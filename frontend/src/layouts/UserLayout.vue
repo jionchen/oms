@@ -2,10 +2,13 @@
   <div class="background" ref="card">
     <a-card class="card">
       <div>
-        <div style="text-align: center; padding-top: 16px; cursor: pointer;" @click="backIndex">
-          <img :src="logo" width="112" style="margin-top: -6px; margin-left: 8px;" />
+        <div style="text-align: center; padding-top: 16px;">
+          <img :src="logo" width="112" style="margin-top: -6px; margin-left: 8px; cursor: pointer;"
+            @click="backIndex" />
         </div>
-        <div class="title" @click="backIndex" style="margin: 0;">海鸥云</div>
+        <div class="title" style="margin: 0;">
+          <span style="cursor: pointer;" @click="backIndex">海鸥云</span>
+        </div>
         <div style="text-align: center; font-size: 16px; color: #666; margin-bottom: 24px;">进销存 - 让生意更简单高效</div>
       </div>
       <router-view />
@@ -49,6 +52,5 @@
     color: #1890ff;
     margin-top: 8px;
     font-weight: bold;
-    cursor: pointer;
   }
 </style>
