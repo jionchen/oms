@@ -10,7 +10,7 @@
           <headbar :collapsed="collapsed" :username="username" @toggleCollapsed="toggleCollapsed" />
         </a-layout-header>
 
-        <a-layout-content>
+        <a-layout-content v-if="isLogin">
           <router-view style="padding: 8px;" />
         </a-layout-content>
 
@@ -37,6 +37,7 @@
     },
     data() {
       return {
+        isLogin: false,
         collapsed: false,
         username: '',
       };
@@ -45,6 +46,7 @@
       initialize() {
         getInfo()
           .then(resp => {
+            this.isLogin = true;
             this.username = resp.data.username;
             if (resp.data.end_datetime) {
               // let remainDays = moment(resp.data.end_datetime).diff(moment(), 'days');
