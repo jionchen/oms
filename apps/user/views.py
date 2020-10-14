@@ -47,6 +47,7 @@ def register(request):
     code = request.data.get('code')
     username = request.data.get('username')
     password = request.data.get('password')
+    wechat = request.data.get('wechat')
 
     # 数据验证
     if not username or not password or not company_name or not name or not phone:
@@ -73,7 +74,7 @@ def register(request):
         raise exceptions.ValidationError({'message': '账号已被注册'})
 
     teams = Teams.objects.create(phone=phone, company_name=company_name)
-    User.objects.create(name=name, phone=phone, username=username,
+    User.objects.create(name=name, phone=phone, username=username, wechat=wechat,
                         password=password, teams=teams)
     return Response(status=status.HTTP_201_CREATED)
 

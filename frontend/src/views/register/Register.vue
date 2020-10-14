@@ -17,6 +17,9 @@
               {{captchaLoading ? countdown : '获取验证码'}}</a-button>
           </a-input-search>
         </a-form-model-item>
+        <a-form-model-item prop="wechat" label="微信号">
+          <a-input size="large" v-model="form.wechat" />
+        </a-form-model-item>
         <a-form-model-item prop="username" label="用户名">
           <a-input size="large" v-model="form.username" />
         </a-form-model-item>
@@ -57,6 +60,7 @@
           name: '',
           phone: '',
           code: '',
+          wechat: '',
           username: '',
           password: '',
           confirm: '',
@@ -76,6 +80,7 @@
             { required: true, message: '请输入验证码', trigger: 'change' },
             { len: 6, message: '请检查验证码 (6位)', trigger: 'blur' },
           ],
+          wechat: [{ required: true, message: '请输入微信号', trigger: 'change' }],
           username: [
             { required: true, message: '请输入用户名', trigger: 'change' },
           ],
