@@ -3,8 +3,7 @@
     <a-row gutter="12">
       <a-col :span="16">
         <sales-trend />
-        <sales-goods style="margin-top: 12px;"/>
-
+        <profit-trend style="margin-top: 12px;"/>
       </a-col>
       <a-col :span="8">
         <sales-task />
@@ -21,7 +20,7 @@
       SalesTask: () => import('./SalesTask.vue'),
       SalesTrend: () => import('./SalesTrend.vue'),
       WarehouseTask: () => import('./WarehouseTask.vue'),
-      SalesGoods: () => import('./SalesGoods.vue'),
+      ProfitTrend: () => import('./ProfitTrend.vue'),
     },
   }
 </script>

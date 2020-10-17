@@ -1,10 +1,10 @@
 <template>
   <div>
-    <a-card style="height: calc(50vh - 48px);">
+    <a-card style="height: 420px;">
       <div slot="title" style="height: 24px;">
         <span>出入库任务提醒</span>
-        <a-select v-model="taskType" size="small" @change="changeTask"
-          style="width: 160px; float: right;">
+        <a-select v-model="taskType" @change="changeTask"
+          style="width: 160px; float: right; margin: -4px 0;">
           <a-select-option value="purchase">采购入库</a-select-option>
           <a-select-option value="purchaseReturn">采购退货</a-select-option>
           <a-select-option value="sales">销售出库</a-select-option>

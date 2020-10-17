@@ -261,47 +261,47 @@ class SalesOrderProfitViewSet(viewsets.ModelViewSet):
         return Response({'total_profit': total_profit if total_profit else 0})
 
 
-class SalesValueViewSet(viewsets.ViewSet):
-    """销售额"""
-    permission_classes = [IsAuthenticated]
+# class SalesValueViewSet(viewsets.ViewSet):
+#     """销售额"""
+#     permission_classes = [IsAuthenticated]
 
-    def list(self, request, *args, **kwargs):
-        start_date = self.request.GET.get('start_date')
-        end_date = self.request.GET.get('end_date')
+#     def list(self, request, *args, **kwargs):
+#         start_date = self.request.GET.get('start_date')
+#         end_date = self.request.GET.get('end_date')
 
-        if not start_date or not end_date:
-            raise ValidationError
-        end_date = pendulum.parse(end_date).add(days=1)
+#         if not start_date or not end_date:
+#             raise ValidationError
+#         end_date = pendulum.parse(end_date).add(days=1)
 
-        queryset = SalesOrder.objects.filter(teams=request.user.teams, is_return=False)
-        queryset = queryset.filter(date__gte=start_date, date__lte=end_date)
-        queryset = queryset.extra(select={'_date': 'DATE_FORMAT(date, "%%Y-%%m-%%d")'})
-        queryset = queryset.values('_date', _warehouse=F('warehouse__name'))
-        results = queryset.annotate(_amount=Sum('total_amount'))
+#         queryset = SalesOrder.objects.filter(teams=request.user.teams, is_return=False)
+#         queryset = queryset.filter(date__gte=start_date, date__lte=end_date)
+#         queryset = queryset.extra(select={'_date': 'DATE_FORMAT(date, "%%Y-%%m-%%d")'})
+#         queryset = queryset.values('_date', _warehouse=F('warehouse__name'))
+#         results = queryset.annotate(_amount=Sum('total_amount'))
 
-        warehouse_list = Warehouse.objects.filter(
-            teams=request.user.teams, is_delete=False).values_list('name', flat=True)
-        return Response({'results': results, 'warehouse_list': warehouse_list})
+#         warehouse_list = Warehouse.objects.filter(
+#             teams=request.user.teams, is_delete=False).values_list('name', flat=True)
+#         return Response({'results': results, 'warehouse_list': warehouse_list})
 
 
-class SalesTopTenViewSet(viewsets.ViewSet):
-    """销售前十"""
-    permission_classes = [IsAuthenticated]
+# class SalesTopTenViewSet(viewsets.ViewSet):
+#     """销售前十"""
+#     permission_classes = [IsAuthenticated]
 
-    def list(self, request, *args, **kwargs):
-        start_date = self.request.GET.get('start_date')
-        end_date = self.request.GET.get('end_date')
+#     def list(self, request, *args, **kwargs):
+#         start_date = self.request.GET.get('start_date')
+#         end_date = self.request.GET.get('end_date')
 
-        if not start_date or not end_date:
-            raise ValidationError
-        end_date = pendulum.parse(end_date).add(days=1)
+#         if not start_date or not end_date:
+#             raise ValidationError
+#         end_date = pendulum.parse(end_date).add(days=1)
 
-        queryset = SalesGoods.objects.filter(sales_order__teams=request.user.teams, sales_order__is_return=False)
-        queryset = queryset.filter(sales_order__date__gte=start_date, sales_order__date__lte=end_date)
-        queryset = queryset.values(_goods=F('goods__name'))
-        results = queryset.annotate(_quantity=Sum('quantity')).order_by('-_quantity')[:10]
+#         queryset = SalesGoods.objects.filter(sales_order__teams=request.user.teams, sales_order__is_return=False)
+#         queryset = queryset.filter(sales_order__date__gte=start_date, sales_order__date__lte=end_date)
+#         queryset = queryset.values(_goods=F('goods__name'))
+#         results = queryset.annotate(_quantity=Sum('quantity')).order_by('-_quantity')[:10]
 
-        return Response({'results': results})
+#         return Response({'results': results})
 
 
 class ClientViewSet(viewsets.ModelViewSet):

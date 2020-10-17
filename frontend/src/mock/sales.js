@@ -683,45 +683,6 @@ const salesProfitList = {
     "count": 14
 };
 
-const salesValueList = {
-    "results": [
-        {
-            "date": "2020-07-08",
-            "warehouse_name": "warehouse1",
-            "amount": 274.0
-        },
-        {
-            "date": "2020-07-11",
-            "warehouse_name": "warehouse1",
-            "amount": 14.0
-        },
-        {
-            "date": "2020-07-12",
-            "warehouse_name": "warehouse1",
-            "amount": 28.0
-        },
-        {
-            "date": "2020-07-15",
-            "warehouse_name": "warehouse1",
-            "amount": 98.0
-        },
-        {
-            "date": "2020-07-08",
-            "warehouse_name": "warehouse2",
-            "amount": 27.5
-        },
-        {
-            "date": "2020-06-30",
-            "warehouse_name": "warehouse2",
-            "amount": 14.0
-        }
-    ],
-    "warehouse_list": [
-        "warehouse1",
-        "warehouse2",
-        "333"
-    ]
-};
 
 const salesOrderRetrieve = {
     "id": "19",
@@ -791,5 +752,4 @@ Mock.mock(/^\/api\/sales_order\/$/, 'get', salesOrderList);
 Mock.mock(/\/api\/sales_order\//, 'get', salesOrderRetrieve);
 Mock.mock(/\/api\/sales_tasks\//, 'get', salesTaskList);
 Mock.mock(/\/api\/sales_profits\//, 'get', salesProfitList);
-Mock.mock(/\/api\/sales_values\//, 'get', salesValueList);
 Mock.mock(/\/api\/clients\//, 'get', clientList);

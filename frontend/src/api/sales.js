@@ -92,26 +92,6 @@ export function salesOrderTotalProfit(params) {
   })
 }
 
-// SalesValue
-export function salesValueList(params) {
-  return axios({
-    url: '/api/sales_values/',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    method: 'get',
-    params,
-  })
-}
-
-// SalesTopTen
-export function salesTopTenList(params) {
-  return axios({
-    url: '/api/sales_top_ten/',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    method: 'get',
-    params,
-  })
-}
-
 // Client
 export function clientList(params) {
   return axios({

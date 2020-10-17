@@ -461,5 +461,53 @@ const salesReportList = {
     ]
 }
 
+
+const salesTrendList = {
+    "results": [
+        {
+            "date": "2020-07-08",
+            "warehouse_name": "warehouse1",
+            "amount": 274.0
+        },
+        {
+            "date": "2020-07-11",
+            "warehouse_name": "warehouse1",
+            "amount": 14.0
+        },
+        {
+            "date": "2020-07-12",
+            "warehouse_name": "warehouse1",
+            "amount": 28.0
+        },
+        {
+            "date": "2020-07-15",
+            "warehouse_name": "warehouse1",
+            "amount": 98.0
+        },
+        {
+            "date": "2020-07-08",
+            "warehouse_name": "warehouse2",
+            "amount": 27.5
+        },
+        {
+            "date": "2020-06-30",
+            "warehouse_name": "warehouse2",
+            "amount": 14.0
+        }
+    ],
+    "warehouse_list": [
+        "warehouse1",
+        "warehouse2",
+        "333"
+    ]
+};
+
+const profitTrendList = {
+    "results": [],
+    "warehouse_list": []
+}
+
 Mock.mock(/\/api\/purchase_reports\//, 'get', purchaseReportList);
 Mock.mock(/\/api\/sales_reports\//, 'get', salesReportList);
+Mock.mock(/\/api\/sales_trends\//, 'get', salesTrendList);
+Mock.mock(/\/api\/profit_trends\//, 'get', profitTrendList);

@@ -21,16 +21,6 @@ export function salesReportList(params) {
   })
 }
 
-// FinancialReport
-export function financialReportList(params) {
-  return axios({
-    url: '/api/financial_reports/',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    method: 'get',
-    params,
-  })
-}
-
 // FinancialStatistics
 export function financialStatistics(params) {
   return axios({
@@ -55,6 +45,27 @@ export function purchaseStatistics(params) {
 export function salesStatistics(params) {
   return axios({
     url: '/api/sales_statistics/',
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    method: 'get',
+    params,
+  })
+}
+
+
+// SalesTrend
+export function salesTrendList(params) {
+  return axios({
+    url: '/api/sales_trends/',
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    method: 'get',
+    params,
+  })
+}
+
+// ProfitTrend
+export function profitTrendList(params) {
+  return axios({
+    url: '/api/financial_reports/',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'get',
     params,

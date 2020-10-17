@@ -2,7 +2,7 @@ export default {
   path: '/',
   name: 'console',
   component: () => import('@/layouts/ConsoleLayout'),
-  redirect: 'home',
+  redirect: '/user/login',
   children: [
     {
       path: 'home',
@@ -154,12 +154,12 @@ export default {
       meta: { title: '销售退货' },
       component: () => import('@/views/salesReturn/SalesReturn'),
     },
-    {
-      path: 'financial_report',
-      name: 'financial_report',
-      meta: { title: '财务报表' },
-      component: () => import('@/views/financialReport/FinancialReport'),
-    },
+    // {
+    //   path: 'financial_report',
+    //   name: 'financial_report',
+    //   meta: { title: '财务报表' },
+    //   component: () => import('@/views/financialReport/FinancialReport'),
+    // },
     {
       path: 'financial_statistics',
       name: 'financial_statistics',

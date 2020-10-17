@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-card title="销售任务提醒" style="height: calc(50vh - 48px);">
+    <a-card title="销售任务提醒" style="height: 420px">
       <a-table :columns="columns" :data-source="items" size="small" :pagination="false" :loading="loading"
         :scroll="{y: tableHeight}" />
       <div style="text-align: center; margin-top: 16px;">

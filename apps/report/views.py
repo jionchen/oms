@@ -1,4 +1,4 @@
-from .filters import PurcahseReportFilter, SalesReportFilter, FinancialReportFilter, PurchaseStatisticsFilter, SalesStatisticsFilter
+from .filters import PurcahseReportFilter, SalesReportFilter, ProfitTrendFilter, PurchaseStatisticsFilter, SalesStatisticsFilter
 from .paginations import PurchaseReportPagination, SalesReportPagination
 from utils.permissions import IsAuthenticated, PurchasePricePermission
 from django_filters.rest_framework import DjangoFilterBackend
@@ -10,6 +10,8 @@ from purchase.models import PurchaseGoods, PurchaseOrder, PaymentRecord as Purch
 from rest_framework import viewsets
 from sales.models import SalesGoods, SalesOrder, PaymentRecord as SalesPaymentRecord
 from rest_framework.filters import SearchFilter
+import pendulum
+from rest_framework.exceptions import ValidationError
 
 
 class PurcahseReportViewSet(viewsets.ModelViewSet):
@@ -77,11 +79,34 @@ class SalesReportViewSet(viewsets.ModelViewSet):
         return Response({'total': total, 'results': self.paginate_queryset(results)})
 
 
-class FinancialReportViewSet(viewsets.ModelViewSet):
-    """财务报表: list"""
+class SalesTrendViewSet(viewsets.ModelViewSet):
+    """销售趋势"""
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request, *args, **kwargs):
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
+
+        if not start_date or not end_date:
+            raise ValidationError
+        end_date = pendulum.parse(end_date).add(days=1)
+
+        queryset = SalesOrder.objects.filter(teams=request.user.teams, is_return=False)
+        queryset = queryset.filter(date__gte=start_date, date__lte=end_date)
+        queryset = queryset.extra(select={'_date': 'DATE_FORMAT(date, "%%Y-%%m-%%d")'})
+        queryset = queryset.values('_date', _warehouse=F('warehouse__name'))
+        results = queryset.annotate(_amount=Sum('total_amount'))
+
+        warehouse_list = Warehouse.objects.filter(
+            teams=request.user.teams, is_delete=False).values_list('name', flat=True)
+        return Response({'results': results, 'warehouse_list': warehouse_list})
+
+
+class ProfitTrendViewSet(viewsets.ModelViewSet):
+    """利润趋势"""
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
-    filterset_class = FinancialReportFilter
+    filterset_class = ProfitTrendFilter
 
     def get_queryset(self):
         return SalesGoods.objects.filter(sales_order__teams=self.request.user.teams, sales_order__is_return=False)
@@ -96,6 +121,27 @@ class FinancialReportViewSet(viewsets.ModelViewSet):
         warehouse_list = Warehouse.objects.filter(
             teams=request.user.teams, is_delete=False).values_list('name', flat=True)
         return Response({'results': results, 'warehouse_list': warehouse_list})
+
+
+# class FinancialReportViewSet(viewsets.ModelViewSet):
+#     """财务报表: list"""
+#     permission_classes = [IsAuthenticated]
+#     filter_backends = [DjangoFilterBackend]
+#     filterset_class = FinancialReportFilter
+
+#     def get_queryset(self):
+#         return SalesGoods.objects.filter(sales_order__teams=self.request.user.teams, sales_order__is_return=False)
+
+#     def list(self, request, *args, **kwargs):
+#         queryset = self.filter_queryset(self.get_queryset())
+#         queryset = queryset.extra(select={'_date': 'DATE_FORMAT(`sales_salesorder`.`date`, "%%Y-%%m-%%d")'})
+#         queryset = queryset.values('_date', _warehouse=F('sales_order__warehouse__name'))
+#         results = queryset.annotate(
+#             _amount=Sum((F('retail_price') * F('sales_order__discount') * 0.01 - F('purchase_price')) * F('quantity')))
+
+#         warehouse_list = Warehouse.objects.filter(
+#             teams=request.user.teams, is_delete=False).values_list('name', flat=True)
+#         return Response({'results': results, 'warehouse_list': warehouse_list})
 
 
 class FinancialStatisticsViewSet(viewsets.ModelViewSet):

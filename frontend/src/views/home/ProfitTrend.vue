@@ -2,21 +2,21 @@
   <div>
     <a-card style="height: 420px;">
       <div slot="title">
-        <span>销售走势</span>
+        <span>利润走势</span>
         <a-range-picker v-model="dateRange" :ranges="ranges" :disabled="loading" :allowClear="false"
           @change="changeDateRange" style="float: right; margin: -4px 0;" />
       </div>
-      <div id="salesTrend" style="margin-top: 36px;"></div>
+      <div id="profitTrend" style="margin-top: 36px;"></div>
     </a-card>
   </div>
 </template>
 
 <script>
-  import { salesTrendList } from '@/api/report'
+  import { profitTrendList } from '@/api/report'
   import moment from 'moment'
 
   export default {
-    name: 'SalesTrend',
+    name: 'ProfitTrend',
     data() {
       return {
         ranges: {
@@ -32,7 +32,7 @@
     methods: {
       initialize() {
         let height = 280;
-        this.chart = new window.G2.Chart({ container: 'salesTrend', autoFit: true, height });
+        this.chart = new window.G2.Chart({ container: 'profitTrend', autoFit: true, height });
         this.chart.scale({ _date: { range: [0, 1] }, _amount: { nice: true } });
         this.chart.tooltip({ showCrosshairs: true, shared: true });
         this.chart.line().position('_date*_amount').color('_warehouse').shape('smooth');
@@ -46,7 +46,7 @@
         };
 
         this.loading = true;
-        salesTrendList(form)
+        profitTrendList(form)
           .then(resp => {
             let data = [...resp.data.results, ...this.fillData(resp.data.results, resp.data.warehouse_list)];
             this.chart.changeData(data);
@@ -68,7 +68,7 @@
         let endData = moment(this.dateRange[1]);
         let days = endData.diff(startDate, 'days');
         let fillItems = [];
-        
+
         for (let i = 0; i <= days; i++) {
           for (let w of warehouseList) {
             if (items.findIndex(item => item._warehouse === w && item._date === startDate.format('YYYY-MM-DD')) === -1) {

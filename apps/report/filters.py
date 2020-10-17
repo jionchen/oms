@@ -33,7 +33,7 @@ class SalesReportFilter(filters.FilterSet):
         return queryset.filter(sales_order__date__lte=date)
 
 
-class FinancialReportFilter(filters.FilterSet):
+class ProfitTrendFilter(filters.FilterSet):
     start_date = filters.CharFilter(field_name='sales_order__date', lookup_expr='gte')
     end_date = filters.CharFilter(method='end_date_filter', label='end_date')
 
