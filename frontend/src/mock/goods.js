@@ -1,27 +1,66 @@
 import Mock from 'mockjs'
 
 
-const categoryList = [
-  { id: 1, name: 'category1', description: 'category1 xxx xxx xxx xxx xxx', goods_quantity: 5, product_quantity: 7, order: 100 },
-  { id: 2, name: 'category2', description: 'category1 xxx xxx xxx xxx xxx', goods_quantity: 5, product_quantity: 7, order: 100 },
-  { id: 3, name: 'category3', description: 'category1 xxx xxx xxx xxx xxx', goods_quantity: 5, product_quantity: 7, order: 100 },
-  { id: 4, name: 'category4', description: 'category1 xxx xxx xxx xxx xxx', goods_quantity: 5, product_quantity: 7, order: 100 },
-  { id: 5, name: 'category5', description: 'category1 xxx xxx xxx xxx xxx', goods_quantity: 5, product_quantity: 7, order: 100 },
-];
+const categoryList = {
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "number": "1001",
+      "name": "食品",
+      "description": "",
+      "id": 1
+    },
+    {
+      "number": "1002",
+      "name": "日用品",
+      "description": "",
+      "id": 2
+    }
+  ]
+};
 
 
 const goodsList = {
-  count: 99,
-  results: [
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
     {
-      id: 1, name: 'goods1', code: 10001, suggested_retail_price: 10, retail_price: 12, order: 100, status: true,
-      brand_name: 'brand1', category_name: 'category1', products: [
-        { id: 1, goods: 1, spec1: 1, spec1_name: 'spec1_name', spec2: 2, spec2_name: 'spec2_name', purchase_price: 55 },
-        { id: 2, goods: 1, spec1: 3, spec1_name: 'spec3_name', spec2: 4, spec2_name: 'spec4_name', purchase_price: 55 },
-      ]
+      "number": "1001",
+      "name": "apple",
+      "unit": "个",
+      "category": null,
+      "purchase_price": 0.0,
+      "retail_price": 0.0,
+      "shelf_life": null,
+      "shelf_life_warnning_days": null,
+      "inventory_upper": null,
+      "inventory_lower": null,
+      "inventory_warning": false,
+      "is_active": true,
+      "id": 1,
+      "category_name": null
     },
-  ],
+    {
+      "number": "1002",
+      "name": "orange",
+      "unit": "个",
+      "category": null,
+      "purchase_price": 0.0,
+      "retail_price": 0.0,
+      "shelf_life": null,
+      "shelf_life_warnning_days": null,
+      "inventory_upper": 5.0,
+      "inventory_lower": 1000.0,
+      "inventory_warning": true,
+      "is_active": true,
+      "id": 2,
+      "category_name": null
+    }
+  ]
 }
 
-Mock.mock(/\/api\/goods\//, 'get', goodsList);
 Mock.mock(/\/api\/categories\//, 'get', categoryList);
+Mock.mock(/\/api\/goods\//, 'get', goodsList);

@@ -65,9 +65,9 @@ export function goodsUpdate(form) {
   })
 }
 
-export function goodsDestroy(form) {
+export function goodsDestroy(id) {
   return axios({
-    url: `/api/goods/${form.id}/`,
+    url: `/api/goods/${id}/`,
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'delete',
   })

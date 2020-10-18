@@ -84,9 +84,11 @@ def get_info(request):
     if not request.user.is_authenticated:
         raise exceptions.AuthenticationFailed({'message': '未登录'})
 
-    teams = request.user.teams
-    inventory_warning_count = Inventory.objects.filter(
-        teams=teams, quantity__lte=F('goods__inventory_warning_lower_limit')).count()
+    # teams = request.user.teams
+    # inventory_warning_count = Inventory.objects.filter(
+    #     teams=teams, quantity__lte=F('goods__inventory_warning_lower_limit')).count()
+    inventory_warning_count = 0
+    
     data = {'username': request.user.username, 'inventory_warning_count': inventory_warning_count}
     return Response(data=data, status=status.HTTP_200_OK)
 

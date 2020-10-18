@@ -1,225 +1,133 @@
 <template>
   <div>
-    <div>
-      <a-card>
-        <a-form-model ref="searchForm" :model="searchForm" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }"
-          layout="inline">
-          <a-form-model-item prop="name" label="商品名称">
-            <a-input v-model="searchForm.name" />
-          </a-form-model-item>
-          <a-form-model-item prop="category" label="商品分类">
-            <a-select v-model="searchForm.category" style="width: 200px;" :allowClear="true">
-              <a-select-option v-for="item of categoryItems" :key="item.id" :value="item.id">{{item.name}}
-              </a-select-option>
-            </a-select>
-          </a-form-model-item>
-          <a-form-model-item>
-            <a-button @click="search">查询</a-button>
-          </a-form-model-item>
-          <a-form-model-item style="float: right;">
-            <a-button type="primary" @click="resetForm(); goodsVisible = true;">
-              <a-icon type="plus" />新增商品</a-button>
-          </a-form-model-item>
-        </a-form-model>
-      </a-card>
-    </div>
+    <a-card title="商品管理">
+      <a-row gutter="16">
+        <a-col :span="5">
+          <a-input-search v-model="searchForm.search" placeholder="编号, 名称" allowClear @search="search" />
+        </a-col>
+        <a-col :span="5">
+          <category-select v-model="searchForm.category" placeholder="商品分类" @change="search" />
+        </a-col>
+        <a-col :span="5">
+          <a-select v-model="searchForm.is_active" placeholder="状态" style="width: 100%;" allowClear @change="search">
+            <a-select-option :value="true">激活</a-select-option>
+            <a-select-option :value="false">冻结</a-select-option>
+          </a-select>
+        </a-col>
+        <a-col :span="5">
+          <a-space>
+            <a-button>导入</a-button>
+            <a-button>导出</a-button>
+          </a-space>
+        </a-col>
+        <a-col :span="4">
+          <div style="float: right;">
+            <a-button type="primary" icon="plus" @click="openFormModal(form)">新增商品</a-button>
+          </div>
+        </a-col>
+      </a-row>
 
-    <div style="margin-top: 8px;">
-      <a-card>
-        <a-table :columns="columns" :data-source="goodsItems" size="small" :loading="loading" :pagination="false">
-          <div slot="status" slot-scope="value, item">{{item.status ? '启用' : '停用'}}</div>
+      <div style="margin-top: 16px;">
+        <a-table :columns="columns" :data-source="items" size="small" :loading="loading" :pagination="pagination"
+          @change="tableChange">
+          <div slot="is_active" slot-scope="value">
+            <a-tag :color="value ? 'green' : 'red'">{{value ? '开启' : '关闭'}}</a-tag>
+          </div>
           <div slot="action" slot-scope="value, item">
             <a-button-group>
-              <a-button size="small" @click="$router.push({path: '/inventory', query: {search: item.code}})">
-                <a-icon type="appstore" />库存
-              </a-button>
-              <a-button size="small" @click="$router.push({path: '/flow', query: {search: item.code}})">
-                <a-icon type="profile" />流水
-              </a-button>
-              <a-button size="small" @click="goodsForm = {...item}; goodsVisible = true;">
+              <a-button size="small" @click="openFormModal(item)">
                 <a-icon type="edit" />编辑
               </a-button>
-              <a-popconfirm :title="`删除商品: ${item.name}`" ok-text="确认" cancel-text="取消" @confirm="destroy(item)">
-                <a-button type="danger" size="small">
-                  <a-icon type="delete" />删除
-                </a-button>
+              <a-popconfirm title="确定删除吗" @confirm="destroy(item.id)">
+                <a-button type="danger" icon="delete" size="small">删除</a-button>
               </a-popconfirm>
             </a-button-group>
           </div>
         </a-table>
-        <div style="text-align: center; margin-top: 24px;">
-          <a-pagination v-model="searchForm.page" :total="totalRows" :pageSize="perPage" show-less-items
-            @change="list" />
-        </div>
-      </a-card>
-    </div>
+      </div>
+    </a-card>
 
-    <goods-modal v-model="goodsVisible" :form="goodsForm" :categoryItems="categoryItems" @create="create"
-      @update="update" @cancel="goodsVisible = false" />
+    <form-modal v-model="visible" :form="targetItem" @create="create" @update="update" />
   </div>
 </template>
 
 <script>
-  import { goodsList, goodsDestroy, categoryList } from '@/api/goods'
-  import NP from 'number-precision'
+  import { goodsList, goodsDestroy } from '@/api/goods'
+  import columns from './columns.js'
 
   export default {
     name: 'Goods',
     components: {
-      GoodsModal: () => import('@/components/GoodsModal/GoodsModal'),
+      CategorySelect: () => import('@/components/CategorySelect/CategorySelect'),
+      FormModal: () => import('./FormModal.vue')
     },
     data() {
       return {
-        NP,
-        searchForm: { name: '', category: '', page: 1 },
-        goodsForm: {},
-        goodsItems: [],
-        categoryItems: [],
+        columns,
+        searchForm: { search: '', page: 1, category: undefined, is_active: undefined, ordering: undefined },
+        pagination: { current: 1, total: 0, pageSize: 15 },
+        form: { purchase_price: 0, retail_price: 0, inventory_warning: false, is_active: true },
+        items: [],
         loading: false,
-        goodsVisible: false,
-
-        setGoodsItem: {},
-
-        totalRows: 0,
-        perPage: 20,
-        columns: [
-          {
-            title: '名称',
-            dataIndex: 'name',
-            key: 'name',
-          },
-          {
-            title: '货号',
-            dataIndex: 'code',
-            key: 'code',
-          },
-          {
-            title: '品牌',
-            dataIndex: 'brand',
-            key: 'brand',
-          },
-          {
-            title: '分类',
-            dataIndex: 'category_name',
-            key: 'category_name',
-          },
-          {
-            title: '规格型号',
-            dataIndex: 'specification',
-            key: 'specification',
-          },
-          {
-            title: '单位',
-            dataIndex: 'unit',
-            key: 'unit',
-          },
-          {
-            title: '采购价',
-            dataIndex: 'purchase_price',
-            key: 'purchase_price',
-          },
-          {
-            title: '零售价',
-            dataIndex: 'retail_price',
-            key: 'retail_price',
-          },
-          {
-            title: '状态',
-            dataIndex: 'status',
-            key: 'status',
-            scopedSlots: { customRender: 'status' },
-          },
-          {
-            title: '排序',
-            dataIndex: 'order',
-            key: 'order',
-          },
-          {
-            title: '操作',
-            dataIndex: 'action',
-            key: 'action',
-            scopedSlots: { customRender: 'action' },
-            width: '296px',
-          },
-        ],
+        visible: false,
+        targetItem: {},
       };
     },
     methods: {
-      initalize() {
-        this.resetForm();
+      initialize() {
         this.list();
-
-        categoryList()
-          .then(resp => {
-            this.categoryItems = resp.data;
-          })
-          .catch(err => {
-            this.$message.error(err.response.data.message);
-          });
       },
       list() {
         this.loading = true;
         goodsList(this.searchForm)
           .then(resp => {
-            this.totalRows = resp.data.count;
-            this.goodsItems = resp.data.results;
+            this.pagination.total = resp.data.count;
+            this.items = resp.data.results;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.loading = false;
           });
       },
-      create(goodsItem, isKeepAdd) {
-        this.goodsItems.push(goodsItem);
-        if (isKeepAdd) {
-          this.resetForm();
-        } else {
-          this.goodsVisible = false;
-        }
+      create(item) {
+        this.items.splice(0, 0, item);
       },
-      update(goodsItem) {
-        this.goodsItems.splice(this.goodsItems.findIndex(item => item.id === goodsItem.id), 1, goodsItem);
-        this.goodsVisible = false;
+      update(item) {
+        this.items.splice(this.items.findIndex(i => i.id == item.id), 1, item);
       },
-      destroy(goodsItem) {
-        let form = { ...goodsItem };
-        goodsDestroy(form)
+      destroy(id) {
+        goodsDestroy(id)
           .then(() => {
+            this.items.splice(this.items.findIndex(item => item.id == id), 1);
             this.$message.success('删除成功');
-            this.goodsItems.splice(this.goodsItems.findIndex(item => item.id === form.id), 1);
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
-          });
+            this.$message.error(this.errorToString(err));
+          })
       },
       search() {
         this.searchForm.page = 1;
+        this.pagination.current = 1;
         this.list();
       },
-      resetForm() {
-        this.goodsForm = {
-          name: '',
-          code: '',
-          purchase_price: 0,
-          suggested_retail_price: 0,
-          retail_price: 0,
-          order: 100,
-          status: true,
-          inventory_warning_lower_limit: 0,
-          inventory_warning_upper_limit: 5000,
-          brand: '',
-          category: null,
-          specification: '',
-          unit: '',
-          inventory: {},
-          initial_quantity: 0,
-        };
+      tableChange(pagination, filters, sorter) {
+        this.searchForm.page = pagination.current;
+        this.pagination.current = pagination.current;
+        this.searchForm.ordering = `${sorter.order == 'descend' ? '-' : ''}${sorter.field}`;
+        this.list();
+      },
+      openFormModal(item) {
+        this.targetItem = { ...item };
+        this.visible = true;
       },
     },
     mounted() {
-      this.initalize();
+      this.initialize();
     },
   }
 </script>
+
+<style scoped>
+</style>
