@@ -47,7 +47,7 @@ export default [
   },
   {
     key: '7', name: '基础数据', icon: 'table', submenus: [
-      { key: '/warehouse', name: '公司' },
+      { key: '/warehouse', name: '仓库管理' },
       { key: '/supplier', name: '供应商' },
       { key: '/client', name: '客户管理' },
       { key: '/account', name: '结算账户' },

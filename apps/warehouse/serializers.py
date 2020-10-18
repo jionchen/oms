@@ -18,9 +18,6 @@ class WarehouseSerializer(serializers.ModelSerializer):
         if not data.get('name') or not data.get('type'):
             raise serializers.ValidationError
 
-        if str(data['type']) not in ('仓库', '门店', '公司'):
-            raise serializers.ValidationError
-
         teams = self.context['request'].user.teams
         if data['manager'] and not teams.users.filter(username=data['manager'].username, is_delete=False).exists():
             raise serializers.ValidationError

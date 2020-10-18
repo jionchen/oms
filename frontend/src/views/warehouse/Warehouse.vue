@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-card title="公司">
+    <a-card title="仓库">
       <a-table :columns="columns" :data-source="items" size="small" :pagination="false" :loading="loading">
         <div slot="index" slot-scope="value, item, index">{{index + 1}}</div>
         <div slot="create_date" slot-scope="value">{{moment(value).format('YYYY-MM-DD')}}</div>
@@ -11,7 +11,7 @@
             <a-button size="small" @click="form = {...item}; visible = true;">
               <a-icon type="edit" />编辑
             </a-button>
-            <a-popconfirm :title="`删除公司: ${item.name}`" ok-text="确认" cancel-text="取消" @confirm="destroy(item)">
+            <a-popconfirm :title="`删除仓库: ${item.name}`" ok-text="确认" cancel-text="取消" @confirm="destroy(item)">
               <a-button type="danger" size="small">
                 <a-icon type="delete" />删除
               </a-button>
@@ -22,23 +22,16 @@
       </a-table>
       <div style="float: right; margin-top: 24px;">
         <a-button type="primary" @click="resetForm(); visible = true;">
-          <a-icon type="plus" />新增公司</a-button>
+          <a-icon type="plus" />新增仓库</a-button>
       </div>
     </a-card>
 
-    <a-modal v-model="visible" :title="form.id ? '编辑公司' : '新增公司'" :maskClosable="false"
+    <a-modal v-model="visible" :title="form.id ? '编辑仓库' : '新增仓库'" :maskClosable="false"
       :okText="form.id ? '保存' : '新增'" cancelText="取消" @ok="form.id ? update() : create()"
       @cancel="$refs.form.clearValidate()">
       <a-form-model ref="form" :model="form" :rules="rules" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }">
         <a-form-model-item prop="name" label="名称">
           <a-input size="large" v-model="form.name" />
-        </a-form-model-item>
-        <a-form-model-item prop="type" label="类型">
-          <a-select v-model="form.type" size="large">
-            <a-select-option value="仓库">仓库</a-select-option>
-            <a-select-option value="门店">门店</a-select-option>
-            <a-select-option value="公司">公司</a-select-option>
-          </a-select>
         </a-form-model-item>
         <a-form-model-item prop="manager" label="管理人">
           <a-select v-model="form.manager" size="large" :allowClear="true">
@@ -95,11 +88,6 @@
             key: 'manager',
           },
           {
-            title: '类型',
-            dataIndex: 'type',
-            key: 'type',
-          },
-          {
             title: '地址',
             dataIndex: 'address',
             key: 'address',
@@ -148,12 +136,11 @@
         ],
         items: [],
         userItems: [],
-        form: { name: '', type: '', manager: '', address: '', status: true, order: 100, remark: '' },
+        form: { name: '', manager: '', address: '', status: true, order: 100, remark: '' },
         loading: false,
         visible: false,
         rules: {
           name: [{ required: true, message: '请输入名称', trigger: 'change' }],
-          type: [{ required: true, message: '请选择类型', trigger: 'change' }],
         },
       };
     },
@@ -221,7 +208,7 @@
           });
       },
       resetForm() {
-        this.form = { name: '', type: '', manager: '', address: '', status: true, order: 100, remark: '' };
+        this.form = { name: '', manager: '', address: '', status: true, order: 100, remark: '' };
       },
     },
     mounted() {

@@ -39,6 +39,7 @@
         this.chart.point().position('_date*_amount').color('_warehouse').shape('circle');
         this.list();
       },
+      
       list() {
         let form = {
           start_date: this.dateRange[0].format(),
@@ -48,6 +49,7 @@
         this.loading = true;
         profitTrendList(form)
           .then(resp => {
+            console.log(resp.data);
             let data = [...resp.data.results, ...this.fillData(resp.data.results, resp.data.warehouse_list)];
             this.chart.changeData(data);
             this.chart.forceFit();

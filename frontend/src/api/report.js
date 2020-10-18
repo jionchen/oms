@@ -65,7 +65,7 @@ export function salesTrendList(params) {
 // ProfitTrend
 export function profitTrendList(params) {
   return axios({
-    url: '/api/financial_reports/',
+    url: '/api/profit_trends/',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'get',
     params,

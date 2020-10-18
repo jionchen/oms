@@ -2,11 +2,10 @@ from django.db import models
 
 
 class Warehouse(models.Model):
-    """仓库/门店"""
+    """仓库"""
     name = models.CharField(max_length=48)
     manager = models.ForeignKey('user.User', models.CASCADE, related_name='warehouse_set', null=True)
     remark = models.CharField(max_length=64, null=True, blank=True)
-    type = models.CharField(max_length=16)  # 仓库/门店
     address = models.CharField(max_length=128, null=True, blank=True)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
