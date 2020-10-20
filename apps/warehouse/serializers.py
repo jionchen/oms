@@ -10,7 +10,7 @@ class WarehouseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Warehouse
         read_only_fields = ['id', 'create_date', 'update_date']
-        fields = ['number', 'name', 'manager', 'address', 'remark', 'is_active', *read_only_fields]
+        fields = ['number', 'name', 'address', 'remark', 'is_active', *read_only_fields]
 
     def validate(self, data):
         teams = self.context['request'].user.teams
@@ -18,12 +18,6 @@ class WarehouseSerializer(serializers.ModelSerializer):
         # 编号验证
         if Warehouse.objects.filter(teams=teams, number=data['number']).exists():
             raise serializers.ValidationError({'number': '编号已存在'})
-
-        # 负责人验证
-        manager = data.get('manager')
-        if manager is not None and not User.objects.filter(teams=teams, username=manager.username).exists():
-            raise serializers.ValidationError({'category': '账户不存在'})
-
         return data
 
 
@@ -31,15 +25,7 @@ class WarehouseUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Warehouse
         read_only_fields = ['id', 'number', 'create_date', 'update_date']
-        fields = ['name', 'manager', 'address', 'remark', 'is_active', *read_only_fields]
-
-    def validate(self, data):
-        # 负责人验证
-        teams = self.context['request'].user.teams
-        manager = data.get('manager')
-        if manager is not None and not User.objects.filter(teams=teams, username=manager.username).exists():
-            raise serializers.ValidationError({'category': '账户不存在'})
-        return data
+        fields = ['name', 'address', 'remark', 'is_active', *read_only_fields]
 
 
 class InventorySerializer(serializers.ModelSerializer):

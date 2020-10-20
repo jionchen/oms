@@ -3,11 +3,12 @@ import axios from 'axios'
 
 
 // Category
-export function categoryList() {
+export function categoryList(params) {
   return axios({
     url: '/api/categories/',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'get',
+    params,
   })
 }
 
@@ -29,9 +30,9 @@ export function categoryUpdate(form) {
   })
 }
 
-export function categoryDestroy(form) {
+export function categoryDestroy(id) {
   return axios({
-    url: `/api/categories/${form.id}/`,
+    url: `/api/categories/${id}/`,
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'delete',
   })

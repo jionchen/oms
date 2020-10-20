@@ -80,13 +80,13 @@ export function subuserDestroy(form) {
   })
 }
 
-
 // Account
-export function accountList() {
+export function accountList(params) {
   return axios({
     url: '/api/accounts/',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'get',
+    params,
   })
 }
 
@@ -108,9 +108,9 @@ export function accountUpdate(form) {
   })
 }
 
-export function accountDestroy(form) {
+export function accountDestroy(id) {
   return axios({
-    url: `/api/accounts/${form.id}/`,
+    url: `/api/accounts/${id}/`,
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'delete',
   })

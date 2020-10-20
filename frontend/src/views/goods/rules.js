@@ -5,8 +5,7 @@ export default {
   ],
   name: [
     { required: true, message: '请输入商品名称', trigger: 'change' },
-    { max: 256, message: '超出最大长度 (64)', trigger: 'change' },
+    { max: 256, message: '超出最大长度 (256)', trigger: 'change' },
   ],
   unit: [{ max: 32, message: '超出最大长度 (32)', trigger: 'change' }],
-  description: [{ max: 256, message: '超出最大长度 (256)', trigger: 'change' }],
 }

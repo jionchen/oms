@@ -2,17 +2,18 @@ import Cookies from 'js-cookie'
 import axios from 'axios'
 
 // Warehouse
-export function warehouseList() {
+export function warehouseList(params) {
   return axios({
-    url: '/api/warehouse/',
+    url: '/api/warehouses/',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'get',
+    params,
   })
 }
 
 export function warehouseCreate(form) {
   return axios({
-    url: '/api/warehouse/',
+    url: '/api/warehouses/',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'post',
     data: form,
@@ -21,16 +22,16 @@ export function warehouseCreate(form) {
 
 export function warehouseUpdate(form) {
   return axios({
-    url: `/api/warehouse/${form.id}/`,
+    url: `/api/warehouses/${form.id}/`,
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'put',
     data: form,
   })
 }
 
-export function warehouseDestroy(form) {
+export function warehouseDestroy(id) {
   return axios({
-    url: `/api/warehouse/${form.id}/`,
+    url: `/api/warehouses/${id}/`,
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'delete',
   })

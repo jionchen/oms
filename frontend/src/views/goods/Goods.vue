@@ -31,7 +31,7 @@
         <a-table :columns="columns" :data-source="items" size="small" :loading="loading" :pagination="pagination"
           @change="tableChange">
           <div slot="is_active" slot-scope="value">
-            <a-tag :color="value ? 'green' : 'red'">{{value ? '开启' : '关闭'}}</a-tag>
+            <a-tag :color="value ? 'green' : 'red'">{{value ? '激活' : '冻结'}}</a-tag>
           </div>
           <div slot="action" slot-scope="value, item">
             <a-button-group>

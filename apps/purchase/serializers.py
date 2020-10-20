@@ -7,7 +7,7 @@ class SupplierSerializer(serializers.ModelSerializer):
         model = Supplier
         read_only_fields = ['id', 'update_date']
         fields = ['number', 'name', 'manager', 'phone', 'address', 'email', 'bank_account',
-                  'bank_name', 'url', 'default_discount', 'remark', 'is_active']
+                  'bank_name', 'url', 'default_discount', 'remark', 'is_active', *read_only_fields]
 
     def validate(self, data):
         # 编号验证
@@ -22,7 +22,7 @@ class SupplierUpdateSerializer(serializers.ModelSerializer):
         model = Supplier
         read_only_fields = ['id', 'number', 'update_date']
         fields = ['name', 'manager', 'phone', 'address', 'email', 'bank_account',
-                  'bank_name', 'url', 'default_discount', 'remark', 'is_active']
+                  'bank_name', 'url', 'default_discount', 'remark', 'is_active', *read_only_fields]
 
 
 class PurchaseOrderSerializer(serializers.ModelSerializer):

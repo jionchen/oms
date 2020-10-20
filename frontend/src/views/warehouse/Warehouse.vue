@@ -1,214 +1,122 @@
 <template>
   <div>
-    <a-card title="仓库">
-      <a-table :columns="columns" :data-source="items" size="small" :pagination="false" :loading="loading">
-        <div slot="index" slot-scope="value, item, index">{{index + 1}}</div>
-        <div slot="create_date" slot-scope="value">{{moment(value).format('YYYY-MM-DD')}}</div>
-        <div slot="update_date" slot-scope="value">{{moment(value).format('YYYY-MM-DD')}}</div>
-        <div slot="status" slot-scope="value, item">{{item.status ? '启用' : '停用'}}</div>
-        <div slot="action" slot-scope="value, item">
-          <a-button-group>
-            <a-button size="small" @click="form = {...item}; visible = true;">
-              <a-icon type="edit" />编辑
-            </a-button>
-            <a-popconfirm :title="`删除仓库: ${item.name}`" ok-text="确认" cancel-text="取消" @confirm="destroy(item)">
-              <a-button type="danger" size="small">
-                <a-icon type="delete" />删除
-              </a-button>
-            </a-popconfirm>
-          </a-button-group>
+    <a-card title="仓库管理">
+      <a-row gutter="16">
+        <a-col :span="6">
+          <a-input-search v-model="searchForm.search" placeholder="编号, 名称" allowClear @search="search" />
+        </a-col>
+        <a-col :span="6">
+          <a-select v-model="searchForm.is_active" placeholder="状态" style="width: 100%;" allowClear @change="search">
+            <a-select-option :value="true">激活</a-select-option>
+            <a-select-option :value="false">冻结</a-select-option>
+          </a-select>
+        </a-col>
+        <a-col :span="6">
+          <a-space>
+            <a-button>导入</a-button>
+            <a-button>导出</a-button>
+          </a-space>
+        </a-col>
+        <a-col :span="6">
+          <div style="float: right;">
+            <a-button type="primary" icon="plus" @click="openFormModal(form)">新增仓库</a-button>
+          </div>
+        </a-col>
+      </a-row>
 
-        </div>
-      </a-table>
-      <div style="float: right; margin-top: 24px;">
-        <a-button type="primary" @click="resetForm(); visible = true;">
-          <a-icon type="plus" />新增仓库</a-button>
+      <div style="margin-top: 16px;">
+        <a-table :columns="columns" :data-source="items" size="small" :loading="loading" :pagination="pagination"
+          @change="tableChange">
+          <div slot="is_active" slot-scope="value">
+            <a-tag :color="value ? 'green' : 'red'">{{value ? '激活' : '冻结'}}</a-tag>
+          </div>
+          <div slot="action" slot-scope="value, item">
+            <a-button-group>
+              <a-button size="small" @click="openFormModal(item)">
+                <a-icon type="edit" />编辑
+              </a-button>
+              <a-popconfirm title="确定删除吗" @confirm="destroy(item.id)">
+                <a-button type="danger" icon="delete" size="small">删除</a-button>
+              </a-popconfirm>
+            </a-button-group>
+          </div>
+        </a-table>
       </div>
     </a-card>
 
-    <a-modal v-model="visible" :title="form.id ? '编辑仓库' : '新增仓库'" :maskClosable="false"
-      :okText="form.id ? '保存' : '新增'" cancelText="取消" @ok="form.id ? update() : create()"
-      @cancel="$refs.form.clearValidate()">
-      <a-form-model ref="form" :model="form" :rules="rules" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }">
-        <a-form-model-item prop="name" label="名称">
-          <a-input size="large" v-model="form.name" />
-        </a-form-model-item>
-        <a-form-model-item prop="manager" label="管理人">
-          <a-select v-model="form.manager" size="large" :allowClear="true">
-            <a-select-option v-for="value in userItems" :key="value" :value="value">{{value}}
-            </a-select-option>
-          </a-select>
-        </a-form-model-item>
-        <a-form-model-item prop="address" label="地址">
-          <a-input size="large" v-model="form.address" />
-        </a-form-model-item>
-        <a-form-model-item prop="status" label="状态">
-          <a-select v-model="form.status" size="large">
-            <a-select-option :value="true">启用</a-select-option>
-            <a-select-option :value="false">停用</a-select-option>
-          </a-select>
-        </a-form-model-item>
-        <a-form-model-item prop="order" label="排序">
-          <a-input size="large" v-model="form.order" />
-        </a-form-model-item>
-        <a-form-model-item prop="remark" label="备注">
-          <a-input size="large" v-model="form.remark" />
-        </a-form-model-item>
-      </a-form-model>
-    </a-modal>
+    <form-modal v-model="visible" :form="targetItem" @create="create" @update="update" />
   </div>
 </template>
 
 <script>
-  import { warehouseList, warehouseCreate, warehouseUpdate, warehouseDestroy } from '@/api/warehouse'
-  import { userList } from '@/api/account'
-  import moment from 'moment'
+  import { warehouseList, warehouseDestroy } from '@/api/warehouse'
+  import columns from './columns.js'
 
   export default {
     name: 'Warehouse',
+    components: {
+      FormModal: () => import('./FormModal.vue')
+    },
     data() {
       return {
-        moment,
-        columns: [
-          {
-            title: '#',
-            dataIndex: 'index',
-            key: 'index',
-            width: '64px',
-            scopedSlots: { customRender: 'index' },
-          },
-          {
-            title: '名称',
-            dataIndex: 'name',
-            key: 'name',
-          },
-          {
-            title: '负责人',
-            dataIndex: 'manager',
-            key: 'manager',
-          },
-          {
-            title: '地址',
-            dataIndex: 'address',
-            key: 'address',
-          },
-          {
-            title: '商品总数',
-            dataIndex: 'goods_total',
-            key: 'goods_total',
-          },
-          {
-            title: '备注',
-            dataIndex: 'remark',
-            key: 'remark',
-            ellipsis: true,
-          },
-          {
-            title: '创建时间',
-            dataIndex: 'create_date',
-            key: 'create_date',
-            scopedSlots: { customRender: 'create_date' },
-          },
-          {
-            title: '更新时间',
-            dataIndex: 'update_date',
-            key: 'update_date',
-            scopedSlots: { customRender: 'update_date' },
-          },
-          {
-            title: '排序',
-            dataIndex: 'order',
-            key: 'order',
-          },
-          {
-            title: '状态',
-            dataIndex: 'status',
-            key: 'status',
-            scopedSlots: { customRender: 'status' },
-          },
-          {
-            title: '操作',
-            dataIndex: 'action',
-            key: 'action',
-            scopedSlots: { customRender: 'action' },
-            width: '156px',
-          },
-        ],
+        columns,
+        searchForm: { search: '', page: 1, is_active: undefined, ordering: undefined },
+        pagination: { current: 1, total: 0, pageSize: 15 },
+        form: { is_active: true },
         items: [],
-        userItems: [],
-        form: { name: '', manager: '', address: '', status: true, order: 100, remark: '' },
         loading: false,
         visible: false,
-        rules: {
-          name: [{ required: true, message: '请输入名称', trigger: 'change' }],
-        },
+        targetItem: {},
       };
     },
     methods: {
       initialize() {
+        this.list();
+      },
+      list() {
         this.loading = true;
-        warehouseList()
+        warehouseList(this.searchForm)
           .then(resp => {
-            this.items = resp.data;
+            this.pagination.total = resp.data.count;
+            this.items = resp.data.results;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.loading = false;
           });
-
-          userList()
-          .then(resp => {
-            this.userItems = resp.data;
-          })
-          .catch(err => {
-            this.$message.error(err.response.data.message);
-          })
       },
-      create() {
-        this.$refs.form.validate(valid => {
-          if (valid) {
-            warehouseCreate(this.form)
-              .then(resp => {
-                this.$message.success('新增成功');
-                this.items.push(resp.data);
-                this.visible = false;
-              })
-              .catch(err => {
-                this.$message.error(err.response.data.message);
-              });
-          }
-        });
+      create(item) {
+        this.items.splice(0, 0, item);
       },
-      update() {
-        this.$refs.form.validate(valid => {
-          if (valid) {
-            warehouseUpdate(this.form)
-              .then(resp => {
-                this.$message.success('修改成功');
-                this.items.splice(this.items.findIndex(item => item.id === resp.data.id), 1, resp.data);
-                this.visible = false;
-              })
-              .catch(err => {
-                this.$message.error(err.response.data.message);
-              });
-          }
-        });
+      update(item) {
+        this.items.splice(this.items.findIndex(i => i.id == item.id), 1, item);
       },
-      destroy(item) {
-        let form = { ...item };
-        warehouseDestroy(form)
+      destroy(id) {
+        warehouseDestroy(id)
           .then(() => {
+            this.items.splice(this.items.findIndex(item => item.id == id), 1);
             this.$message.success('删除成功');
-            this.items.splice(this.items.findIndex(item => item.id === form.id), 1);
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
-          });
+            this.$message.error(this.errorToString(err));
+          })
       },
-      resetForm() {
-        this.form = { name: '', manager: '', address: '', status: true, order: 100, remark: '' };
+      search() {
+        this.searchForm.page = 1;
+        this.pagination.current = 1;
+        this.list();
+      },
+      tableChange(pagination, filters, sorter) {
+        this.searchForm.page = pagination.current;
+        this.pagination.current = pagination.current;
+        this.searchForm.ordering = `${sorter.order == 'descend' ? '-' : ''}${sorter.field}`;
+        this.list();
+      },
+      openFormModal(item) {
+        this.targetItem = { ...item };
+        this.visible = true;
       },
     },
     mounted() {
