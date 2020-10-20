@@ -46,32 +46,26 @@ class SubuserSerializer(serializers.ModelSerializer):
         return obj.roles.all().values_list('name', flat=True)
 
 
-
 class AccountSerializer(serializers.ModelSerializer):
-    warehouse_name = serializers.SerializerMethodField('get_warehouse_name')
-
     class Meta:
         model = Account
-        fields = ['id', 'name', 'account', 'holder', 'warehouse', 'warehouse_name',
-                  'type', 'status', 'order', 'remark']
-        read_only_fields = ['id', 'warehouse_name']
+        read_only_fields = ['id']
+        fields = ['number', 'name', 'account', 'holder', 'type', 'remark', 'is_active',
+                  *read_only_fields]
 
     def validate(self, data):
-        if not data.get('name') or not data.get('type'):
-            raise serializers.ValidationError
-
-        if data.get('warehouse'):
-            warehouse_set = self.context['request'].user.teams.warehouse_set.filter(
-                is_delete=False).values_list('id', flat=True)
-            if data['warehouse'].id not in warehouse_set:
-                raise serializers.ValidationError
-        else:
-            data['warehouse'] = None
-
+        # 编号验证
+        teams = self.context['request'].user.teams
+        if Account.objects.filter(teams=teams, number=data['number']).exists():
+            raise serializers.ValidationError({'number': '编号已存在'})
         return data
 
-    def get_warehouse_name(self, obj):
-        return obj.warehouse.name if obj.warehouse else None
+
+class AccountUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        read_only_fields = ['id', 'number']
+        fields = ['name', 'account', 'holder', 'type', 'remark', 'is_active', *read_only_fields]
 
 
 class BookkeepingSerializer(serializers.ModelSerializer):

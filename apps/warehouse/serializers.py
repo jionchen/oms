@@ -3,30 +3,43 @@ from goods.serializers import GoodsSerializer
 from rest_framework import serializers
 from django.db.models import Sum, F
 from goods.models import Goods
+from user.models import User
 
 
 class WarehouseSerializer(serializers.ModelSerializer):
-    goods_total = serializers.SerializerMethodField('get_goods_total')
-
     class Meta:
         model = Warehouse
-        fields = ['id', 'name', 'type', 'remark', 'create_date', 'update_date', 'address',
-                  'order', 'status', 'manager', 'goods_total']
-        read_only_fields = ['create_date', 'update_date', 'goods_total']
+        read_only_fields = ['id', 'create_date', 'update_date']
+        fields = ['number', 'name', 'manager', 'address', 'remark', 'is_active', *read_only_fields]
 
     def validate(self, data):
-        if not data.get('name') or not data.get('type'):
-            raise serializers.ValidationError
-
         teams = self.context['request'].user.teams
-        if data['manager'] and not teams.users.filter(username=data['manager'].username, is_delete=False).exists():
-            raise serializers.ValidationError
+
+        # 编号验证
+        if Warehouse.objects.filter(teams=teams, number=data['number']).exists():
+            raise serializers.ValidationError({'number': '编号已存在'})
+
+        # 负责人验证
+        manager = data.get('manager')
+        if manager is not None and not User.objects.filter(teams=teams, username=manager.username).exists():
+            raise serializers.ValidationError({'category': '账户不存在'})
 
         return data
 
-    def get_goods_total(self, obj):
-        return obj.inventory_set.filter(goods__is_delete=False, goods__status=True).aggregate(
-            goods_total=Sum('quantity')).get('goods_total')
+
+class WarehouseUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Warehouse
+        read_only_fields = ['id', 'number', 'create_date', 'update_date']
+        fields = ['name', 'manager', 'address', 'remark', 'is_active', *read_only_fields]
+
+    def validate(self, data):
+        # 负责人验证
+        teams = self.context['request'].user.teams
+        manager = data.get('manager')
+        if manager is not None and not User.objects.filter(teams=teams, username=manager.username).exists():
+            raise serializers.ValidationError({'category': '账户不存在'})
+        return data
 
 
 class InventorySerializer(serializers.ModelSerializer):

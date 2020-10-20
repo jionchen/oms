@@ -739,13 +739,32 @@ const salesOrderRetrieve = {
 };
 
 const clientList = {
-    count: 99,
-    results: [
-      { id: 1, name: 'client1', create_date: '2018-09-01', phone: '110' },
-      { id: 2, name: 'client2', create_date: '2018-09-01', phone: '110' },
-      { id: 3, name: 'client3', create_date: '2018-09-01', phone: '110' },
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "number": "1001",
+            "name": "client1",
+            "contacts": "",
+            "phone": "",
+            "address": "",
+            "email": "",
+            "id": 1,
+            "create_date": "2020-10-20T09:27:54.713865Z"
+        },
+        {
+            "number": "1002",
+            "name": "client2",
+            "contacts": "",
+            "phone": "",
+            "address": "",
+            "email": "",
+            "id": 2,
+            "create_date": "2020-10-20T09:28:04.242755Z"
+        }
     ]
-  };
+};
   
 
 Mock.mock(/^\/api\/sales_order\/$/, 'get', salesOrderList);

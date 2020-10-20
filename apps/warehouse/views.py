@@ -1,6 +1,6 @@
 from .permissions import WarehousePermission, InventoryPermission, FlowPermission, CountingListPermission, RequisitionPermission
 from .serializers import WarehouseSerializer, FlowSerializer, CountingListSerializer, RequisitionSerializer, InventorySerializer
-from .paginations import FlowPagination, CountingListPagination, RequisitionPagination, InventoryPagination
+from .paginations import FlowPagination, CountingListPagination, RequisitionPagination, InventoryPagination, WarehousePagination
 from utils.permissions import IsAuthenticated, PurchasePricePermission
 from rest_framework.exceptions import APIException, ValidationError
 from .models import CountingListGoods, RequisitionGoods, Warehouse
@@ -19,36 +19,28 @@ from goods.models import Goods
 from utils import math
 import pendulum
 import csv
+from .serializers import WarehouseUpdateSerializer
 
 
 class WarehouseViewSet(viewsets.ModelViewSet):
-    """list, create, update, destroy"""
+    """仓库: list, create, update, destroy"""
     serializer_class = WarehouseSerializer
+    pagination_class = WarehousePagination
     permission_classes = [IsAuthenticated, WarehousePermission]
-    filter_backends = [OrderingFilter, DjangoFilterBackend]
-    filter_fields = ['status']
-    ordering_fields = ['name', 'manager', 'create_date', 'order']
-    ordering = ['order']
+    filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
+    filter_fields = ['is_active']
+    search_fields = ['number', 'name', 'address', 'remark']
+    ordering_fields = ['number', 'name']
+    ordering = ['number']
+
+    def get_serializer_class(self):
+        return WarehouseUpdateSerializer if self.request.method == 'PUT' else self.serializer_class
 
     def get_queryset(self):
-        return self.request.user.teams.warehouse_set.filter(is_delete=False)
+        return self.request.user.teams.warehouses.all()
 
-    @transaction.atomic
     def perform_create(self, serializer):
-        teams = self.request.user.teams
-        serializer.save(teams=teams)
-
-        goods_set = teams.goods_set.filter(is_delete=False)
-        Inventory.objects.bulk_create([Inventory(goods=goods, warehouse=serializer.instance, teams=teams)
-                                       for goods in goods_set])
-
-    @transaction.atomic
-    def perform_destroy(self, instance):
-        instance.is_delete = True
-        instance.save()
-
-        # 删除所有库存
-        instance.inventory_set.all().delete()
+        serializer.save(teams=self.request.user.teams)
 
 
 class InventoryViewSet(viewsets.ModelViewSet):

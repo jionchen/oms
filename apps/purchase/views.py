@@ -20,22 +20,29 @@ from user.models import User
 from utils import math
 import pendulum
 from .filters import PurchasePaymentRecordFilter, PurchaseOrderFilter
+from .serializers import SupplierUpdateSerializer
+from .paginations import SupplierPagination
 
 
 class SupplierViewSet(viewsets.ModelViewSet):
-    """list, create, update, destroy"""
+    """供应商: list, create, update, destroy"""
     serializer_class = SupplierSerializer
+    pagination_class = SupplierPagination
     permission_classes = [IsAuthenticated, SupplierPermission]
+    filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
+    filter_fields = ['is_active']
+    search_fields = ['number', 'name', 'address', 'remark']
+    ordering_fields = ['number', 'name']
+    ordering = ['number']
+
+    def get_serializer_class(self):
+        return SupplierUpdateSerializer if self.request.method == 'PUT' else self.serializer_class
 
     def get_queryset(self):
-        return self.request.user.teams.supplier_set.filter(is_delete=False).order_by('order')
+        return self.request.user.teams.suppliers.all()
 
     def perform_create(self, serializer):
         serializer.save(teams=self.request.user.teams)
-
-    def perform_destroy(self, instance):
-        instance.is_delete = True
-        instance.save()
 
 
 class PurchaseOrderViewSet(viewsets.ModelViewSet):

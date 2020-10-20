@@ -65,11 +65,11 @@ class SalesTask(models.Model):
 
 class Client(models.Model):
     """客户"""
-    phone = models.CharField(max_length=16)
-    name = models.CharField(max_length=24, null=True, blank=True)  # 客户名称
-    contacts = models.CharField(max_length=24, null=True, blank=True)  # 联系人
-    address = models.CharField(max_length=64, null=True, blank=True)
-    mailbox = models.CharField(max_length=48, null=True, blank=True)
+    number = models.CharField(max_length=32)
+    name = models.CharField(max_length=64, null=True, blank=True)  # 客户名称
+    contacts = models.CharField(max_length=64, null=True, blank=True)  # 联系人
+    phone = models.CharField(max_length=12, null=True, blank=True)
+    address = models.CharField(max_length=256, null=True, blank=True)
+    email = models.CharField(max_length=256, null=True, blank=True)
     create_date = models.DateTimeField(auto_now_add=True)
-    is_delete = models.BooleanField(default=False)
     teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='clients')

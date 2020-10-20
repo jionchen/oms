@@ -10,9 +10,7 @@ urlpatterns = [
     path('sales_order_profit/total_profit/', views.SalesOrderProfitViewSet.as_view({'get': 'total_profit'})),
     path('sales_order_profit/', views.SalesOrderProfitViewSet.as_view({'get': 'list'})),
     path('sales_order_profit/<int:pk>/', views.SalesOrderProfitViewSet.as_view({'put': 'update'})),
-    # path('sales_values/', views.SalesValueViewSet.as_view({'get': 'list'})),
-    # path('sales_top_ten/', views.SalesTopTenViewSet.as_view({'get': 'list'})),
     path('clients/', views.ClientViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('clients/<str:pk>/', views.ClientViewSet.as_view({'delete': 'destroy'})),
+    path('clients/<int:pk>/', views.ClientViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
     path('sales_payment_records/', views.SalesPaymentRecordViewSet.as_view({'get': 'list'})),
 ]

@@ -3,7 +3,7 @@ from .paginations import BookkeepingPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from .permissions import RolePermission, SubuserPermission
 from rest_framework import permissions, pagination
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework import status, exceptions
 from utils.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -13,6 +13,8 @@ from django.contrib import auth
 from user.models import User
 from .models import Role
 import pendulum
+from .serializers import AccountUpdateSerializer
+from .paginations import AccountPagination
 
 
 class RoleViewSet(viewsets.ModelViewSet):
@@ -76,17 +78,22 @@ class SubusertViewSet(viewsets.ModelViewSet):
 class AccountViewSet(viewsets.ModelViewSet):
     """list, create, update, destroy"""
     serializer_class = AccountSerializer
+    pagination_class = AccountPagination
     permission_classes = [IsAuthenticated]
+    filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
+    filter_fields = ['is_active']
+    search_fields = ['number', 'name', 'account', 'holder', 'remark']
+    ordering_fields = ['number', 'name']
+    ordering = ['number']
+
+    def get_serializer_class(self):
+        return AccountUpdateSerializer if self.request.method == 'PUT' else self.serializer_class
 
     def get_queryset(self):
-        return self.request.user.teams.accounts.filter(is_delete=False).order_by('order')
+        return self.request.user.teams.accounts.all()
 
     def perform_create(self, serializer):
         serializer.save(teams=self.request.user.teams)
-
-    def perform_destroy(self, instance):
-        instance.is_delete = True
-        instance.save()
 
 
 class SellerViewSet(viewsets.ModelViewSet):

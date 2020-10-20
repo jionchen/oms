@@ -3,16 +3,15 @@ from django.db import models
 
 class Warehouse(models.Model):
     """仓库"""
-    name = models.CharField(max_length=48)
-    manager = models.ForeignKey('user.User', models.CASCADE, related_name='warehouse_set', null=True)
-    remark = models.CharField(max_length=64, null=True, blank=True)
-    address = models.CharField(max_length=128, null=True, blank=True)
+    number = models.CharField(max_length=32)
+    name = models.CharField(max_length=64)
+    manager = models.ForeignKey('user.User', models.CASCADE, related_name='warehouses', null=True)
+    address = models.CharField(max_length=256, null=True, blank=True)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
-    order = models.IntegerField(default=100)
-    status = models.BooleanField(default=True)
-    is_delete = models.BooleanField(default=False)
-    teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='warehouse_set')
+    remark = models.CharField(max_length=256, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='warehouses')
 
 
 class Inventory(models.Model):

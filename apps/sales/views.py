@@ -22,6 +22,7 @@ from goods.models import Goods
 from user.models import User
 from utils import math
 import pendulum
+from .serializers import ClientUpdateSerializer
 
 
 class SalesOrderViewSet(viewsets.ModelViewSet):
@@ -261,72 +262,23 @@ class SalesOrderProfitViewSet(viewsets.ModelViewSet):
         return Response({'total_profit': total_profit if total_profit else 0})
 
 
-# class SalesValueViewSet(viewsets.ViewSet):
-#     """销售额"""
-#     permission_classes = [IsAuthenticated]
-
-#     def list(self, request, *args, **kwargs):
-#         start_date = self.request.GET.get('start_date')
-#         end_date = self.request.GET.get('end_date')
-
-#         if not start_date or not end_date:
-#             raise ValidationError
-#         end_date = pendulum.parse(end_date).add(days=1)
-
-#         queryset = SalesOrder.objects.filter(teams=request.user.teams, is_return=False)
-#         queryset = queryset.filter(date__gte=start_date, date__lte=end_date)
-#         queryset = queryset.extra(select={'_date': 'DATE_FORMAT(date, "%%Y-%%m-%%d")'})
-#         queryset = queryset.values('_date', _warehouse=F('warehouse__name'))
-#         results = queryset.annotate(_amount=Sum('total_amount'))
-
-#         warehouse_list = Warehouse.objects.filter(
-#             teams=request.user.teams, is_delete=False).values_list('name', flat=True)
-#         return Response({'results': results, 'warehouse_list': warehouse_list})
-
-
-# class SalesTopTenViewSet(viewsets.ViewSet):
-#     """销售前十"""
-#     permission_classes = [IsAuthenticated]
-
-#     def list(self, request, *args, **kwargs):
-#         start_date = self.request.GET.get('start_date')
-#         end_date = self.request.GET.get('end_date')
-
-#         if not start_date or not end_date:
-#             raise ValidationError
-#         end_date = pendulum.parse(end_date).add(days=1)
-
-#         queryset = SalesGoods.objects.filter(sales_order__teams=request.user.teams, sales_order__is_return=False)
-#         queryset = queryset.filter(sales_order__date__gte=start_date, sales_order__date__lte=end_date)
-#         queryset = queryset.values(_goods=F('goods__name'))
-#         results = queryset.annotate(_quantity=Sum('quantity')).order_by('-_quantity')[:10]
-
-#         return Response({'results': results})
-
-
 class ClientViewSet(viewsets.ModelViewSet):
-    """list, create, destroy"""
+    """客户: list, create, update, destroy"""
     serializer_class = ClientSerializer
-    permission_classes = [IsAuthenticated]
     pagination_class = ClientPagination
-    filter_backends = [SearchFilter]
-    search_fields = ['phone', 'name']
+    permission_classes = [IsAuthenticated]
+    filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
+    filter_fields = []
+    search_fields = ['number', 'name', 'phone', 'address', 'email', 'remark']
+    ordering_fields = ['number', 'name']
+    ordering = ['number']
+
+    def get_serializer_class(self):
+        return ClientUpdateSerializer if self.request.method == 'PUT' else self.serializer_class
 
     def get_queryset(self):
-        return self.request.user.teams.clients.filter(is_delete=False).order_by('-create_date')
+        return self.request.user.teams.clients.all()
 
-    def perform_create(self, serializer):
-        teams = self.request.user.teams
-        phone = self.request.data['phone']
-        client = Client.objects.filter(phone=phone, teams=teams).first()
-        if not client:
-            serializer.save(teams=teams)
-        elif client.is_delete:
-            client.is_delete = False
-            client.save()
-        else:
-            raise ValidationError({'message': '客户已存在'})
-
-    def perform_destroy(self, instance):
-        instance.is_delete = True
-        instance.save()
+    def perform_create(self, serializer):  
+        serializer.save(teams=self.request.user.teams)
+        

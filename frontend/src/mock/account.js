@@ -13,16 +13,33 @@ const subuserList = [
   { id: 3, username: 'role2', create_date: '2018-09-01', roles: [], role_names: [] },
 ];
 
-const accountList = [
-  {
-    id: 1, name: 'account1', account: 'account1', holder: '11', warehouse: 1,
-    warehouse_name: 'warehouse', status: true, order: 88, remark: '', type: '现金'
-  },
-  {
-    id: 2, name: 'account2', account: 'account2', holder: '22', warehouse: 1,
-    warehouse_name: 'warehouse', status: true, order: 88, remark: '', type: '现金'
-  },
-];
+const accountList = {
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+      {
+          "number": "1001",
+          "name": "account1",
+          "account": "",
+          "holder": "",
+          "type": "cash",
+          "remark": "",
+          "is_active": true,
+          "id": 1
+      },
+      {
+          "number": "1002",
+          "name": "account2",
+          "account": "",
+          "holder": "",
+          "type": "cash",
+          "remark": "",
+          "is_active": false,
+          "id": 2
+      }
+  ]
+};
 
 const sellerList = ['user1', 'user2'];
 

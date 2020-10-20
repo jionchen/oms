@@ -1,11 +1,35 @@
 import Mock from 'mockjs'
 
 
-const warehouseList = [
-    { id: 1, name: 'warehouse1', type: 'warehouse', product_quantity: 5, manager: 1, manager_username: 'username1', remark: 'remark', create_date: '2019-08-06', update_date: '2019-08-06', status: true, order: 88 },
-    { id: 2, name: 'warehouse2', type: 'store', product_quantity: 6, manager: 1, manager_username: 'username1', remark: 'remark', create_date: '2019-08-06', update_date: '2019-08-06', status: true, order: 88 },
-    { id: 3, name: 'warehouse3', type: 'warehouse', product_quantity: 5, manager: 1, manager_username: 'username1', remark: 'remark', create_date: '2019-08-06', update_date: '2019-08-06', status: true, order: 88 },
-];
+const warehouseList = {
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "number": "1001",
+            "name": "test",
+            "manager": null,
+            "address": "",
+            "remark": "",
+            "is_active": true,
+            "id": 1,
+            "create_date": "2020-10-20T07:39:07.009663Z",
+            "update_date": "2020-10-20T07:39:07.009738Z"
+        },
+        {
+            "number": "1002",
+            "name": "uuuu",
+            "manager": null,
+            "address": "",
+            "remark": "",
+            "is_active": false,
+            "id": 2,
+            "create_date": "2020-10-20T07:39:20.065995Z",
+            "update_date": "2020-10-20T07:39:20.066118Z"
+        }
+    ]
+};
 
 const inventoryList = {
     "results": [
@@ -551,7 +575,7 @@ const requisitionRetrievev = {
     ]
 };
 
-Mock.mock(/\/api\/warehouse\//, 'get', warehouseList);
+Mock.mock(/\/api\/warehouses\//, 'get', warehouseList);
 Mock.mock(/\/api\/inventory\//, 'get', inventoryList);
 Mock.mock(/\/api\/flows\//, 'get', flowList);
 Mock.mock(/^\/api\/counting_list\/$/, 'get', countingListList);

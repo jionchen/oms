@@ -2,8 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('supplier/', views.SupplierViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('supplier/<int:pk>/', views.SupplierViewSet.as_view({'put': 'update', 'delete': 'destroy'})),
+    path('suppliers/', views.SupplierViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('suppliers/<int:pk>/', views.SupplierViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
     path('purchase_order/confirm/', views.PurchaseOrderViewSet.as_view({'post': 'confirm'})),
     path('purchase_order/payment/', views.PurchaseOrderViewSet.as_view({'post': 'payment'})),
     path('purchase_order/', views.PurchaseOrderViewSet.as_view({'get': 'list', 'post': 'create'})),

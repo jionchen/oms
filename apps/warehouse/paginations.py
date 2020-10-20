@@ -1,6 +1,11 @@
 from rest_framework.pagination import PageNumberPagination
 
 
+class WarehousePagination(PageNumberPagination):
+    page_size = 15
+    max_page_size = 15
+
+
 class InventoryPagination(PageNumberPagination):
     page_size = 15
     page_query_param = 'page'

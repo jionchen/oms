@@ -6,7 +6,7 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         read_only_fields = ['id']
-        fields = ['number', 'name', 'description', *read_only_fields]
+        fields = ['number', 'name', 'remark', *read_only_fields]
 
     def validate(self, data):
         # 编号验证
@@ -20,7 +20,7 @@ class CategoryUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         read_only_fields = ['id', 'number']
-        fields = ['name', 'description', *read_only_fields]
+        fields = ['name', 'remark', *read_only_fields]
 
 
 class GoodsSerializer(serializers.ModelSerializer):
@@ -34,7 +34,6 @@ class GoodsSerializer(serializers.ModelSerializer):
                   'is_active', *read_only_fields]
 
     def validate(self, data):
-        print(data)
         teams = self.context['request'].user.teams
 
         # 编号验证

@@ -1,18 +1,41 @@
 import Mock from 'mockjs'
 
 
-const supplierList = [
-  {
-    id: 1, name: 'supplier1', manager: 'manager1', phone: '110', bank_account_name: 'bank_account_name',
-    bank_account: 'bank_account', remark: 'remark', bank_name: 'bank_name', address: 'address', status: true, order: 88,
-    url: 'url', default_discount: 80, update_date: '2019-09-09',
-  },
-  {
-    id: 2, name: 'supplier2', manager: 'manager2', phone: '112', bank_account_name: 'bank_account_name',
-    bank_account: 'bank_account', remark: 'remark', bank_name: 'bank_name', address: 'address', status: true, order: 88,
-    url: 'url', default_discount: 80, update_date: '2019-09-09',
-  },
-];
+const supplierList = {
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "number": "1001",
+            "name": "test",
+            "manager": "",
+            "phone": "",
+            "address": "",
+            "email": "",
+            "bank_account": "",
+            "bank_name": "",
+            "url": "",
+            "default_discount": 100,
+            "remark": "",
+            "is_active": true
+        },
+        {
+            "number": "1002",
+            "name": "test",
+            "manager": "",
+            "phone": "",
+            "address": "",
+            "email": "",
+            "bank_account": "",
+            "bank_name": "",
+            "url": "",
+            "default_discount": 100,
+            "remark": "",
+            "is_active": false
+        }
+    ]
+};
 
 const purchaseOrderList = {
     "count": 12,
@@ -379,7 +402,7 @@ const purchaseOrderRetrieve = {
     "is_draft": false
 };
 
-Mock.mock(/\/api\/supplier\//, 'get', supplierList);
+Mock.mock(/\/api\/suppliers\//, 'get', supplierList);
 Mock.mock(/\/api\/purchase_order\/.+\//, 'get', purchaseOrderRetrieve);
 Mock.mock(/\/api\/purchase_order\//, 'get', purchaseOrderList);
 Mock.mock(/\/api\/change_records\//, 'get', changeRecordList);

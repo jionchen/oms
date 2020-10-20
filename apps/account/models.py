@@ -12,15 +12,16 @@ class Role(models.Model):
 
 class Account(models.Model):
     """结算账户"""
-    name = models.CharField(max_length=48)  # 账户名称
-    account = models.CharField(max_length=48, null=True, blank=True)  # 账号
-    holder = models.CharField(max_length=48, null=True, blank=True)  # 开户人
-    warehouse = models.ForeignKey('warehouse.Warehouse', models.CASCADE, null=True)
-    type = models.CharField(max_length=12)
-    order = models.IntegerField(default=100)
-    status = models.BooleanField(default=True)
-    remark = models.CharField(max_length=64, null=True, blank=True)
-    is_delete = models.BooleanField(default=False)
+    TYPE = (('cash', '现金'), ('bank_accounts', '银行账户'), ('alipay', '支付宝'),
+            ('wechat_pay', '微信支付'), ('other', '其他'), )
+
+    number = models.CharField(max_length=32)
+    name = models.CharField(max_length=64)  # 账户名称
+    account = models.CharField(max_length=64, null=True, blank=True)  # 账号
+    holder = models.CharField(max_length=64, null=True, blank=True)  # 开户人
+    type = models.CharField(max_length=12, default='cash', choices=TYPE)
+    remark = models.CharField(max_length=256, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
     teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='accounts')
 
 

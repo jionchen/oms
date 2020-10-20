@@ -5,14 +5,24 @@ from rest_framework import serializers
 class SupplierSerializer(serializers.ModelSerializer):
     class Meta:
         model = Supplier
-        fields = ['id', 'name', 'manager', 'phone', 'address', 'mailbox', 'bank_account', 'bank_name',
-                  'order', 'status', 'address', 'url', 'default_discount', 'remark', 'update_date']
         read_only_fields = ['id', 'update_date']
+        fields = ['number', 'name', 'manager', 'phone', 'address', 'email', 'bank_account',
+                  'bank_name', 'url', 'default_discount', 'remark', 'is_active']
 
     def validate(self, data):
-        if not data.get('name') or data.get('default_discount') is None:
-            raise serializers.ValidationError
+        # 编号验证
+        teams = self.context['request'].user.teams
+        if Supplier.objects.filter(teams=teams, number=data['number']).exists():
+            raise serializers.ValidationError({'number': '编号已存在'})
         return data
+
+
+class SupplierUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supplier
+        read_only_fields = ['id', 'number', 'update_date']
+        fields = ['name', 'manager', 'phone', 'address', 'email', 'bank_account',
+                  'bank_name', 'url', 'default_discount', 'remark', 'is_active']
 
 
 class PurchaseOrderSerializer(serializers.ModelSerializer):

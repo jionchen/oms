@@ -124,10 +124,19 @@ class SalesTaskSerializer(serializers.ModelSerializer):
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
-        fields = ['id', 'phone', 'name', 'address', 'mailbox', 'create_date', 'contacts']
         read_only_fields = ['id', 'create_date']
+        fields = ['number', 'name', 'contacts', 'phone', 'address', 'email', *read_only_fields]
 
     def validate(self, data):
-        if not data.get('phone'):
-            raise serializers.ValidationError
+        # 编号验证
+        teams = self.context['request'].user.teams
+        if Client.objects.filter(teams=teams, number=data['number']).exists():
+            raise serializers.ValidationError({'number': '编号已存在'})
         return data
+
+
+class ClientUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Client
+        read_only_fields = ['id', 'number', 'create_date']
+        fields = ['name', 'contacts', 'phone', 'address', 'email', *read_only_fields]

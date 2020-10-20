@@ -4,8 +4,8 @@ from django.db import models
 class Category(models.Model):
     """商品分类"""
     number = models.CharField(max_length=32)
-    name = models.CharField(max_length=32)
-    description = models.CharField(max_length=256, null=True, blank=True)
+    name = models.CharField(max_length=64)
+    remark = models.CharField(max_length=256, null=True, blank=True)
     teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='categories')
 
 

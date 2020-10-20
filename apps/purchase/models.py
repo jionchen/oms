@@ -3,21 +3,20 @@ from django.db import models
 
 class Supplier(models.Model):
     """供应商"""
-    name = models.CharField(max_length=48)
-    manager = models.CharField(max_length=24, null=True, blank=True)
+    number = models.CharField(max_length=32)
+    name = models.CharField(max_length=64)
+    manager = models.CharField(max_length=64, null=True, blank=True)
     phone = models.CharField(max_length=12, null=True, blank=True)
-    address = models.CharField(max_length=48, null=True, blank=True)
-    mailbox = models.CharField(max_length=48, null=True, blank=True)
-    bank_account = models.CharField(max_length=24, null=True, blank=True)  # 银行账户
-    bank_name = models.CharField(max_length=24, null=True, blank=True)  # 开户行
-    url = models.CharField(max_length=128, null=True, blank=True)
+    address = models.CharField(max_length=256, null=True, blank=True)
+    email = models.CharField(max_length=256, null=True, blank=True)
+    bank_account = models.CharField(max_length=64, null=True, blank=True)  # 银行账户
+    bank_name = models.CharField(max_length=64, null=True, blank=True)  # 开户行
+    url = models.CharField(max_length=256, null=True, blank=True)
     update_date = models.DateTimeField(auto_now=True)
     default_discount = models.IntegerField(default=100)
-    order = models.IntegerField(default=100)
-    status = models.BooleanField(default=True)
-    remark = models.CharField(max_length=64, null=True, blank=True)
-    is_delete = models.BooleanField(default=False)
-    teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='supplier_set')
+    is_active = models.BooleanField(default=True)
+    remark = models.CharField(max_length=256, null=True, blank=True)
+    teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='suppliers')
 
 
 class PurchaseOrder(models.Model):

@@ -26,9 +26,8 @@ class SalesProfitPagination(PageNumberPagination):
 
 
 class ClientPagination(PageNumberPagination):
-    page_size = 10
-    page_query_param = 'page'
-    max_page_size = 10
+    page_size = 15
+    max_page_size = 15
 
 
 class SalesPaymentRecordPagination(PageNumberPagination):
