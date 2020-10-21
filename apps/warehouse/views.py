@@ -10,16 +10,18 @@ from django.db.models import F, Sum, Q, Count, Value
 from .filters import FlowFilter, InventoryFilter
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from warehouse.models import Inventory, Flow
+from apps.warehouse.models import Inventory, Flow
 from rest_framework.decorators import action
 from django.db import models, transaction
 from django.http import HttpResponse
 from rest_framework import viewsets
-from goods.models import Goods
+from apps.goods.models import Goods
 from utils import math
 import pendulum
 import csv
 from .serializers import WarehouseUpdateSerializer
+from utils.excel import export_excel, import_excel
+from rest_framework.status import HTTP_201_CREATED
 
 
 class WarehouseViewSet(viewsets.ModelViewSet):
@@ -32,6 +34,8 @@ class WarehouseViewSet(viewsets.ModelViewSet):
     search_fields = ['number', 'name', 'address', 'remark']
     ordering_fields = ['number', 'name']
     ordering = ['number']
+    field_mapping = (('number', '编号'), ('name', '名称'), ('address', '地址'),
+                     ('remark', '备注'), ('is_active', '状态'))
 
     def get_serializer_class(self):
         return WarehouseUpdateSerializer if self.request.method == 'PUT' else self.serializer_class
@@ -41,6 +45,19 @@ class WarehouseViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(teams=self.request.user.teams)
+
+    @action(detail=False)
+    def export_excel(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return export_excel(serializer.data, '仓库列表', self.field_mapping)
+
+    @action(detail=False)
+    @transaction.atomic
+    def import_excel(self, request, *args, **kwargs):
+        Warehouse.objects.bulk_create([Warehouse(**item, teams=request.user.teams)
+                                       for item in import_excel(self, self.field_mapping)])
+        return Response(status=HTTP_201_CREATED)
 
 
 class InventoryViewSet(viewsets.ModelViewSet):

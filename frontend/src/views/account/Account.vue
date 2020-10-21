@@ -13,8 +13,10 @@
         </a-col>
         <a-col :span="6">
           <a-space>
-            <a-button>导入</a-button>
-            <a-button>导出</a-button>
+            <a-upload name="file" :showUploadList="false" :customRequest="importExcel">
+              <a-button icon="upload">导入</a-button>
+            </a-upload>
+            <a-button icon="download" @click="exportExcel">导出</a-button>
           </a-space>
         </a-col>
         <a-col :span="6">
@@ -50,7 +52,8 @@
 </template>
 
 <script>
-  import { accountList, accountDestroy } from '@/api/account'
+  import { accountList, accountDestroy, accountExportExcel, accountImportExcel } from '@/api/account'
+  import { exportExcel } from '@/utils/excel'
   import columns from './columns.js'
 
   export default {
@@ -126,6 +129,21 @@
       openFormModal(item) {
         this.targetItem = { ...item };
         this.visible = true;
+      },
+      exportExcel() {
+        exportExcel(accountExportExcel, '账户列表');
+      },
+      importExcel(item) {
+        let data = new FormData();
+        data.append('file', item.file);
+        accountImportExcel(data)
+          .then(() => {
+            this.$message.success('导入成功');
+            this.list();
+          })
+          .catch(err => {
+            this.$message.error(this.errorToString(err));
+          });
       },
     },
     mounted() {

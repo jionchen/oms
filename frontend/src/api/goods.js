@@ -38,6 +38,20 @@ export function categoryDestroy(id) {
   })
 }
 
+export let categoryExportExcel = '/api/export/categories/'
+
+export function categoryImportExcel(data) {
+  return axios({
+    url: '/api/import/categories/',
+    headers: {
+      'X-CSRFToken': Cookies.get('csrftoken'),
+      'Content-Type': 'multipart/form-data',
+    },
+    method: 'post',
+    data,
+  })
+}
+
 // Goods
 export function goodsList(params) {
   return axios({
@@ -71,5 +85,19 @@ export function goodsDestroy(id) {
     url: `/api/goods/${id}/`,
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'delete',
+  })
+}
+
+export let goodsExportExcel = '/api/export/goods/'
+
+export function goodsImportExcel(data) {
+  return axios({
+    url: '/api/import/goods/',
+    headers: {
+      'X-CSRFToken': Cookies.get('csrftoken'),
+      'Content-Type': 'multipart/form-data',
+    },
+    method: 'post',
+    data,
   })
 }

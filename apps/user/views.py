@@ -3,7 +3,7 @@ from oms.settings import captcha_app_key
 from rest_framework import status, exceptions
 from rest_framework.response import Response
 from .models import Teams, User, Captcha
-from warehouse.models import Inventory
+from apps.warehouse.models import Inventory
 from rest_framework import viewsets
 from django.contrib import auth
 from django.db.models import F

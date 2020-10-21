@@ -37,6 +37,20 @@ export function supplierDestroy(id) {
   })
 }
 
+export let supplierExportExcel = '/api/export/suppliers/'
+
+export function supplierImportExcel(data) {
+  return axios({
+    url: '/api/import/suppliers/',
+    headers: {
+      'X-CSRFToken': Cookies.get('csrftoken'),
+      'Content-Type': 'multipart/form-data',
+    },
+    method: 'post',
+    data,
+  })
+}
+
 // PurchaseOrder
 export function purchaseOrderList(params) {
   return axios({

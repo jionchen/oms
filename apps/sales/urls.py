@@ -12,5 +12,7 @@ urlpatterns = [
     path('sales_order_profit/<int:pk>/', views.SalesOrderProfitViewSet.as_view({'put': 'update'})),
     path('clients/', views.ClientViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('clients/<int:pk>/', views.ClientViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+    path('export/clients/', views.ClientViewSet.as_view({'get': 'export_excel'})),
+    path('import/clients/', views.ClientViewSet.as_view({'post': 'import_excel'})),
     path('sales_payment_records/', views.SalesPaymentRecordViewSet.as_view({'get': 'list'})),
 ]

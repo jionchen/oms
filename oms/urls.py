@@ -18,14 +18,14 @@ from . import views
 
 
 urlpatterns = [
-    re_path('user/', include('user.urls')),
+    re_path('user/', include('apps.user.urls')),
 
-    path('api/', include('account.urls')),
-    path('api/', include('goods.urls')),
-    path('api/', include('warehouse.urls')),
-    path('api/', include('purchase.urls')),
-    path('api/', include('sales.urls')),
-    path('api/', include('report.urls')),
+    path('api/', include('apps.account.urls')),
+    path('api/', include('apps.goods.urls')),
+    path('api/', include('apps.warehouse.urls')),
+    path('api/', include('apps.purchase.urls')),
+    path('api/', include('apps.sales.urls')),
+    path('api/', include('apps.report.urls')),
 
     re_path('^.*$', views.index),
 ]

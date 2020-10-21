@@ -2,19 +2,21 @@ from .serializers import RoleSerializer, SubuserSerializer, AccountSerializer, B
 from .paginations import BookkeepingPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from .permissions import RolePermission, SubuserPermission
-from rest_framework import permissions, pagination
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework import status, exceptions
 from utils.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from django.db.models import Sum
-from django.contrib import auth
-from user.models import User
-from .models import Role
+from apps.user.models import User
+from .models import Account
 import pendulum
 from .serializers import AccountUpdateSerializer
 from .paginations import AccountPagination
+from utils.excel import export_excel, import_excel
+from rest_framework.decorators import action
+from rest_framework.status import HTTP_201_CREATED
+from django.db import transaction
 
 
 class RoleViewSet(viewsets.ModelViewSet):
@@ -85,6 +87,8 @@ class AccountViewSet(viewsets.ModelViewSet):
     search_fields = ['number', 'name', 'account', 'holder', 'remark']
     ordering_fields = ['number', 'name']
     ordering = ['number']
+    field_mapping = (('number', '编号'), ('name', '名称'), ('account', '账号'), ('holder', '银行账户'),
+                     ('type', '类型'), ('remark', '备注'), ('is_active', '状态'))
 
     def get_serializer_class(self):
         return AccountUpdateSerializer if self.request.method == 'PUT' else self.serializer_class
@@ -94,6 +98,19 @@ class AccountViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(teams=self.request.user.teams)
+
+    @action(detail=False)
+    def export_excel(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return export_excel(serializer.data, '账户列表', self.field_mapping)
+
+    @action(detail=False)
+    @transaction.atomic
+    def import_excel(self, request, *args, **kwargs):
+        Account.objects.bulk_create([Account(**item, teams=request.user.teams)
+                                     for item in import_excel(self, self.field_mapping)])
+        return Response(status=HTTP_201_CREATED)
 
 
 class SellerViewSet(viewsets.ModelViewSet):

@@ -128,6 +128,20 @@ export function clientDestroy(id) {
   })
 }
 
+export let clientExportExcel = '/api/export/clients/'
+
+export function clientImportExcel(data) {
+  return axios({
+    url: '/api/import/clients/',
+    headers: {
+      'X-CSRFToken': Cookies.get('csrftoken'),
+      'Content-Type': 'multipart/form-data',
+    },
+    method: 'post',
+    data,
+  })
+}
+
 // SalesPaymentRecord
 export function salesPaymentRecord(params) {
   return axios({

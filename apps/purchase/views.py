@@ -7,21 +7,22 @@ from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.status import HTTP_201_CREATED
-from warehouse.models import Inventory, Flow
+from apps.warehouse.models import Inventory, Flow
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from warehouse.models import Warehouse
+from apps.warehouse.models import Warehouse
 from django.db.models import Sum, F
 from rest_framework import viewsets
-from account.models import Account
+from apps.account.models import Account
 from django.db import transaction
-from goods.models import Goods
-from user.models import User
+from apps.goods.models import Goods
+from apps.user.models import User
 from utils import math
 import pendulum
 from .filters import PurchasePaymentRecordFilter, PurchaseOrderFilter
 from .serializers import SupplierUpdateSerializer
 from .paginations import SupplierPagination
+from utils.excel import export_excel, import_excel
 
 
 class SupplierViewSet(viewsets.ModelViewSet):
@@ -34,6 +35,10 @@ class SupplierViewSet(viewsets.ModelViewSet):
     search_fields = ['number', 'name', 'address', 'remark']
     ordering_fields = ['number', 'name']
     ordering = ['number']
+    field_mapping = (('number', '编号'), ('name', '名称'), ('manager', '负责人'), ('phone', '电话'),
+                     ('address', '地址'), ('email', '邮箱'), ('bank_account', '银行账户'),
+                     ('bank_name', '开户行'), ('url', '网址'), ('default_discount', '默认折扣'),
+                     ('remark', '备注'), ('is_active', '状态'))
 
     def get_serializer_class(self):
         return SupplierUpdateSerializer if self.request.method == 'PUT' else self.serializer_class
@@ -43,6 +48,19 @@ class SupplierViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(teams=self.request.user.teams)
+
+    @action(detail=False)
+    def export_excel(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return export_excel(serializer.data, '供应商列表', self.field_mapping)
+
+    @action(detail=False)
+    @transaction.atomic
+    def import_excel(self, request, *args, **kwargs):
+        Supplier.objects.bulk_create([Supplier(**item, teams=request.user.teams)
+                                      for item in import_excel(self, self.field_mapping)])
+        return Response(status=HTTP_201_CREATED)
 
 
 class PurchaseOrderViewSet(viewsets.ModelViewSet):
@@ -114,26 +132,6 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
                                                             discount=goods2['discount'], discount_price=discount_price,
                                                             amount=amount, discount_amount=discount_amount,
                                                             purchase_order_id=order_id))
-
-                    # # 计算平均采购价
-                    # if goods2['is_calculate_avg'] and goods1.purchase_price != goods2['purchase_price']:
-                    #     print()
-                    #     total_quantity = Inventory.objects.filter(teams=teams, goods=goods1).aggregate(
-                    #         total_quantity=Sum('quantity')).get('total_quantity', 0)
-                    #     total_amount = math.times(total_quantity, goods1.purchase_price)
-                    #     total_amount = math.plus(total_amount, amount)
-                    #     total_quantity = math.plus(total_quantity, goods2['quantity'])
-                    #     after_change = math.divide(total_amount, total_quantity)
-                    #     print(total_amount, total_quantity)
-
-                    #     change_records.append(ChangeRecord(
-                    #         goods=goods1, goods_code=goods1.id, goods_name=goods1.name,
-                    #         specification=goods1.specification, unit=goods1.unit, change_method='采购均价',
-                    #         before_change=goods1.purchase_price, operator=self.request.user, teams=teams,
-                    #         after_change=after_change, relation_order=serializer.instance))
-
-                    #     goods1.purchase_price = after_change
-                    #     goods1.save()
                     break
 
         serializer.save(id=order_id, supplier_name=supplier.name, warehouse_name=warehouse.name,

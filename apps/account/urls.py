@@ -8,6 +8,8 @@ urlpatterns = [
     path('subusers/<str:pk>/', views.SubusertViewSet.as_view({'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
     path('accounts/', views.AccountViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('accounts/<int:pk>/', views.AccountViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+    path('export/accounts/', views.AccountViewSet.as_view({'get': 'export_excel'})),
+    path('import/accounts/', views.AccountViewSet.as_view({'post': 'import_excel'})),
     path('sellers/', views.SellerViewSet.as_view({'get': 'list'})),
     path('bookkeeping/', views.BookkeepingViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('bookkeeping/<str:pk>/', views.BookkeepingViewSet.as_view({'delete': 'destroy'})),

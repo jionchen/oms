@@ -37,6 +37,20 @@ export function warehouseDestroy(id) {
   })
 }
 
+export let warehouseExportExcel = '/api/export/warehouses/'
+
+export function warehouseImportExcel(data) {
+  return axios({
+    url: '/api/import/warehouses/',
+    headers: {
+      'X-CSRFToken': Cookies.get('csrftoken'),
+      'Content-Type': 'multipart/form-data',
+    },
+    method: 'post',
+    data,
+  })
+}
+
 // Inventory
 export function inventoryList(params) {
   return axios({

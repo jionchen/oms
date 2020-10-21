@@ -5,10 +5,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Sum, Count, Avg, Max, Min, F
 from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
-from warehouse.models import Flow, Warehouse
-from purchase.models import PurchaseGoods, PurchaseOrder, PaymentRecord as PurchasePaymentRecord
+from apps.warehouse.models import Flow, Warehouse
+from apps.purchase.models import PurchaseGoods, PurchaseOrder, PaymentRecord as PurchasePaymentRecord
 from rest_framework import viewsets
-from sales.models import SalesGoods, SalesOrder, PaymentRecord as SalesPaymentRecord
+from apps.sales.models import SalesGoods, SalesOrder, PaymentRecord as SalesPaymentRecord
 from rest_framework.filters import SearchFilter
 import pendulum
 from rest_framework.exceptions import ValidationError

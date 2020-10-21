@@ -1,8 +1,6 @@
-from rest_framework.exceptions import PermissionDenied
 from .models import Role, Account, Bookkeeping
 from rest_framework import serializers
-from sales.models import Client
-from user.models import User
+from apps.user.models import User
 import re
 
 

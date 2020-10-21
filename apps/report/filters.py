@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
-from purchase.models import PurchaseGoods, PurchaseOrder
-from sales.models import SalesGoods, SalesOrder
+from apps.purchase.models import PurchaseGoods, PurchaseOrder
+from apps.sales.models import SalesGoods, SalesOrder
 from django.db.models import Q, F
 import pendulum
 

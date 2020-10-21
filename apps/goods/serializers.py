@@ -24,11 +24,12 @@ class CategoryUpdateSerializer(serializers.ModelSerializer):
 
 
 class GoodsSerializer(serializers.ModelSerializer):
+    category_number = serializers.SerializerMethodField('get_category_number')
     category_name = serializers.SerializerMethodField('get_category_name')
 
     class Meta:
         model = Goods
-        read_only_fields = ['id', 'category_name']
+        read_only_fields = ['id', 'category_number', 'category_name']
         fields = ['number', 'name', 'unit', 'category', 'purchase_price', 'retail_price', 'shelf_life',
                   'shelf_life_warnning_days', 'inventory_upper', 'inventory_lower', 'inventory_warning',
                   'is_active', *read_only_fields]
@@ -46,6 +47,9 @@ class GoodsSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'category': '商品分类不存在'})
 
         return data
+
+    def get_category_number(self, obj):
+        return obj.category.number if obj.category else None
 
     def get_category_name(self, obj):
         return obj.category.name if obj.category else None

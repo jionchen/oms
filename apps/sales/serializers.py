@@ -1,7 +1,7 @@
 from .models import SalesOrder, SalesTask, Client, PaymentRecord
 from rest_framework import serializers
 from django.db.models import Sum, F
-from warehouse.models import Flow
+from apps.warehouse.models import Flow
 import re
 
 

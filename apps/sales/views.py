@@ -6,7 +6,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import SalesTaskFilter, SalesOrderProfitFilter, SalesPaymentRecordFilter, SalesOrderFilter
 from .models import SalesGoods, SalesOrder, PaymentRecord
-from warehouse.models import Inventory, Warehouse, Flow
+from apps.warehouse.models import Inventory, Warehouse, Flow
 from rest_framework.status import HTTP_201_CREATED
 from rest_framework.exceptions import APIException
 from .permissions import SalesOrderPermission
@@ -15,14 +15,15 @@ from rest_framework.response import Response
 from rest_framework import viewsets, status
 from datetime import datetime, timedelta
 from django.db.models import F, Sum
-from account.models import Account
+from apps.account.models import Account
 from django.db import transaction
-from sales.models import Client
-from goods.models import Goods
-from user.models import User
+from apps.sales.models import Client
+from apps.goods.models import Goods
+from apps.user.models import User
 from utils import math
 import pendulum
 from .serializers import ClientUpdateSerializer
+from utils.excel import export_excel, import_excel
 
 
 class SalesOrderViewSet(viewsets.ModelViewSet):
@@ -272,6 +273,8 @@ class ClientViewSet(viewsets.ModelViewSet):
     search_fields = ['number', 'name', 'phone', 'address', 'email', 'remark']
     ordering_fields = ['number', 'name']
     ordering = ['number']
+    field_mapping = (('number', '编号'), ('name', '名称'), ('contacts', '联系人'), ('phone', '电话'),
+                     ('address', '地址'), ('email', '邮箱'))
 
     def get_serializer_class(self):
         return ClientUpdateSerializer if self.request.method == 'PUT' else self.serializer_class
@@ -280,5 +283,17 @@ class ClientViewSet(viewsets.ModelViewSet):
         return self.request.user.teams.clients.all()
 
     def perform_create(self, serializer):  
-        serializer.save(teams=self.request.user.teams)
-        
+        serializer.save(teams=self.request.user.teams)  
+
+    @action(detail=False)
+    def export_excel(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return export_excel(serializer.data, '客户列表', self.field_mapping)
+
+    @action(detail=False)
+    @transaction.atomic
+    def import_excel(self, request, *args, **kwargs):
+        Client.objects.bulk_create([Client(**item, teams=request.user.teams)
+                                       for item in import_excel(self, self.field_mapping)])
+        return Response(status=HTTP_201_CREATED)

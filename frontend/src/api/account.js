@@ -116,6 +116,20 @@ export function accountDestroy(id) {
   })
 }
 
+export let accountExportExcel = '/api/export/accounts/'
+
+export function accountImportExcel(data) {
+  return axios({
+    url: '/api/import/accounts/',
+    headers: {
+      'X-CSRFToken': Cookies.get('csrftoken'),
+      'Content-Type': 'multipart/form-data',
+    },
+    method: 'post',
+    data,
+  })
+}
+
 // Seller
 export function sellertList() {
   return axios({
