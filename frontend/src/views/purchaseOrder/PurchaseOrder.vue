@@ -106,9 +106,6 @@
                             :formatter="value => `${value}%`" :parser="value => value.replace('%', '')"
                             style="width: 100%;" @change="computeGoods(item)" />
                         </a-form-model-item>
-                        <!-- <a-form-model-item style="text-align: center;">
-                          <a-checkbox @change="item.is_calculate_avg = !item.is_calculate_avg">自动计算平均采购价</a-checkbox>
-                        </a-form-model-item> -->
                       </a-form-model>
                     </div>
                     <a-button size="small">
@@ -380,7 +377,6 @@
           });
       },
       addGoods(goodsItem) {
-        // goodsItem.is_calculate_avg = false;
         goodsItem.discount = 100;
         this.computeGoods(goodsItem);
         this.purchaseForm.goods_set.push(goodsItem);

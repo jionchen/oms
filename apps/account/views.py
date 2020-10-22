@@ -17,6 +17,8 @@ from utils.excel import export_excel, import_excel
 from rest_framework.decorators import action
 from rest_framework.status import HTTP_201_CREATED
 from django.db import transaction
+from .serializers import UserSerializer
+from .paginations import UserPagination
 
 
 class RoleViewSet(viewsets.ModelViewSet):
@@ -190,8 +192,13 @@ class StatisticalAccountViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+    pagination_class = UserPagination
     permission_classes = [IsAuthenticated]
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['username', 'name']
+    ordering_fields = ['username']
+    ordering = ['username']
 
-    def list(self, request, *args, **kwargs):
-        results = request.user.teams.users.filter(is_delete=False).values_list('username', flat=True)
-        return Response(data=results)
+    def get_queryset(self):
+        return self.request.user.teams.users.all()

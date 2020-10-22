@@ -23,7 +23,7 @@ export default [
     key: '4', name: '销售管理', icon: 'shop', submenus: [
       { key: '/sales_order', name: '销售开单' },
       { key: '/sales_return', name: '销售退货' },
-      { key: '/sales_record', name: '销售历史记录' },
+      // { key: '/sales_record', name: '销售历史记录' },
       { key: '/sales_task', name: '销售任务' },
     ]
   },

@@ -87,3 +87,10 @@ class BookkeepingSerializer(serializers.ModelSerializer):
 
     def get_account_name(self, obj):
         return obj.account.name
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        read_only_fields = ['username', 'name']
+        fields = [*read_only_fields]

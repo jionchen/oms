@@ -22,7 +22,7 @@ class User(AbstractBaseUser):
     name = models.CharField(max_length=48)
     phone = models.CharField(max_length=12)
     teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='users')
-    wechat = models.CharField(max_length=48, null=True)
+    wechat = models.CharField(max_length=48, blank=True, null=True)
 
     roles = models.ManyToManyField('account.Role', related_name='users')
     create_date = models.DateTimeField(auto_now_add=True)
