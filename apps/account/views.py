@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from .serializers import RoleSerializer, SubuserSerializer, AccountSerializer, BookkeepingSerializer
 from .paginations import BookkeepingPagination
 from django_filters.rest_framework import DjangoFilterBackend
@@ -39,7 +40,7 @@ class SubusertViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, SubuserPermission]
 
     def get_queryset(self):
-        return self.request.user.teams.users.filter(is_boss=False, is_delete=False).order_by('create_date')
+        return self.request.user.teams.users.filter(is_boss=False).order_by('create_date')
 
     def perform_create(self, serializer):
         password = self.request.data.get('password')
@@ -73,10 +74,6 @@ class SubusertViewSet(viewsets.ModelViewSet):
         instance.set_password(password)
         instance.save()
         return Response(status=status.HTTP_200_OK)
-
-    def perform_destroy(self, instance):
-        instance.is_delete = True
-        instance.save()
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -120,7 +117,7 @@ class SellerViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
-        queryset = request.user.teams.users.filter(is_delete=False)
+        queryset = request.user.teams.users.all()
         roles = request.user.roles.all()
         if not roles:  # 没有设置角色默认拥有全部权限
             return Response(queryset.values_list('username', flat=True))
@@ -142,7 +139,14 @@ class BookkeepingViewSet(viewsets.ModelViewSet):
         return self.request.user.teams.bookkeeping_set.all().order_by('-create_datetime')
 
     def perform_create(self, serializer):
-        serializer.save(teams=self.request.user.teams, recorder=self.request.user)
+        teams = self.request.user.teams
+        account_id = self.request.data.get('account')
+        account = Account.objects.filter(teams=teams, id=account_id).first()
+        if not account:
+            raise ValidationError({'message': '账户不存在'})
+
+        recorder = self.request.user
+        serializer.save(teams=teams, account_name=account.name, recorder=recorder, recorder_name=recorder.name)
 
 
 class StatisticalAccountViewSet(viewsets.ModelViewSet):

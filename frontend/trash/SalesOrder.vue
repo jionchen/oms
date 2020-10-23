@@ -135,19 +135,14 @@
             scopedSlots: { customRender: 'index' },
           },
           {
-            title: '货号',
-            dataIndex: 'code',
-            key: 'code',
+            title: '编号',
+            dataIndex: 'number',
+            key: 'number',
           },
           {
             title: '名称',
             dataIndex: 'name',
             key: 'name',
-          },
-          {
-            title: '规格型号',
-            dataIndex: 'specification',
-            key: 'specification',
           },
           {
             title: '单位',

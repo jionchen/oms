@@ -11,8 +11,8 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="24" :md="12">
-            <a-form-model-item prop="code" label="商品货号">
-              <a-input v-model="form.code" :disabled="form.id" />
+            <a-form-model-item prop="number" label="商品编号">
+              <a-input v-model="form.number" :disabled="form.id" />
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -53,11 +53,7 @@
           </a-col>
         </a-row>
         <a-row gutter="12">
-          <a-col :span="24" :md="12">
-            <a-form-model-item prop="specification" label="规格型号">
-              <a-input v-model="form.specification" />
-            </a-form-model-item>
-          </a-col>
+          
 
           <a-col :span="24" :md="12">
             <a-form-model-item prop="category" label="分类">
@@ -137,7 +133,7 @@
         inventoryVisible: false,
         rules: {
           name: [{ required: true, message: '请输入商品名称', trigger: 'change' }],
-          code: [{ required: true, message: '请输入商品货号', trigger: 'change' }],
+          number: [{ required: true, message: '请输入商品编号', trigger: 'change' }],
           purchase_price: [{ required: true, message: '请输入采购价', trigger: 'change' }],
           retail_price: [{ required: true, message: '请输入零售价', trigger: 'change' }],
         },

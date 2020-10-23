@@ -30,10 +30,10 @@
           <div slot="status" slot-scope="value, item">{{item.status ? '启用' : '停用'}}</div>
           <div slot="action" slot-scope="value, item">
             <a-button-group>
-              <a-button size="small" @click="$router.push({path: '/inventory', query: {search: item.code}})">
+              <a-button size="small" @click="$router.push({path: '/inventory', query: {search: item.number}})">
                 <a-icon type="appstore" />库存
               </a-button>
-              <a-button size="small" @click="$router.push({path: '/flow', query: {search: item.code}})">
+              <a-button size="small" @click="$router.push({path: '/flow', query: {search: item.number}})">
                 <a-icon type="profile" />流水
               </a-button>
               <a-button size="small" @click="goodsForm = {...item}; goodsVisible = true;">
@@ -89,9 +89,9 @@
             key: 'name',
           },
           {
-            title: '货号',
-            dataIndex: 'code',
-            key: 'code',
+            title: '编号',
+            dataIndex: 'number',
+            key: 'number',
           },
           {
             title: '品牌',
@@ -102,11 +102,6 @@
             title: '分类',
             dataIndex: 'category_name',
             key: 'category_name',
-          },
-          {
-            title: '规格型号',
-            dataIndex: 'specification',
-            key: 'specification',
           },
           {
             title: '单位',
@@ -201,7 +196,7 @@
       resetForm() {
         this.goodsForm = {
           name: '',
-          code: '',
+          number: '',
           purchase_price: 0,
           suggested_retail_price: 0,
           retail_price: 0,
@@ -211,7 +206,6 @@
           inventory_warning_upper_limit: 5000,
           brand: '',
           category: null,
-          specification: '',
           unit: '',
           inventory: {},
           initial_quantity: 0,

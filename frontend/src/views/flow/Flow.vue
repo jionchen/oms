@@ -26,7 +26,7 @@
               </a-select-option>
             </a-select>
           </a-form-model-item>
-          <a-form-model-item class="form" label="商品/货号" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+          <a-form-model-item class="form" label="商品/编号" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-input v-model="searchForm.search" allowClear />
           </a-form-model-item>
           <a-form-model-item>
@@ -80,19 +80,14 @@
             scopedSlots: { customRender: 'create_datetime' },
           },
           {
-            title: '货号',
-            dataIndex: 'goods_code',
-            key: 'goods_code',
+            title: '编号',
+            dataIndex: 'goods_number',
+            key: 'goods_number',
           },
           {
             title: '名称',
             dataIndex: 'goods_name',
             key: 'goods_name',
-          },
-          {
-            title: '规格型号',
-            dataIndex: 'specification',
-            key: 'specification',
           },
           {
             title: '单位',
@@ -122,8 +117,8 @@
           },
           {
             title: '操作人',
-            dataIndex: 'operator',
-            key: 'operator',
+            dataIndex: 'operator_name',
+            key: 'operator_name',
           },
           {
             title: '关联单',

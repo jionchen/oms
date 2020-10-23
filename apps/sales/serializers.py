@@ -10,11 +10,10 @@ class SalesOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SalesOrder
-        read_only_fields = ['id', 'seller_name', 'warehouse_name', 'account_name', 'is_done',
-                            'goods_set', 'total_amount']
-        fields = ['date', 'seller', 'warehouse', 'account', 'discount', 'amount', 'client_phone',
-                  'client_contacts', 'client_name', 'client_address', 'remark', 'is_return',
-                  'sales_order', *read_only_fields]
+        read_only_fields = ['id', 'seller_name', 'warehouse_name', 'account_name', 'client_name',
+                            'is_done', 'goods_set', 'total_amount']
+        fields = ['date', 'seller', 'warehouse', 'account', 'discount', 'amount',
+                  'client', 'remark', 'is_return', 'sales_order', *read_only_fields]
 
     def validate(self, data):
         if not data.get('seller') or not data.get('warehouse') or not data.get('account'):
@@ -26,9 +25,9 @@ class SalesOrderSerializer(serializers.ModelSerializer):
         if data.get('discount') is None or data['discount'] <= 0:
             raise serializers.ValidationError
 
-        client_phone = data.get('client_phone')
-        if client_phone and not re.match(r'^1[3456789]\d{9}$', client_phone):
-            raise serializers.ValidationError
+        # client_phone = data.get('client_phone')
+        # if client_phone and not re.match(r'^1[3456789]\d{9}$', client_phone):
+        #     raise serializers.ValidationError
 
         # 验证修改销售员权利
         if self.context['request'].user.username != data['seller']:
@@ -56,7 +55,7 @@ class SalesOrderSerializer(serializers.ModelSerializer):
         return data
 
     def get_goods_set(self, obj):
-        return obj.goods_set.all().values('id', 'code', 'name', 'specification', 'unit', 'quantity',
+        return obj.goods_set.all().values('id', 'number', 'name', 'unit', 'quantity',
                                           'retail_price', 'amount', 'remark')
 
 
@@ -81,7 +80,7 @@ class SalesOrderProfitSerializer(serializers.ModelSerializer):
         fields = [*read_only_fields]
 
     def get_goods_set(self, obj):
-        return obj.goods_set.all().values('id', 'code', 'name', 'specification', 'unit', 'quantity',
+        return obj.goods_set.all().values('id', 'number', 'name', 'unit', 'quantity',
                                           'retail_price', 'purchase_price', 'remark')
 
 

@@ -9,7 +9,7 @@ const purchaseReportList = {
   },
   "results": [
       {
-          "goods_code": "1001",
+          "goods_number": "1001",
           "goods_name": "goods1",
           "brand_name": "brand1",
           "category_name": "category1",
@@ -19,7 +19,7 @@ const purchaseReportList = {
           "avg_purchase_price": 7.777777777777778
       },
       {
-          "goods_code": "1002",
+          "goods_number": "1002",
           "goods_name": "goods2",
           "brand_name": null,
           "category_name": null,
@@ -29,7 +29,7 @@ const purchaseReportList = {
           "avg_purchase_price": 44.5
       },
       {
-          "goods_code": "1002",
+          "goods_number": "1002",
           "goods_name": "goods2",
           "brand_name": null,
           "category_name": "category1",
@@ -39,7 +39,7 @@ const purchaseReportList = {
           "avg_purchase_price": 0.0
       },
       {
-          "goods_code": "1003",
+          "goods_number": "1003",
           "goods_name": "goods3",
           "brand_name": "brand2",
           "category_name": "category1",
@@ -49,7 +49,7 @@ const purchaseReportList = {
           "avg_purchase_price": 10.0
       },
       {
-        "goods_code": "1001",
+        "goods_number": "1001",
         "goods_name": "goods1",
         "brand_name": "brand1",
         "category_name": "category1",
@@ -59,7 +59,7 @@ const purchaseReportList = {
         "avg_purchase_price": 7.777777777777778
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": null,
@@ -69,7 +69,7 @@ const purchaseReportList = {
         "avg_purchase_price": 44.5
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": "category1",
@@ -79,7 +79,7 @@ const purchaseReportList = {
         "avg_purchase_price": 0.0
     },
     {
-        "goods_code": "1003",
+        "goods_number": "1003",
         "goods_name": "goods3",
         "brand_name": "brand2",
         "category_name": "category1",
@@ -89,7 +89,7 @@ const purchaseReportList = {
         "avg_purchase_price": 10.0
     },
     {
-        "goods_code": "1001",
+        "goods_number": "1001",
         "goods_name": "goods1",
         "brand_name": "brand1",
         "category_name": "category1",
@@ -99,7 +99,7 @@ const purchaseReportList = {
         "avg_purchase_price": 7.777777777777778
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": null,
@@ -109,7 +109,7 @@ const purchaseReportList = {
         "avg_purchase_price": 44.5
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": "category1",
@@ -119,7 +119,7 @@ const purchaseReportList = {
         "avg_purchase_price": 0.0
     },
     {
-        "goods_code": "1003",
+        "goods_number": "1003",
         "goods_name": "goods3",
         "brand_name": "brand2",
         "category_name": "category1",
@@ -129,7 +129,7 @@ const purchaseReportList = {
         "avg_purchase_price": 10.0
     },
     {
-        "goods_code": "1001",
+        "goods_number": "1001",
         "goods_name": "goods1",
         "brand_name": "brand1",
         "category_name": "category1",
@@ -139,7 +139,7 @@ const purchaseReportList = {
         "avg_purchase_price": 7.777777777777778
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": null,
@@ -149,7 +149,7 @@ const purchaseReportList = {
         "avg_purchase_price": 44.5
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": "category1",
@@ -159,7 +159,7 @@ const purchaseReportList = {
         "avg_purchase_price": 0.0
     },
     {
-        "goods_code": "1003",
+        "goods_number": "1003",
         "goods_name": "goods3",
         "brand_name": "brand2",
         "category_name": "category1",
@@ -169,7 +169,7 @@ const purchaseReportList = {
         "avg_purchase_price": 10.0
     },
     {
-        "goods_code": "1001",
+        "goods_number": "1001",
         "goods_name": "goods1",
         "brand_name": "brand1",
         "category_name": "category1",
@@ -179,7 +179,7 @@ const purchaseReportList = {
         "avg_purchase_price": 7.777777777777778
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": null,
@@ -189,7 +189,7 @@ const purchaseReportList = {
         "avg_purchase_price": 44.5
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": "category1",
@@ -199,7 +199,7 @@ const purchaseReportList = {
         "avg_purchase_price": 0.0
     },
     {
-        "goods_code": "1003",
+        "goods_number": "1003",
         "goods_name": "goods3",
         "brand_name": "brand2",
         "category_name": "category1",
@@ -209,7 +209,7 @@ const purchaseReportList = {
         "avg_purchase_price": 10.0
     },
     {
-        "goods_code": "1001",
+        "goods_number": "1001",
         "goods_name": "goods1",
         "brand_name": "brand1",
         "category_name": "category1",
@@ -219,7 +219,7 @@ const purchaseReportList = {
         "avg_purchase_price": 7.777777777777778
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": null,
@@ -229,7 +229,7 @@ const purchaseReportList = {
         "avg_purchase_price": 44.5
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": "category1",
@@ -239,7 +239,7 @@ const purchaseReportList = {
         "avg_purchase_price": 0.0
     },
     {
-        "goods_code": "1003",
+        "goods_number": "1003",
         "goods_name": "goods3",
         "brand_name": "brand2",
         "category_name": "category1",
@@ -249,7 +249,7 @@ const purchaseReportList = {
         "avg_purchase_price": 10.0
     },
     {
-        "goods_code": "1001",
+        "goods_number": "1001",
         "goods_name": "goods1",
         "brand_name": "brand1",
         "category_name": "category1",
@@ -259,7 +259,7 @@ const purchaseReportList = {
         "avg_purchase_price": 7.777777777777778
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": null,
@@ -269,7 +269,7 @@ const purchaseReportList = {
         "avg_purchase_price": 44.5
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": "category1",
@@ -279,7 +279,7 @@ const purchaseReportList = {
         "avg_purchase_price": 0.0
     },
     {
-        "goods_code": "1003",
+        "goods_number": "1003",
         "goods_name": "goods3",
         "brand_name": "brand2",
         "category_name": "category1",
@@ -289,7 +289,7 @@ const purchaseReportList = {
         "avg_purchase_price": 10.0
     },
     {
-        "goods_code": "1001",
+        "goods_number": "1001",
         "goods_name": "goods1",
         "brand_name": "brand1",
         "category_name": "category1",
@@ -299,7 +299,7 @@ const purchaseReportList = {
         "avg_purchase_price": 7.777777777777778
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": null,
@@ -309,7 +309,7 @@ const purchaseReportList = {
         "avg_purchase_price": 44.5
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": "category1",
@@ -319,7 +319,7 @@ const purchaseReportList = {
         "avg_purchase_price": 0.0
     },
     {
-        "goods_code": "1003",
+        "goods_number": "1003",
         "goods_name": "goods3",
         "brand_name": "brand2",
         "category_name": "category1",
@@ -329,7 +329,7 @@ const purchaseReportList = {
         "avg_purchase_price": 10.0
     },
     {
-        "goods_code": "1001",
+        "goods_number": "1001",
         "goods_name": "goods1",
         "brand_name": "brand1",
         "category_name": "category1",
@@ -339,7 +339,7 @@ const purchaseReportList = {
         "avg_purchase_price": 7.777777777777778
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": null,
@@ -349,7 +349,7 @@ const purchaseReportList = {
         "avg_purchase_price": 44.5
     },
     {
-        "goods_code": "1002",
+        "goods_number": "1002",
         "goods_name": "goods2",
         "brand_name": null,
         "category_name": "category1",
@@ -359,7 +359,7 @@ const purchaseReportList = {
         "avg_purchase_price": 0.0
     },
     {
-        "goods_code": "1003",
+        "goods_number": "1003",
         "goods_name": "goods3",
         "brand_name": "brand2",
         "category_name": "category1",
@@ -384,7 +384,7 @@ const salesReportList = {
             "spec1": "spec1",
             "spec2": "spec3",
             "quantity": 1.0,
-            "goods_code": "1001",
+            "goods_number": "1001",
             "goods_name": "goods1",
             "brand_name": "brand1",
             "category_name": "category1",
@@ -397,7 +397,7 @@ const salesReportList = {
             "spec1": "spec1",
             "spec2": "spec3",
             "quantity": 1.0,
-            "goods_code": "1001",
+            "goods_number": "1001",
             "goods_name": "goods1",
             "brand_name": "brand1",
             "category_name": "category1",
@@ -410,7 +410,7 @@ const salesReportList = {
             "spec1": "spec1",
             "spec2": "spec3",
             "quantity": 12.0,
-            "goods_code": "1001",
+            "goods_number": "1001",
             "goods_name": "goods1",
             "brand_name": "brand1",
             "category_name": "category1",
@@ -423,7 +423,7 @@ const salesReportList = {
             "spec1": "spec1",
             "spec2": "spec3",
             "quantity": 2.0,
-            "goods_code": "1001",
+            "goods_number": "1001",
             "goods_name": "goods1",
             "brand_name": "brand1",
             "category_name": "category1",
@@ -436,7 +436,7 @@ const salesReportList = {
             "spec1": "spec1",
             "spec2": "spec3",
             "quantity": 2.0,
-            "goods_code": "1001",
+            "goods_number": "1001",
             "goods_name": "goods1",
             "brand_name": "brand1",
             "category_name": "category1",
@@ -449,7 +449,7 @@ const salesReportList = {
             "spec1": "spec4",
             "spec2": "spec1",
             "quantity": 10.0,
-            "goods_code": "1003",
+            "goods_number": "1003",
             "goods_name": "goods3",
             "brand_name": "brand2",
             "category_name": "category1",

@@ -14,7 +14,7 @@ class Goods(models.Model):
     number = models.CharField(max_length=32)
     name = models.CharField(max_length=256)
     unit = models.CharField(max_length=32, null=True, blank=True)
-    category = models.ForeignKey('goods.Category', models.CASCADE, related_name='goods_set', null=True)
+    category = models.ForeignKey('goods.Category', models.SET_NULL, related_name='goods_set', null=True)
     purchase_price = models.FloatField(default=0)
     retail_price = models.FloatField(default=0)
     shelf_life = models.FloatField(null=True)

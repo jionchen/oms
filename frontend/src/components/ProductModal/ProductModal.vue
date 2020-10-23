@@ -18,7 +18,7 @@
     </a-modal>
 
     <!-- <a-modal v-model="productModalVisible" :maskClosable="false" okText="确定" cancelText="取消"
-      :title="selectedGoods.id ? `${selectedGoods.name} - ${selectedGoods.code}` : ''" @ok="confirm">
+      :title="selectedGoods.id ? `${selectedGoods.name} - ${selectedGoods.number}` : ''" @ok="confirm">
       <a-table :columns="productColumns" :data-source="selectedGoods.products" size="small" :pagination="false">
         <div slot="spec1" slot-scope="value, item">{{item.spec1_name}}</div>
         <div slot="spec2" slot-scope="value, item">{{item.spec2_name}}</div>
@@ -50,9 +50,9 @@
             key: 'name',
           },
           {
-            title: '货号',
-            dataIndex: 'code',
-            key: 'code',
+            title: '编号',
+            dataIndex: 'number',
+            key: 'number',
           },
           {
             title: '选择',

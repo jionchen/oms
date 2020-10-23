@@ -55,39 +55,24 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
             warehouse = sales_order.warehouse
         else:
             warehouse = self.request.data.get('warehouse')
-            warehouse = Warehouse.objects.filter(id=warehouse, teams=teams, is_delete=False).first()
+            warehouse = Warehouse.objects.filter(id=warehouse, teams=teams).first()
 
         seller = self.request.data.get('seller')
         if seller == self.request.user.username:
             seller = self.request.user
         else:
-            seller = User.objects.filter(username=seller, teams=teams, is_delete=False).first()
+            seller = User.objects.filter(username=seller, teams=teams).first()
 
         account = self.request.data.get('account')
-        account = Account.objects.filter(id=account, teams=teams, is_delete=False).first()
+        account = Account.objects.filter(id=account, teams=teams).first()
 
         if not warehouse or not account or not seller:
             raise ValidationError
 
-        # 创建客户
-        client = None
-        client_phone = self.request.data.get('client_phone')
-        if client_phone:
-            client = Client.objects.filter(teams=teams, phone=client_phone).first()
-            if not client:
-                client_name = self.request.data.get('client_name')
-                client_contacts = self.request.data.get('client_contacts')
-                client_address = self.request.data.get('client_address')
-                Client.objects.create(phone=client_phone, name=client_name, contacts=client_contacts,
-                                      address=client_address, teams=teams)
-            elif client.is_delete:
-                client.is_delete = False
-                client.save()
-
         # 创建表单商品
         goods_set = self.request.data.get('goods_set', [])
         goods_id_set = map(lambda item: item['id'], goods_set)
-        goods_list = Goods.objects.filter(id__in=goods_id_set, is_delete=False, teams=teams)
+        goods_list = Goods.objects.filter(id__in=goods_id_set, teams=teams)
 
         if len(goods_set) != len(goods_list):
             raise ValidationError
@@ -104,15 +89,20 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
                     total_amount = math.plus(total_amount, amount)
 
                     sales_goods_set.append(
-                        SalesGoods(goods=goods1, code=goods1.code, name=goods1.name, unit=goods1.unit,
-                                   specification=goods1.specification, quantity=goods2['quantity'],
+                        SalesGoods(goods=goods1, number=goods1.number, name=goods1.name, unit=goods1.unit,
+                                   quantity=goods2['quantity'],
                                    purchase_price=goods1.purchase_price, retail_price=goods2['retail_price'],
                                    amount=amount, remark=goods2.get('remark'), sales_order_id=order_id))
                     break
 
+
+        client = self.request.data.get('client')
+        client = Client.objects.filter(id=client, teams=teams).first()
+        client_name = client.name if client else None
+        
         serializer.save(teams=teams, id=order_id, seller_name=seller.name, warehouse_name=warehouse.name,
                         account_name=account.name, total_quantity=total_quantity, total_amount=total_amount,
-                        client=client)
+                        client=client, client_name=client_name)
         SalesGoods.objects.bulk_create(sales_goods_set)
 
         # 创建付款记录
@@ -145,11 +135,12 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
             inventory.save()
 
             type = '销售退货单' if sales_order.is_return else '销售单'
-            flows.append(Flow(type=type, teams=teams, goods=sales_goods.goods, goods_code=sales_goods.code,
-                              goods_name=sales_goods.name, specification=sales_goods.specification,
+            flows.append(Flow(type=type, teams=teams, goods=sales_goods.goods, goods_number=sales_goods.number,
+                              goods_name=sales_goods.name,
                               unit=sales_goods.unit, warehouse=sales_order.warehouse,
                               warehouse_name=sales_order.warehouse_name, change_quantity=change_quantity,
-                              remain_quantity=inventory.quantity, operator=request.user, sales_order=sales_order))
+                              remain_quantity=inventory.quantity, operator=request.user,
+                              operator_name=request.user.name, sales_order=sales_order))
 
         Flow.objects.bulk_create(flows)
 
@@ -173,7 +164,7 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
             raise ValidationError({'message': '金额错误'})
 
         order = SalesOrder.objects.filter(teams=teams, id=order_id).first()
-        account = Account.objects.filter(teams=teams, id=account, is_delete=False).first()
+        account = Account.objects.filter(teams=teams, id=account).first()
         if not order or not account:
             raise ValidationError
         if order.amount + amount > order.total_amount:
@@ -282,8 +273,8 @@ class ClientViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.request.user.teams.clients.all()
 
-    def perform_create(self, serializer):  
-        serializer.save(teams=self.request.user.teams)  
+    def perform_create(self, serializer):
+        serializer.save(teams=self.request.user.teams)
 
     @action(detail=False)
     def export_excel(self, request, *args, **kwargs):
@@ -295,5 +286,5 @@ class ClientViewSet(viewsets.ModelViewSet):
     @transaction.atomic
     def import_excel(self, request, *args, **kwargs):
         Client.objects.bulk_create([Client(**item, teams=request.user.teams)
-                                       for item in import_excel(self, self.field_mapping)])
+                                    for item in import_excel(self, self.field_mapping)])
         return Response(status=HTTP_201_CREATED)

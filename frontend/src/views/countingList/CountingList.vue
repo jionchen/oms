@@ -154,14 +154,9 @@
             key: 'name',
           },
           {
-            title: '货号',
-            dataIndex: 'code',
-            key: 'code',
-          },
-          {
-            title: '规格型号',
-            dataIndex: 'specification',
-            key: 'specification',
+            title: '编号',
+            dataIndex: 'number',
+            key: 'number',
           },
           {
             title: '单位',

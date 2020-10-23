@@ -28,8 +28,10 @@ class Account(models.Model):
 class Bookkeeping(models.Model):
     """记账"""
     create_datetime = models.DateTimeField(auto_now_add=True)
-    account = models.ForeignKey('account.Account', models.CASCADE, related_name='bookkeeping_set')
+    account = models.ForeignKey('account.Account', models.SET_NULL, related_name='bookkeeping_set', null=True)
+    account_name = models.CharField(max_length=64)
     amount = models.FloatField(default=0)  # 收入支出
-    recorder = models.ForeignKey('user.User', models.CASCADE, related_name='bookkeeping_set')
+    recorder = models.ForeignKey('user.User', models.SET_NULL, related_name='bookkeeping_set', null=True)
+    recorder_name = models.CharField(max_length=64)
     remark = models.CharField(max_length=64, null=True, blank=True)
     teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='bookkeeping_set')

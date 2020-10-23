@@ -5,8 +5,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Sum, Count, Avg, Max, Min, F
 from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
-from apps.warehouse.models import Flow, Warehouse
-from apps.purchase.models import PurchaseGoods, PurchaseOrder, PaymentRecord as PurchasePaymentRecord
+from apps.warehouse.models import Warehouse
+from apps.purchase.models import PurchaseGoods, PaymentRecord as PurchasePaymentRecord
 from rest_framework import viewsets
 from apps.sales.models import SalesGoods, SalesOrder, PaymentRecord as SalesPaymentRecord
 from rest_framework.filters import SearchFilter
@@ -33,10 +33,10 @@ class PurcahseReportViewSet(viewsets.ModelViewSet):
                                                         max_purchase_price=Max('discount_price'),
                                                         avg_purchase_price=Avg('discount_price'))
             results = results.values('quantity', 'min_purchase_price', 'max_purchase_price', 'avg_purchase_price',
-                                     code=F('goods__code'), name=F('goods__name'), specification=F('goods__specification'),
-                                     unit=F('goods__unit')).order_by('code')
+                                     number=F('goods__number'), name=F('goods__name'),
+                                     unit=F('goods__unit')).order_by('number')
         else:
-            results = queryset.values('code', 'name', 'specification', 'unit', 'quantity',
+            results = queryset.values('number', 'name', 'unit', 'quantity',
                                       date=F('purchase_order__date'), category_name=F('goods__category__name'),
                                       supplier_name=F('purchase_order__supplier_name'),
                                       warehouse_name=F('purchase_order__warehouse_name'),
@@ -65,10 +65,10 @@ class SalesReportViewSet(viewsets.ModelViewSet):
                                                         max_retail_price=Max('retail_price'),
                                                         avg_retail_price=Avg('retail_price'))
             results = results.values('quantity', 'min_retail_price', 'max_retail_price', 'avg_retail_price',
-                                     code=F('goods__code'), name=F('goods__name'), specification=F('goods__specification'),
-                                     unit=F('goods__unit')).order_by('code')
+                                     number=F('goods__number'), name=F('goods__name'),
+                                     unit=F('goods__unit')).order_by('number')
         else:
-            results = queryset.values('code', 'name', 'specification', 'unit', 'quantity',
+            results = queryset.values('number', 'name', 'unit', 'quantity',
                                       date=F('sales_order__date'), category_name=F('goods__category__name'),
                                       seller_name=F('sales_order__seller_name'),
                                       warehouse_name=F('sales_order__warehouse_name'),
@@ -97,8 +97,7 @@ class SalesTrendViewSet(viewsets.ModelViewSet):
         queryset = queryset.values('_date', _warehouse=F('warehouse__name'))
         results = queryset.annotate(_amount=Sum('total_amount'))
 
-        warehouse_list = Warehouse.objects.filter(
-            teams=request.user.teams, is_delete=False).values_list('name', flat=True)
+        warehouse_list = Warehouse.objects.filter(teams=request.user.teams).values_list('name', flat=True)
         return Response({'results': results, 'warehouse_list': warehouse_list})
 
 
@@ -118,30 +117,8 @@ class ProfitTrendViewSet(viewsets.ModelViewSet):
         results = queryset.annotate(
             _amount=Sum((F('retail_price') * F('sales_order__discount') * 0.01 - F('purchase_price')) * F('quantity')))
 
-        warehouse_list = Warehouse.objects.filter(
-            teams=request.user.teams, is_delete=False).values_list('name', flat=True)
+        warehouse_list = Warehouse.objects.filter(teams=request.user.teams).values_list('name', flat=True)
         return Response({'results': results, 'warehouse_list': warehouse_list})
-
-
-# class FinancialReportViewSet(viewsets.ModelViewSet):
-#     """财务报表: list"""
-#     permission_classes = [IsAuthenticated]
-#     filter_backends = [DjangoFilterBackend]
-#     filterset_class = FinancialReportFilter
-
-#     def get_queryset(self):
-#         return SalesGoods.objects.filter(sales_order__teams=self.request.user.teams, sales_order__is_return=False)
-
-#     def list(self, request, *args, **kwargs):
-#         queryset = self.filter_queryset(self.get_queryset())
-#         queryset = queryset.extra(select={'_date': 'DATE_FORMAT(`sales_salesorder`.`date`, "%%Y-%%m-%%d")'})
-#         queryset = queryset.values('_date', _warehouse=F('sales_order__warehouse__name'))
-#         results = queryset.annotate(
-#             _amount=Sum((F('retail_price') * F('sales_order__discount') * 0.01 - F('purchase_price')) * F('quantity')))
-
-#         warehouse_list = Warehouse.objects.filter(
-#             teams=request.user.teams, is_delete=False).values_list('name', flat=True)
-#         return Response({'results': results, 'warehouse_list': warehouse_list})
 
 
 class FinancialStatisticsViewSet(viewsets.ModelViewSet):

@@ -22,35 +22,23 @@
               <a-row>
                 <a-col :sm="12" :xl="8" :xs="24">
                   <a-form-model-item prop="supplier" label="供应商">
-                    <a-select v-model="purchaseForm.supplier" :disabled="purchaseForm.id">
-                      <a-select-option v-for="item in supplierItems" :key="item.id" :value="item.id">{{item.name}}
-                      </a-select-option>
-                    </a-select>
+                    <supplier-select v-model="purchaseForm.supplier" :defaultItem="purchaseForm" />
                   </a-form-model-item>
                 </a-col>
                 <a-col :sm="12" :xl="8" :xs="24">
                   <a-form-model-item prop="warehouse" label="仓库">
-                    <a-select v-model="purchaseForm.warehouse" :disabled="purchaseForm.id">
-                      <a-select-option v-for="item in warehouseItems" :key="item.id" :value="item.id">{{item.name}}
-                      </a-select-option>
-                    </a-select>
+                    <warehouse-select v-model="purchaseForm.warehouse" :defaultItem="purchaseForm" />
                   </a-form-model-item>
                 </a-col>
                 <a-col :sm="12" :xl="8" :xs="24">
                   <a-form-model-item prop="account" label="结算账户">
-                    <a-select v-model="purchaseForm.account" :disabled="purchaseForm.id">
-                      <a-select-option v-for="item in accountItems" :key="item.id" :value="item.id">{{item.name}}
-                      </a-select-option>
-                    </a-select>
+                    <account-select v-model="purchaseForm.account" :defaultItem="purchaseForm" />
                   </a-form-model-item>
                 </a-col>
 
                 <a-col :sm="12" :xl="8" :xs="24">
                   <a-form-model-item prop="contacts" label="联系人">
-                    <a-select v-model="purchaseForm.contacts" :disabled="purchaseForm.id">
-                      <a-select-option v-for="value in userItems" :key="value" :value="value">{{value}}
-                      </a-select-option>
-                    </a-select>
+                    <user-select v-model="purchaseForm.contacts" :user="purchaseForm.contacts" :userName="purchaseForm.contacts_name" />
                   </a-form-model-item>
                 </a-col>
                 <a-col :sm="12" :xl="8" :xs="24">
@@ -138,9 +126,7 @@
 </template>
 
 <script>
-  import { supplierList, purchaseOrderList, purchaseOrderCreate, purchaseOrderDestroy } from '@/api/purchase'
-  import { accountList, userList } from '@/api/account'
-  import { warehouseList } from '@/api/warehouse'
+  import { purchaseOrderList, purchaseOrderCreate, purchaseOrderDestroy } from '@/api/purchase'
   import NP from 'number-precision'
   import moment from 'moment'
 
@@ -148,6 +134,10 @@
     name: 'PurchaseOrder',
     components: {
       AddGoodsModal: () => import('@/components/AddGoodsModal/AddGoodsModal.vue'),
+      UserSelect: () => import('@/components/UserSelect/UserSelect'),
+      WarehouseSelect: () => import('@/components/WarehouseSelect/WarehouseSelect'),
+      AccountSelect: () => import('@/components/AccountSelect/AccountSelect'),
+      SupplierSelect: () => import('@/components/SupplierSelect/SupplierSelect'),
     },
     data() {
       return {
@@ -175,19 +165,14 @@
             scopedSlots: { customRender: 'action' },
           },
           {
-            title: '货号',
-            dataIndex: 'code',
-            key: 'code',
+            title: '编号',
+            dataIndex: 'number',
+            key: 'number',
           },
           {
             title: '商品',
             dataIndex: 'name',
             key: 'name',
-          },
-          {
-            title: '规格型号',
-            dataIndex: 'specification',
-            key: 'specification',
           },
           {
             title: '单位',
@@ -292,38 +277,6 @@
       initialize() {
         this.resetForm();
         this.list();
-
-        warehouseList()
-          .then(resp => {
-            this.warehouseItems = resp.data;
-          })
-          .catch(err => {
-            this.$message.error(err.response.data.message);
-          });
-
-        supplierList()
-          .then(resp => {
-            this.supplierItems = resp.data;
-          })
-          .catch(err => {
-            this.$message.error(err.response.data.message);
-          });
-
-        accountList()
-          .then(resp => {
-            this.accountItems = resp.data;
-          })
-          .catch(err => {
-            this.$message.error(err.response.data.message);
-          });
-
-        userList()
-          .then(resp => {
-            this.userItems = resp.data;
-          })
-          .catch(err => {
-            this.$message.error(err.response.data.message);
-          });
       },
       list() {
         this.tableLoading = true;

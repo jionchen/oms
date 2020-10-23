@@ -7,7 +7,7 @@
             <a-popover title="列表设置" trigger="click">
               <template slot="content">
                 <a-checkbox-group v-model="checkedColumns" @change="changeColumns">
-                  <a-checkbox value="code">货号</a-checkbox>
+                  <a-checkbox value="number">编号</a-checkbox>
                   <a-checkbox value="barnd">品牌</a-checkbox>
                   <a-checkbox value="category">分类</a-checkbox>
                   <a-checkbox value="purchase_price">采购价</a-checkbox>
@@ -32,7 +32,7 @@
           </a-form-model-item>
 
           <a-form-model-item class="form" label="搜索">
-            <a-input v-model="searchForm.search" placeholder="名称/货号" allowClear />
+            <a-input v-model="searchForm.search" placeholder="名称/编号" allowClear />
           </a-form-model-item>
           <a-form-model-item class="form" label="排序">
             <a-select v-model="searchForm.ordering" allowClear>
@@ -72,10 +72,9 @@
 
       <div style="margin-top: 8px;">
         <a-table :columns="columns" :data-source="items" :loading="loading" :pagination="false">
-          <div slot="code" slot-scope="value, item">{{ item.goods.code }}</div>
+          <div slot="number" slot-scope="value, item">{{ item.goods.number }}</div>
           <div slot="name" slot-scope="value, item">{{ item.goods.name }}</div>
           <div slot="brand" slot-scope="value, item">{{ item.goods.brand }}</div>
-          <div slot="specification" slot-scope="value, item">{{ item.goods.specification }}</div>
           <div slot="unit" slot-scope="value, item">{{ item.goods.unit }}</div>
           <div slot="category_name" slot-scope="value, item">{{ item.goods.category_name }}</div>
 
@@ -123,10 +122,10 @@
         items: [],
         columnsTemplate: [
           {
-            title: '货号',
-            dataIndex: 'code',
-            key: 'code',
-            scopedSlots: { customRender: 'code' },
+            title: '编号',
+            dataIndex: 'number',
+            key: 'number',
+            scopedSlots: { customRender: 'number' },
           },
           {
             title: '名称',
@@ -139,12 +138,6 @@
             dataIndex: 'brand',
             key: 'brand',
             scopedSlots: { customRender: 'brand' },
-          },
-          {
-            title: '规格型号',
-            dataIndex: 'specification',
-            key: 'specification',
-            scopedSlots: { customRender: 'specification' },
           },
           {
             title: '单位',
@@ -176,7 +169,7 @@
           },
         ],
         columns: [],
-        checkedColumns: ['code', 'barnd', 'category', 'purchase_price'],
+        checkedColumns: ['number', 'barnd', 'category', 'purchase_price'],
         loading: false,
         noMoreData: false,
         totalAmount: 0,
@@ -235,7 +228,7 @@
         this.list();
       },
       changeColumns() {
-        let columns = ['code', 'barnd', 'category', 'purchase_price'].filter(value => this.checkedColumns.indexOf(value) === -1);
+        let columns = ['number', 'barnd', 'category', 'purchase_price'].filter(value => this.checkedColumns.indexOf(value) === -1);
         this.columns = this.columnsTemplate.filter(item => columns.indexOf(item.key) === -1);
       },
       exportData() {

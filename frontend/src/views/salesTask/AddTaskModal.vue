@@ -22,8 +22,8 @@
         <a-form-model-item label="任务商品">
           <div>{{selectedGoods.name}}</div>
         </a-form-model-item>
-        <a-form-model-item label="商品货号">
-          <div>{{selectedGoods.code}}</div>
+        <a-form-model-item label="商品编号">
+          <div>{{selectedGoods.number}}</div>
         </a-form-model-item>
         <a-form-model-item prop="warehouse" label="仓库">
           <a-select v-model="form.warehouse">
@@ -73,9 +73,9 @@
             key: 'name',
           },
           {
-            title: '货号',
-            dataIndex: 'code',
-            key: 'code',
+            title: '编号',
+            dataIndex: 'number',
+            key: 'number',
           },
           {
             title: '选择',

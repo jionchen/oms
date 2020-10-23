@@ -13,6 +13,7 @@ from rest_framework.decorators import action
 from django.db import transaction
 from rest_framework.status import HTTP_201_CREATED
 from rest_framework.response import Response
+from apps.purchase.models import ChangeRecord
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -72,6 +73,28 @@ class GoodsViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(teams=self.request.user.teams)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        # 采购价变更记录
+        purchase_price = request.data.get('purchase_price', 0)
+        if purchase_price != instance.purchase_price:
+            ChangeRecord.objects.create(goods=instance, goods_number=instance.number,
+                                        goods_name=instance.name, unit=instance.unit,
+                                        before_change=instance.purchase_price,
+                                        after_change=purchase_price, operator=request.user,
+                                        operator_name=request.user.name,
+                                        teams=request.user.teams)
+
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
     @action(detail=False)
     def export_excel(self, request, *args, **kwargs):

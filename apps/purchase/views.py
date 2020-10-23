@@ -93,14 +93,14 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
             warehouse = purchase_order.warehouse
         else:
             supplier = self.request.data.get('supplier')
-            supplier = Supplier.objects.filter(id=supplier, teams=teams, is_delete=False).first()
+            supplier = Supplier.objects.filter(id=supplier, teams=teams).first()
             warehouse = self.request.data.get('warehouse')
-            warehouse = Warehouse.objects.filter(id=warehouse, teams=teams, is_delete=False).first()
+            warehouse = Warehouse.objects.filter(id=warehouse, teams=teams).first()
 
         account = self.request.data.get('account')
-        account = Account.objects.filter(id=account, teams=teams, is_delete=False).first()
+        account = Account.objects.filter(id=account, teams=teams).first()
         contacts = self.request.data.get('contacts')
-        contacts = User.objects.filter(username=contacts, teams=teams, is_delete=False).first()
+        contacts = User.objects.filter(username=contacts, teams=teams).first()
 
         if not supplier or not warehouse or not account or not contacts:
             raise ValidationError
@@ -108,12 +108,11 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         # 创建表单商品
         goods_set = self.request.data.get('goods_set', [])
         goods_id_set = map(lambda item: item['id'], goods_set)
-        goods_list = Goods.objects.filter(id__in=goods_id_set, is_delete=False, teams=teams)
+        goods_list = Goods.objects.filter(id__in=goods_id_set, teams=teams)
 
         if len(goods_set) != len(goods_list):
             raise ValidationError
 
-        # change_records = []
         total_quantity = 0
         total_amount = 0
         purchase_goods_set = []
@@ -126,8 +125,8 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
                     total_quantity = math.plus(total_quantity, goods2['quantity'])
                     total_amount = math.plus(total_amount, discount_amount)
 
-                    purchase_goods_set.append(PurchaseGoods(goods=goods1, code=goods1.code, name=goods1.name,
-                                                            specification=goods1.specification, unit=goods1.unit,
+                    purchase_goods_set.append(PurchaseGoods(goods=goods1, number=goods1.number, name=goods1.name,
+                                                            unit=goods1.unit,
                                                             quantity=goods2['quantity'], purchase_price=goods2['purchase_price'],
                                                             discount=goods2['discount'], discount_price=discount_price,
                                                             amount=amount, discount_amount=discount_amount,
@@ -146,8 +145,6 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         if amount != 0:
             PaymentRecord.objects.create(amount=amount, account=account, account_name=account.name,
                                          purchase_order=serializer.instance)
-
-        # ChangeRecord.objects.bulk_create(change_records)
 
     def perform_destroy(self, instance):
         if instance.is_done:
@@ -178,11 +175,12 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
             inventory.save()
 
             type = '采购退货单' if purchase_order.is_return else '采购单'
-            flows.append(Flow(type=type, teams=teams, goods=purchase_goods.goods, goods_code=purchase_goods.code,
-                              goods_name=purchase_goods.name, specification=purchase_goods.specification,
+            flows.append(Flow(type=type, teams=teams, goods=purchase_goods.goods, goods_number=purchase_goods.number,
+                              goods_name=purchase_goods.name,
                               unit=purchase_goods.unit, warehouse=purchase_order.warehouse,
                               warehouse_name=purchase_order.warehouse_name, change_quantity=change_quantity,
-                              remain_quantity=inventory.quantity, operator=request.user, purchase_order=purchase_order))
+                              remain_quantity=inventory.quantity, operator=request.user,
+                              operator_name=request.user.name, purchase_order=purchase_order))
 
         Flow.objects.bulk_create(flows)
 
@@ -206,7 +204,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
             raise ValidationError({'message': '金额错误'})
 
         order = PurchaseOrder.objects.filter(teams=teams, id=order_id).first()
-        account = Account.objects.filter(teams=teams, id=account, is_delete=False).first()
+        account = Account.objects.filter(teams=teams, id=account).first()
         if not order or not account:
             raise ValidationError
         if order.amount + amount > order.total_amount:
@@ -239,7 +237,7 @@ class ChangeRecordViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, PurchasePricePermission]
     pagination_class = ChangeRecordPagination
     filter_backends = [OrderingFilter]
-    ordering_fields = ['create_datetime', 'goods_code', 'goods_name', 'change_method', 'before_change',
+    ordering_fields = ['create_datetime', 'goods_number', 'goods_name', 'before_change',
                        'after_change', 'operator']
     ordering = ['-create_datetime']
 

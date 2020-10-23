@@ -67,27 +67,11 @@ class AccountUpdateSerializer(serializers.ModelSerializer):
 
 
 class BookkeepingSerializer(serializers.ModelSerializer):
-    account_name = serializers.SerializerMethodField('get_account_name')
-
     class Meta:
         model = Bookkeeping
-        fields = ['id', 'create_datetime', 'account', 'account_name', 'amount',
-                  'recorder', 'remark']
-        read_only_fields = ['id', 'create_datetime', 'account_name', 'recorder']
-
-    def validate(self, data):
-        if not data.get('account') or data.get('amount') is None:
-            raise serializers.ValidationError
-
-        teams = self.context['request'].user.teams
-        if data['account'].teams != teams:
-            raise serializers.ValidationError
-
-        return data
-
-    def get_account_name(self, obj):
-        return obj.account.name
-
+        read_only_fields = ['id', 'create_datetime', 'account_name', 'recorder', 'recorder_name']
+        fields = ['account', 'amount', 'remark', *read_only_fields]
+        
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

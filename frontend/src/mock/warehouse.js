@@ -35,7 +35,7 @@ const inventoryList = {
     "results": [
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec2, spec1, spec6, spec5",
             "spec2": "spec3, spec4",
@@ -46,7 +46,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec2, spec1, spec6, spec5",
             "spec2": "spec3, spec4",
@@ -57,7 +57,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods2",
-            "goods_code": "1002",
+            "goods_number": "1002",
             "brand": null,
             "spec1": "spec3",
             "spec2": null,
@@ -68,7 +68,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods2",
-            "goods_code": "1002",
+            "goods_number": "1002",
             "brand": null,
             "spec1": "spec3",
             "spec2": null,
@@ -79,7 +79,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec1",
             "spec2": "spec3",
@@ -90,7 +90,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec1",
             "spec2": "spec3",
@@ -101,7 +101,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec1",
             "spec2": "spec4",
@@ -112,7 +112,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec1",
             "spec2": "spec4",
@@ -123,7 +123,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec2",
             "spec2": "spec3",
@@ -134,7 +134,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec2",
             "spec2": "spec3",
@@ -145,7 +145,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec2",
             "spec2": "spec4",
@@ -156,7 +156,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec2",
             "spec2": "spec4",
@@ -167,7 +167,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec5",
             "spec2": "spec3",
@@ -178,7 +178,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec5",
             "spec2": "spec3",
@@ -189,7 +189,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec5",
             "spec2": "spec4",
@@ -200,7 +200,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec5",
             "spec2": "spec4",
@@ -211,7 +211,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec6",
             "spec2": "spec3",
@@ -222,7 +222,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec6",
             "spec2": "spec3",
@@ -233,7 +233,7 @@ const inventoryList = {
         },
         {
             "goods_name": "goods1",
-            "goods_code": "1001",
+            "goods_number": "1001",
             "brand": "brand1",
             "spec1": "spec6",
             "spec2": "spec4",
@@ -271,7 +271,7 @@ const countingListList =
                 {
                     "product_id": "e9f1996e-c105-11ea-b73e-87e5a1fdee64",
                     "name": "goods3",
-                    "code": "1003",
+                    "number": "1003",
                     "spec1": "spec4",
                     "spec2": "spec1",
                     "counting": 2.0,
@@ -282,7 +282,7 @@ const countingListList =
                 {
                     "product_id": "0d50aba4-bc4a-11ea-8e20-0b942bb21c98",
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "counting": 2.0,
@@ -306,7 +306,7 @@ const countingListList =
                 {
                     "product_id": "e9f1996e-c105-11ea-b73e-87e5a1fdee64",
                     "name": "goods3",
-                    "code": "1003",
+                    "number": "1003",
                     "spec1": "spec4",
                     "spec2": "spec1",
                     "counting": 11.0,
@@ -330,7 +330,7 @@ const countingListList =
                 {
                     "product_id": "0d50aba4-bc4a-11ea-8e20-0b942bb21c98",
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "counting": 3.0,
@@ -354,7 +354,7 @@ const countingListList =
                 {
                     "product_id": "0d50aba4-bc4a-11ea-8e20-0b942bb21c98",
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "counting": 6.0,
@@ -378,7 +378,7 @@ const countingListList =
                 {
                     "product_id": "0d50aba4-bc4a-11ea-8e20-0b942bb21c98",
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "counting": 2.0,
@@ -402,7 +402,7 @@ const countingListList =
                 {
                     "product_id": "0d50aba4-bc4a-11ea-8e20-0b942bb21c98",
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "counting": 0.0,
@@ -426,7 +426,7 @@ const countingListList =
                 {
                     "product_id": "e9f1996e-c105-11ea-b73e-87e5a1fdee64",
                     "name": "goods3",
-                    "code": "1003",
+                    "number": "1003",
                     "spec1": "spec4",
                     "spec2": "spec1",
                     "counting": 12.0,
@@ -437,7 +437,7 @@ const countingListList =
                 {
                     "product_id": "0d50aba4-bc4a-11ea-8e20-0b942bb21c98",
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "counting": 2.0,
@@ -518,7 +518,7 @@ const requisitionList = {
                 {
                     "product_id": "e9f1996e-c105-11ea-b73e-87e5a1fdee64",
                     "name": "goods3",
-                    "code": "1003",
+                    "number": "1003",
                     "spec1": "spec4",
                     "spec2": "spec1",
                     "quantity": 12.0
@@ -541,7 +541,7 @@ const countingListRetrieve = {
         {
             "product_id": "0d50aba4-bc4a-11ea-8e20-0b942bb21c98",
             "name": "goods1",
-            "code": "1001",
+            "number": "1001",
             "spec1": "spec1",
             "spec2": "spec3",
             "counting": 3.0,
@@ -567,7 +567,7 @@ const requisitionRetrievev = {
         {
             "product_id": "0d50aba4-bc4a-11ea-8e20-0b942bb21c98",
             "name": "goods1",
-            "code": "1001",
+            "number": "1001",
             "spec1": "spec1",
             "spec2": "spec3",
             "quantity": 1.0

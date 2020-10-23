@@ -37,9 +37,9 @@
             scopedSlots: { customRender: 'create_datetime' },
           },
           {
-            title: '货号',
-            dataIndex: 'goods_code',
-            key: 'goods_code',
+            title: '编号',
+            dataIndex: 'goods_number',
+            key: 'goods_number',
           },
           {
             title: '名称',
@@ -47,19 +47,9 @@
             key: 'goods_name',
           },
           {
-            title: '规格型号',
-            dataIndex: 'specification',
-            key: 'specification',
-          },
-          {
             title: '单位',
             dataIndex: 'unit',
             key: 'unit',
-          },
-          {
-            title: '修改方式',
-            dataIndex: 'change_method',
-            key: 'change_method',
           },
           {
             title: '修改前',
@@ -75,14 +65,8 @@
           },
           {
             title: '操作人',
-            dataIndex: 'operator',
-            key: 'operator',
-          },
-          {
-            title: '关联采购单',
-            dataIndex: 'relation_order',
-            key: 'relation_order',
-            scopedSlots: { customRender: 'relation_order' },
+            dataIndex: 'operator_name',
+            key: 'operator_name',
           },
         ],
         totalRows: 0,

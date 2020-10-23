@@ -16,7 +16,7 @@
           </a-col>
           <a-col :span="8">
             <a-form-model-item prop="seller" label="销售员">
-              <user-select v-model="form.seller" :userName="form.seller_name" />
+              <user-select v-model="form.seller" :user="form.seller" :userName="form.seller_name" />
             </a-form-model-item>
           </a-col>
           <a-col :span="8">

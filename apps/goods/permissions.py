@@ -8,5 +8,5 @@ class CategoryPermission(BasePermission):
 
 
 class GoodsPermission(BasePermission):
-    name = 'SPECIFICATION'
+    name = 'GOODS'
     view_set = ('POST', 'PUT', 'DELETE')

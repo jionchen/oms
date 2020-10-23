@@ -55,19 +55,9 @@
             key: 'name',
           },
           {
-            title: '货号',
-            dataIndex: 'code',
-            key: 'code',
-          },
-          {
-            title: '规格A',
-            dataIndex: 'spec1',
-            key: 'spec1',
-          },
-          {
-            title: '规格B',
-            dataIndex: 'spec2',
-            key: 'spec2',
+            title: '编号',
+            dataIndex: 'number',
+            key: 'number',
           },
           {
             title: '数量',

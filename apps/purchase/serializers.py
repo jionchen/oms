@@ -63,7 +63,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
         return data
 
     def get_goods_set(self, obj):
-        return obj.goods_set.all().values('id', 'code', 'name', 'specification', 'unit', 'purchase_price', 'quantity',
+        return obj.goods_set.all().values('id', 'number', 'name', 'unit', 'purchase_price', 'quantity',
                                           'discount', 'discount_price', 'amount', 'discount_amount')
 
 
@@ -82,6 +82,6 @@ class PurchasePaymentRecordSerializer(serializers.ModelSerializer):
 class ChangeRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChangeRecord
-        fields = ['create_datetime', 'goods_code', 'goods_name', 'specification', 'unit', 'change_method',
-                  'before_change', 'after_change', 'operator', 'relation_order']
-        read_only_fields = fields
+        read_only_fields = ['create_datetime', 'goods_number', 'goods_name', 'unit',
+                            'before_change', 'after_change', 'operator', 'operator_name']
+        fields = [*read_only_fields]

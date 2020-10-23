@@ -29,16 +29,16 @@ class InventoryFilter(filters.FilterSet):
         return queryset.filter(quantity__lte=F('goods__inventory_warning_lower_limit')) if value else queryset
 
     def search_filter(self, queryset, name, value):
-        return queryset.filter(Q(goods__name__startswith=value) | Q(goods__code__startswith=value))
+        return queryset.filter(Q(goods__name__startswith=value) | Q(goods__number__startswith=value))
 
     def ordering_filter(self, queryset, name, value):
-        ordering_fields = {'goods_code': 'goods__code', '-goods_code': '-goods__code', 'goods_name': 'goods__name',
+        ordering_fields = {'goods_number': 'goods__number', '-goods_number': '-goods__number', 'goods_name': 'goods__name',
                            '-goods_name': '-goods__name', 'category': 'goods__category', '-category': '-goods__category',
                            'warehouse': 'warehouse', '-warehouse': '-warehouse', 'quantity': 'quantity',
                            '-quantity': '-quantity', 'purchase_price': 'goods__purchase_price',
                            '-purchase_price': '-goods__purchase_price'}
 
-        return queryset.order_by(ordering_fields.get(value, 'goods__code'))
+        return queryset.order_by(ordering_fields.get(value, 'goods__number'))
 
 
 class FlowFilter(filters.FilterSet):

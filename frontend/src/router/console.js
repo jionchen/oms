@@ -83,12 +83,6 @@ export default {
       component: () => import('@/views/salesOrder/SalesOrder'),
     },
     {
-      path: 'sales_record',
-      name: 'sales_record',
-      meta: { title: '销售单' },
-      component: () => import('@/views/salesRecord/SalesRecord'),
-    },
-    {
       path: 'counting_list',
       name: 'counting_list',
       meta: { title: '库存盘点' },

@@ -18,7 +18,7 @@
     </a-modal>
 
     <a-modal v-model="formModalVisible" :maskClosable="false" okText="确定" cancelText="取消"
-      :title="selectedGoods.id ? `${selectedGoods.name} - ${selectedGoods.code}` : ''" @ok="confirm">
+      :title="selectedGoods.id ? `${selectedGoods.name} - ${selectedGoods.number}` : ''" @ok="confirm">
       <div style="text-align: center;">
         <span style="margin-right: 4px;">数量:</span>
         <a-input-number v-model="selectedGoods.quantity" :min="0" style="width: 40%;" />
@@ -47,9 +47,9 @@
             key: 'name',
           },
           {
-            title: '货号',
-            dataIndex: 'code',
-            key: 'code',
+            title: '编号',
+            dataIndex: 'number',
+            key: 'number',
           },
           {
             title: '选择',

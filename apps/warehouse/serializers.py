@@ -37,10 +37,9 @@ class InventorySerializer(serializers.ModelSerializer):
 
     def get_goods(self, obj):
         return {
-            'code': obj.goods.code,
+            'number': obj.goods.number,
             'name': obj.goods.name,
             'brand': obj.goods.brand,
-            'specification': obj.goods.specification,
             'unit': obj.goods.unit,
             'category_name': obj.goods.category.name if obj.goods.category else '',
             'purchase_price': obj.goods.purchase_price,
@@ -57,9 +56,9 @@ class InventorySerializer(serializers.ModelSerializer):
 class FlowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flow
-        fields = ['create_datetime', 'goods_code', 'goods_name', 'specification', 'unit',
+        fields = ['create_datetime', 'goods_number', 'goods_name', 'unit',
                   'warehouse_name', 'type', 'change_quantity', 'remain_quantity', 'operator',
-                  'requisition', 'counting_list', 'purchase_order', 'sales_order']
+                  'operator_name', 'requisition', 'counting_list', 'purchase_order', 'sales_order']
         read_only_fields = fields
 
 
@@ -87,7 +86,7 @@ class CountingListSerializer(serializers.ModelSerializer):
         return data
 
     def get_goods_set(self, obj):
-        return obj.goods_set.all().values('id', 'code', 'name', 'specification', 'unit', 'quantity',
+        return obj.goods_set.all().values('id', 'number', 'name', 'unit', 'quantity',
                                           'before_counting', 'purchase_price')
 
 
@@ -115,4 +114,4 @@ class RequisitionSerializer(serializers.ModelSerializer):
         return data
 
     def get_goods_set(self, obj):
-        return obj.goods_set.all().values('id', 'code', 'name', 'specification', 'unit', 'quantity')
+        return obj.goods_set.all().values('id', 'number', 'name', 'unit', 'quantity')

@@ -22,15 +22,15 @@ class Supplier(models.Model):
 class PurchaseOrder(models.Model):
     """采购单/采购退货单"""
     id = models.CharField(primary_key=True, max_length=20)
-    supplier = models.ForeignKey('purchase.Supplier', models.CASCADE, related_name='purchase_order_set')  # 供应商
-    supplier_name = models.CharField(max_length=48)
-    warehouse = models.ForeignKey('warehouse.Warehouse', models.CASCADE, related_name='purchase_order_set')
-    warehouse_name = models.CharField(max_length=48)
+    supplier = models.ForeignKey('purchase.Supplier', models.SET_NULL, related_name='purchase_order_set', null=True)  # 供应商
+    supplier_name = models.CharField(max_length=64)
+    warehouse = models.ForeignKey('warehouse.Warehouse', models.SET_NULL, related_name='purchase_order_set', null=True)
+    warehouse_name = models.CharField(max_length=64)
     warehouse_address = models.CharField(max_length=128, null=True, blank=True)
-    account = models.ForeignKey('account.Account', models.CASCADE, related_name='purchase_order_set')  # 结算账户
-    account_name = models.CharField(max_length=48)
-    contacts = models.ForeignKey('user.User', models.CASCADE, related_name='purchase_order_set')  # 联系人
-    contacts_name = models.CharField(max_length=48)
+    account = models.ForeignKey('account.Account', models.SET_NULL, related_name='purchase_order_set', null=True)  # 结算账户
+    account_name = models.CharField(max_length=64)
+    contacts = models.ForeignKey('user.User', models.SET_NULL, related_name='purchase_order_set', null=True)  # 联系人
+    contacts_name = models.CharField(max_length=64)
     contacts_phone = models.CharField(max_length=12)
     amount = models.FloatField(default=0)  # 实付金额
     total_amount = models.FloatField(default=0)  # 应收金额
@@ -45,9 +45,8 @@ class PurchaseOrder(models.Model):
 
 class PurchaseGoods(models.Model):
     """采购商品"""
-    code = models.CharField(max_length=36)
-    name = models.CharField(max_length=24)
-    specification = models.CharField(max_length=32, null=True, blank=True)  # 规格型号
+    number = models.CharField(max_length=32)
+    name = models.CharField(max_length=256)
     unit = models.CharField(max_length=16, null=True, blank=True)  # 单位
     purchase_price = models.FloatField(default=0)
     quantity = models.FloatField(default=0)
@@ -55,7 +54,7 @@ class PurchaseGoods(models.Model):
     discount_price = models.FloatField(default=0)  # 折扣价
     amount = models.FloatField(default=0)  # 金额
     discount_amount = models.FloatField(default=0)  # 折扣金额
-    goods = models.ForeignKey('goods.Goods', models.CASCADE, related_name='purchase_goods_set')
+    goods = models.ForeignKey('goods.Goods', models.SET_NULL, related_name='purchase_goods_set', null=True)
     purchase_order = models.ForeignKey('purchase.PurchaseOrder', models.CASCADE, related_name='goods_set')
 
 
@@ -63,23 +62,21 @@ class PaymentRecord(models.Model):
     """付款记录"""
     date = models.DateTimeField(auto_now_add=True)
     amount = models.FloatField(default=0)
-    purchase_order = models.ForeignKey('purchase.PurchaseOrder', models.CASCADE, related_name='payment_records')
-    account = models.ForeignKey('account.Account', models.CASCADE, related_name='purchase_payment_records')  # 结算账户
-    account_name = models.CharField(max_length=48)
-    remark = models.CharField(max_length=64, null=True, blank=True)
+    purchase_order = models.ForeignKey('purchase.PurchaseOrder', models.SET_NULL, related_name='payment_records', null=True)
+    account = models.ForeignKey('account.Account', models.SET_NULL, related_name='purchase_payment_records', null=True)  # 结算账户
+    account_name = models.CharField(max_length=64)
+    remark = models.CharField(max_length=256, null=True, blank=True)
 
 
 class ChangeRecord(models.Model):
     """进价变更记录"""
     create_datetime = models.DateTimeField(auto_now_add=True)
-    goods = models.ForeignKey('goods.Goods', models.CASCADE, related_name='change_records')
-    goods_code = models.CharField(max_length=36)
-    goods_name = models.CharField(max_length=128)
-    specification = models.CharField(max_length=32, null=True, blank=True)  # 规格型号
+    goods = models.ForeignKey('goods.Goods', models.SET_NULL, related_name='change_records', null=True)
+    goods_number = models.CharField(max_length=32)
+    goods_name = models.CharField(max_length=256)
     unit = models.CharField(max_length=16, null=True, blank=True)  # 单位
-    change_method = models.CharField(max_length=8)
     before_change = models.FloatField()
     after_change = models.FloatField()
-    operator = models.ForeignKey('user.User', models.CASCADE, related_name='change_records')
-    relation_order = models.ForeignKey('purchase.PurchaseOrder', models.CASCADE, related_name='change_records', null=True)
+    operator = models.ForeignKey('user.User', models.SET_NULL, related_name='change_records', null=True)
+    operator_name = models.CharField(max_length=64)
     teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='change_records')

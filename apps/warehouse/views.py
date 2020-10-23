@@ -78,15 +78,15 @@ class InventoryViewSet(viewsets.ModelViewSet):
             raise ValidationError
 
         queryset = queryset.filter_queryset(request.user.teams.inventory_set.all())
-        results = queryset.all().values('quantity', code=F('goods__code'), name=F('goods__name'), brand=F('goods__brand'),
-                                        category_name=F('goods__category__name'), specification=F('goods__specification'),
+        results = queryset.all().values('quantity', number=F('goods__number'), name=F('goods__name'), brand=F('goods__brand'),
+                                        category_name=F('goods__category__name'),
                                         unit=F('goods__unit'), purchase_price=F('goods__purchase_price'),
                                         warehouse_name=F('warehouse__name'))
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment;filename=inventory.csv'
 
-        writer = csv.DictWriter(response, ['code', 'name', 'brand', 'specification', 'unit', 'category_name',
+        writer = csv.DictWriter(response, ['number', 'name', 'brand', 'unit', 'category_name',
                                            'warehouse_name', 'quantity', 'purchase_price'])
         writer.writeheader()
         writer.writerows(results)
@@ -100,8 +100,8 @@ class FlowViewSet(viewsets.ModelViewSet):
     pagination_class = FlowPagination
     filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
     filterset_class = FlowFilter
-    search_fields = ['goods_code', 'goods_name']
-    ordering_fields = ['create_datetime', 'goods_code', 'goods_name', 'change_quantity', 'remain_quantity']
+    search_fields = ['goods_number', 'goods_name']
+    ordering_fields = ['create_datetime', 'goods_number', 'goods_name', 'change_quantity', 'remain_quantity']
     ordering = ['-create_datetime']
 
     def get_queryset(self):
@@ -129,14 +129,14 @@ class CountingListViewSet(viewsets.ModelViewSet):
 
         # 验证
         warehouse = self.request.data.get('warehouse')
-        warehouse = Warehouse.objects.filter(id=warehouse, teams=teams, is_delete=False).first()
+        warehouse = Warehouse.objects.filter(id=warehouse, teams=teams).first()
         if not warehouse:
             raise ValidationError
 
         # 创建表单商品, 同步仓库, 创建流水
         goods_set = self.request.data.get('goods_set', [])
         goods_id_set = map(lambda item: item['id'], goods_set)
-        goods_list = Goods.objects.filter(id__in=goods_id_set, is_delete=False, teams=teams)
+        goods_list = Goods.objects.filter(id__in=goods_id_set, teams=teams)
 
         if len(goods_set) != len(goods_list):
             raise ValidationError
@@ -158,16 +158,17 @@ class CountingListViewSet(viewsets.ModelViewSet):
                     profit_quantity = math.plus(profit_quantity, change_quantity)
                     profit_amount = math.plus(profit_amount, math.times(change_quantity, goods1.purchase_price))
 
-                    counting_goods_set.append(CountingListGoods(goods=goods1, code=goods1.code, name=goods1.name,
-                                                                unit=goods1.unit, specification=goods1.specification,
+                    counting_goods_set.append(CountingListGoods(goods=goods1, number=goods1.number, name=goods1.name,
+                                                                unit=goods1.unit,
                                                                 quantity=goods2['quantity'], before_counting=inventory.quantity,
                                                                 purchase_price=goods1.purchase_price, counting_list_id=order_id))
 
-                    flows.append(Flow(type='盘点单', teams=teams, goods=goods1, goods_code=goods1.code,
-                                      goods_name=goods1.name, specification=goods1.specification,
+                    flows.append(Flow(type='盘点单', teams=teams, goods=goods1, goods_number=goods1.number,
+                                      goods_name=goods1.name,
                                       unit=goods1.unit, warehouse=warehouse, warehouse_name=warehouse.name,
                                       change_quantity=change_quantity, remain_quantity=goods2['quantity'],
-                                      operator=self.request.user, counting_list_id=order_id))
+                                      operator=self.request.user,
+                                      operator_name=self.request.user.name, counting_list_id=order_id))
 
                     inventory.quantity = goods2['quantity']
                     inventory.save()
@@ -200,16 +201,16 @@ class RequisitionViewSet(viewsets.ModelViewSet):
 
         # 验证
         out_warehouse = self.request.data.get('out_warehouse')
-        out_warehouse = Warehouse.objects.filter(id=out_warehouse, teams=teams, is_delete=False).first()
+        out_warehouse = Warehouse.objects.filter(id=out_warehouse, teams=teams).first()
         into_warehouse = self.request.data.get('into_warehouse')
-        into_warehouse = Warehouse.objects.filter(id=into_warehouse, teams=teams, is_delete=False).first()
+        into_warehouse = Warehouse.objects.filter(id=into_warehouse, teams=teams).first()
         if not out_warehouse or not into_warehouse:
             raise ValidationError
 
         # 创建表单商品, 同步仓库, 创建流水
         goods_set = self.request.data.get('goods_set', [])
         goods_id_set = map(lambda item: item['id'], goods_set)
-        goods_list = Goods.objects.filter(id__in=goods_id_set, is_delete=False, teams=teams)
+        goods_list = Goods.objects.filter(id__in=goods_id_set, teams=teams)
 
         if len(goods_set) != len(goods_list):
             raise ValidationError
@@ -233,21 +234,23 @@ class RequisitionViewSet(viewsets.ModelViewSet):
                     into_inventory.save()
                     total_quantity = math.plus(total_quantity, goods2['quantity'])
 
-                    requisition_goods_set.append(RequisitionGoods(goods=goods1, code=goods1.code, name=goods1.name,
-                                                                  unit=goods1.unit, specification=goods1.specification,
+                    requisition_goods_set.append(RequisitionGoods(goods=goods1, number=goods1.number, name=goods1.name,
+                                                                  unit=goods1.unit,
                                                                   quantity=goods2['quantity'],
                                                                   requisition_id=order_id))
 
-                    flows.append(Flow(type='调拨单', teams=teams, goods=goods1, goods_code=goods1.code,
-                                      goods_name=goods1.name, specification=goods1.specification,
+                    flows.append(Flow(type='调拨单', teams=teams, goods=goods1, goods_number=goods1.number,
+                                      goods_name=goods1.name,
                                       unit=goods1.unit, warehouse=out_warehouse, warehouse_name=out_warehouse.name,
                                       change_quantity=-change_quantity, remain_quantity=out_inventory.quantity,
-                                      operator=self.request.user, requisition_id=order_id))
-                    flows.append(Flow(type='调拨单', teams=teams, goods=goods1, goods_code=goods1.code,
-                                      goods_name=goods1.name, specification=goods1.specification,
+                                      operator=self.request.user, operator_name=self.request.user.name,
+                                      requisition_id=order_id))
+                    flows.append(Flow(type='调拨单', teams=teams, goods=goods1, goods_number=goods1.number,
+                                      goods_name=goods1.name,
                                       unit=goods1.unit, warehouse=into_warehouse, warehouse_name=into_warehouse.name,
                                       change_quantity=change_quantity, remain_quantity=into_inventory.quantity,
-                                      operator=self.request.user, requisition_id=order_id))
+                                      operator=self.request.user, operator_name=self.request.user.name,
+                                      requisition_id=order_id))
                     break
 
         serializer.save(id=order_id, out_warehouse_name=out_warehouse.name, total_quantity=total_quantity,

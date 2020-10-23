@@ -54,7 +54,7 @@ const purchaseOrderList = {
             "products": [
                 {
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "quantity": 1.0,
@@ -79,7 +79,7 @@ const purchaseOrderList = {
             "products": [
                 {
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "quantity": 1.0,
@@ -104,7 +104,7 @@ const purchaseOrderList = {
             "products": [
                 {
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "quantity": 1.0,
@@ -129,7 +129,7 @@ const purchaseOrderList = {
             "products": [
                 {
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "quantity": 1.0,
@@ -154,7 +154,7 @@ const purchaseOrderList = {
             "products": [
                 {
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "quantity": 1.0,
@@ -179,7 +179,7 @@ const purchaseOrderList = {
             "products": [
                 {
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "quantity": 1.0,
@@ -204,7 +204,7 @@ const purchaseOrderList = {
             "products": [
                 {
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "quantity": 2.0,
@@ -229,7 +229,7 @@ const purchaseOrderList = {
             "products": [
                 {
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "quantity": 12.0,
@@ -254,7 +254,7 @@ const purchaseOrderList = {
             "products": [
                 {
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "quantity": 12.0,
@@ -291,7 +291,7 @@ const purchaseOrderList = {
             "products": [
                 {
                     "name": "goods2",
-                    "code": "1002",
+                    "number": "1002",
                     "spec1": "spec3",
                     "spec2": null,
                     "quantity": 21.0,
@@ -316,7 +316,7 @@ const purchaseOrderList = {
             "products": [
                 {
                     "name": "goods1",
-                    "code": "1001",
+                    "number": "1001",
                     "spec1": "spec1",
                     "spec2": "spec3",
                     "quantity": 2.0,
@@ -388,7 +388,7 @@ const purchaseOrderRetrieve = {
         {
             "product_id": "e9f1996e-c105-11ea-b73e-87e5a1fdee64",
             "name": "goods3",
-            "code": "1003",
+            "number": "1003",
             "spec1": "spec4",
             "spec2": "spec1",
             "quantity": 1.0,

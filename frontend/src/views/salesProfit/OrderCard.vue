@@ -74,26 +74,6 @@
             scopedSlots: { customRender: 'goods_name' },
           },
           {
-            title: '规格A',
-            dataIndex: 'spec1',
-            key: 'spec1',
-            scopedSlots: { customRender: 'spec1' },
-            customRender: (text, row) => {
-              return row.quantity ? text : {
-                children: <div style="color: #777; font-weight: bold;">{text}</div>,
-                attrs: { colSpan: 6 },
-              }
-            },
-          },
-          {
-            title: '规格B',
-            dataIndex: 'spec2',
-            key: 'spec2',
-            customRender: (text, row) => {
-              return row.quantity ? text : { children: text, attrs: { colSpan: 0 } }
-            },
-          },
-          {
             title: '数量',
             dataIndex: 'quantity',
             key: 'quantity',

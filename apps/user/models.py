@@ -19,7 +19,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     username = models.CharField(primary_key=True, max_length=24)
-    name = models.CharField(max_length=48)
+    name = models.CharField(max_length=64)
     phone = models.CharField(max_length=12)
     teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='users')
     wechat = models.CharField(max_length=48, blank=True, null=True)
@@ -27,7 +27,6 @@ class User(AbstractBaseUser):
     roles = models.ManyToManyField('account.Role', related_name='users')
     create_date = models.DateTimeField(auto_now_add=True)
     is_boss = models.BooleanField(default=True)
-    is_delete = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'username'
     objects = UserManager()
