@@ -46,7 +46,7 @@
           </a-col>
           <a-col :span="8">
             <a-form-model-item style="float: right;">
-              <a-button type="primary" icon="plus">添加条目</a-button>
+              <a-button type="primary" icon="plus" @click="visible = true">添加条目</a-button>
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -96,11 +96,13 @@
         <a-button style="float: right;" @click="resetForm">清空表单</a-button>
       </div>
     </a-card>
+
+    <add-goods-modal v-model="visible" @confirm="addGoods" />
   </div>
 </template>
 
 <script>
-  import {  } from '@/api/sales'
+  import { salesOrderCreate, salesOrderDestroy } from '@/api/sales'
   import { goodsColumns } from './columns.js'
   import NP from 'number-precision'
   import rules from './rules.js'
@@ -113,6 +115,8 @@
       WarehouseSelect: () => import('@/components/WarehouseSelect/WarehouseSelect'),
       AccountSelect: () => import('@/components/AccountSelect/AccountSelect'),
       ClientSelect: () => import('@/components/ClientSelect/ClientSelect'),
+
+      AddGoodsModal: () => import('@/components/AddGoodsModal/AddGoodsModal.vue'),
     },
     props: ['selectedItem'],
     data() {
@@ -123,6 +127,7 @@
         goodsColumns,
         loading: false,
         form: {},
+        visible: false,
       };
     },
     computed: {
@@ -149,8 +154,43 @@
       initialize() {
         this.resetForm();
       },
+      create() {
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            if (this.form.goods_set.length == 0) {
+              this.$message.error('请选择条目');
+              return
+            }
+            this.loading = true;
+            salesOrderCreate(this.form)
+              .then((resp) => {
+                this.$emit('createItem', resp.data);
+                this.$message.success('结账成功');
+                this.resetForm();
+              })
+              .catch(err => {
+                this.$message.error(err.response.data.message);
+              })
+              .finally(() => {
+                this.loading = false;
+              });
+          }
+        });
+      },
+      destroy() {
+        let form = { ...this.form };
+        salesOrderDestroy(form)
+          .then(() => {
+            this.$message.success('删除成功');
+            this.$emit('destroyItem', form.id);
+            this.resetForm();
+          })
+          .catch(err => {
+            this.$message.error(err.response.data.message);
+          });
+      },
       printInvoice() {
-        window.open(`/invoice/purchase?id=${this.purchaseForm.id}`);
+        window.open(`/invoice/sales?id=${this.form.id}`);
       },
       resetForm() {
         this.form = {
@@ -165,10 +205,14 @@
           goods_set: [],
         };
       },
+      addGoods(goodsItem) {
+        goodsItem.remark = '';
+        this.form.goods_set.push(goodsItem);
+      },
     },
     watch: {
       selectedItem() {
-        this.retrieve();
+        this.form = this.selectedItem;
       },
     },
     mounted() {

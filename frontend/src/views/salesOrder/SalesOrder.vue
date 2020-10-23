@@ -5,7 +5,7 @@
         <record-card :items="items" :selectedItem="selectedItem" @updateItems="updateItems" @selectItem="selectItem" />
       </a-col>
       <a-col :span="24" :lg="18" style="margin-bottom: 16px;">
-        <detail-card :selectedItem="selectedItem" />
+        <detail-card :selectedItem="selectedItem" @createItem="createItem" @destroyItem="destroyItem" />
       </a-col>
     </a-row>
   </div>
@@ -25,11 +25,17 @@
       };
     },
     methods: {
+      createItem(item) {
+        this.items.splice(0, 0, item);
+      },
       updateItems(items) {
         this.items = items;
       },
+      destroyItem(id) {
+        this.items.splice(this.items.findIndex(item => item.id == id), 1);
+      },
       selectItem(item) {
-        this.selectItem = item;
+        this.selectedItem = {...item};
       },
     },
   }

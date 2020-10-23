@@ -39,6 +39,7 @@ export const goodsColumns = [
   {
     title: '金额',
     dataIndex: 'amount',
+    scopedSlots: { customRender: 'amount' },
     key: 'amount',
   },
   {

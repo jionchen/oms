@@ -97,7 +97,7 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
 
 
         client = self.request.data.get('client')
-        client = Client.objects.filter(id=client, teams=teams).first()
+        client = Client.objects.filter(id=client, teams=teams).first() if client else None
         client_name = client.name if client else None
         
         serializer.save(teams=teams, id=order_id, seller_name=seller.name, warehouse_name=warehouse.name,
