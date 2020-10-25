@@ -50,13 +50,45 @@ class Flow(models.Model):
     sales_order = models.ForeignKey('sales.SalesOrder', models.CASCADE, related_name='flows', null=True)
 
 
+class StockInOrder(models.Model):
+    """入库单据"""
+
+
+class StockInGoods(models.Model):
+    """入库商品"""
+
+
+class StockOutOrder(models.Model):
+    """出库单据"""
+
+
+class StockOutGoods(models.Model):
+    """出库商品"""
+
+
+class StockCheckOrder(models.Model):
+    """盘点单据"""
+
+
+class StockCheckGoods(models.Model):
+    """盘点商品"""
+
+
+class StockTransferOrder(models.Model):
+    """调拨单据"""
+
+
+class StockTransferGoods(models.Model):
+    """调拨商品"""
+
+
 class CountingList(models.Model):
     """盘点单"""
     id = models.CharField(primary_key=True, max_length=20)
     warehouse = models.ForeignKey('warehouse.Warehouse', models.SET_NULL, related_name='counting_list_set', null=True)
     warehouse_name = models.CharField(max_length=48)
     total_quantity = models.FloatField(default=0)  # 盘点总数
-    profit_quantity = models.FloatField(default=0)  
+    profit_quantity = models.FloatField(default=0)
     profit_amount = models.FloatField(default=0)
     date = models.DateTimeField(auto_now_add=True)
     remark = models.CharField(max_length=64, null=True, blank=True)

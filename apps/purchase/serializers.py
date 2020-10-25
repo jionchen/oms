@@ -28,36 +28,14 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PurchaseOrder
-        read_only_fields = ['id', 'supplier_name', 'warehouse_name', 'warehouse_address', 'account_name',
+        read_only_fields = ['id', 'number', 'supplier_name', 'warehouse_name', 'warehouse_address', 'account_name',
                             'contacts_name', 'contacts_phone', 'is_commit', 'goods_set', 'total_amount']
         fields = ['supplier', 'warehouse', 'account', 'contacts', 'amount', 'date', 'remark',
-                  'purchase_order', *read_only_fields]
+                  *read_only_fields]
 
     def validate(self, data):
-        if not data.get('supplier') or not data.get('warehouse') or not data.get('account'):
-            raise serializers.ValidationError
-
-        if not data.get('contacts') or data.get('amount') is None or not data.get('date'):
-            raise serializers.ValidationError
-
-        # goods_set
-        goods_set = self.context['request'].data.get('goods_set', [])
-        if not goods_set:
-            raise serializers.ValidationError
-
-        for item in goods_set:
-            if item.get('id') is None or item.get('purchase_price') is None:
-                raise serializers.ValidationError
-
-            quantity = item.get('quantity')
-            discount = item.get('discount')
-            if not quantity or quantity <= 0 or not discount or discount <= 0:
-                raise serializers.ValidationError
-
-        # 退货单
-        if data.get('is_return', False) and not data.get('purchase_order'):
-            raise serializers.ValidationError
-
+        if len(self.context['request'].data.get('goods_set', [])) == 0:
+            raise serializers.ValidationError('表单商品不能为空')
         return data
 
     def get_goods_set(self, obj):

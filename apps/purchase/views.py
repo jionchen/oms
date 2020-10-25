@@ -74,7 +74,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
     ordering = ['-number']
 
     def get_queryset(self):
-        return self.request.user.teams.purchase_orders.all()
+        return self.request.user.teams.purchase_orders.prefetch_related('goods_set').all()
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -92,7 +92,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         contacts = User.objects.filter(teams=teams, username=contacts_username).first()
 
         if not supplier or not warehouse or not account or not contacts:
-            raise APIException('供应商, 仓库, 账户, 联系人不存在')
+            raise APIException({'error': '供应商, 仓库, 账户, 联系人不存在'})
 
         # 创建采购表单
         serializer.save(number=order_number, supplier_name=supplier.name, warehouse_name=warehouse.name,
@@ -104,17 +104,12 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         if instance.is_commit:
-            raise APIException('采购单据已确认提交不能删除')
+            raise APIException({'error': '采购单据已确认提交不能删除'})
         instance.delete()
 
     @action(detail=True)
     @transaction.atomic
     def commit(self, request, *args, **kwargs):
-        pass
-
-    @action(detail=True)
-    @transaction.atomic
-    def payment(self, request, *args, **kwargs):
         pass
 
     def create_number(self):
@@ -131,7 +126,11 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
 
         for item in itertools.product(goods_list, goods_set):
             if item[0].id == item[1]['id']:
-                purchase_price, quantity, discount = (item[0].purchase_price, item[1]['quantity'], item[1]['discount'])
+                purchase_price = item[1].get('purchase_price', item[0].purchase_price)
+                quantity, discount = (item[1].get('quantity'), item[1].get('discount'))
+                if purchase_price < 0 or quantity <= 0 or discount < 0:
+                    raise APIException({'error': '商品数据异常'})
+
                 discount_price = NP.times(purchase_price, discount)
                 yield PurchaseGoods(teams=teams, purchase_order=purchase_order, goods=item[0], number=item[0].number,
                                     name=item[0].name, unit=item[0].unit, purchase_price=purchase_price,

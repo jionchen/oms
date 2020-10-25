@@ -32,7 +32,7 @@
 </template>
 
 <script>
-  import { purchaseOrderConfirm } from '@/api/purchase'
+  import { purchaseOrderCommit } from '@/api/purchase'
   import NP from 'number-precision'
   import moment from 'moment'
 
@@ -129,7 +129,7 @@
       confirm() {
         let orderId = this.form.id;
         this.loading = true;
-        purchaseOrderConfirm({ id: orderId })
+        purchaseOrderCommit(orderId)
           .then(() => {
             this.$emit('confirm', orderId);
             this.$message.success('提交成功');

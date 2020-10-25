@@ -34,7 +34,7 @@ class PurchaseOrder(models.Model):
     # is_done = models.BooleanField(default=False)
     is_commit = models.BooleanField(default=False)
     # is_return = models.BooleanField(default=False)  # 退货单
-    purchase_order = models.ForeignKey('purchase.PurchaseOrder', models.CASCADE, related_name='return_order_set', null=True)
+    # purchase_order = models.ForeignKey('purchase.PurchaseOrder', models.CASCADE, related_name='return_order_set', null=True)
     teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='purchase_orders')
 
 
@@ -51,6 +51,7 @@ class PurchaseGoods(models.Model):
     discount_amount = models.FloatField(default=0)  # 折扣金额
     goods = models.ForeignKey('goods.Goods', models.SET_NULL, related_name='purchase_goods_set', null=True)
     purchase_order = models.ForeignKey('purchase.PurchaseOrder', models.CASCADE, related_name='goods_set')
+    teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='purchase_goods_set')
 
 
 class PaymentRecord(models.Model):

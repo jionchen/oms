@@ -5,7 +5,7 @@
         <a-card>
           <a-table :columns="purchaseColumns" :data-source="purchaseItems" :loading="tableLoading" :pagination="false"
             :customRow="customRow" :rowClassName="rowClassName" size="small">
-            <div slot="status" slot-scope="value, item">{{item.is_done ? '已完成' : '等待入库'}}</div>
+            <div slot="status" slot-scope="value, item">{{item.is_commit ? '已完成' : '等待入库'}}</div>
             <div slot="date" slot-scope="value">{{moment(value).format('YYYY-MM-DD')}}</div>
           </a-table>
           <div style="text-align: center; margin-top: 16px;">
@@ -15,7 +15,7 @@
         </a-card>
       </a-col>
       <a-col :span="24" :lg="18">
-        <a-card :title="purchaseForm.id ? `采购单 - ${purchaseForm.id}` : '采购单'">
+        <a-card :title="purchaseForm.number ? `采购单 - ${purchaseForm.number}` : '采购单'">
           <div>
             <a-form-model ref="purchaseForm" :model="purchaseForm" :rules="rules" :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }">
@@ -108,13 +108,16 @@
             </a-table>
           </div>
           <div>
-            <a-popconfirm v-if="purchaseForm.id && !purchaseForm.is_done" title="确定删除吗?" @confirm="destroy">
+            <a-popconfirm v-if="purchaseForm.id && !purchaseForm.is_commit" title="确定提交吗?" @confirm="commit">
+              <a-button type="primary" style="margin-right: 16px;">提交入库</a-button>
+            </a-popconfirm>
+            <a-popconfirm v-if="purchaseForm.id && !purchaseForm.is_commit" title="确定删除吗?" @confirm="destroy">
               <a-button type="danger" style="margin-right: 16px;">删除</a-button>
             </a-popconfirm>
-            <a-popconfirm v-if="!purchaseForm.id" title="确定采购吗?" @confirm="create">
-              <a-button type="primary" :loading="buttonLoading">采购</a-button>
+            <a-popconfirm v-if="!purchaseForm.id" title="确定创建采购单据吗?" @confirm="create">
+              <a-button type="primary" :loading="buttonLoading">创建单据</a-button>
             </a-popconfirm>
-            <a-button v-else @click="printInvoice">生成打印单据</a-button>
+            <a-button v-else @click="printInvoice">生成采购单据</a-button>
             <a-button style="float: right;" @click="resetForm">清空表单</a-button>
           </div>
         </a-card>
@@ -328,6 +331,9 @@
           .catch(err => {
             this.$message.error(err.response.data.message);
           });
+      },
+      commit() {
+
       },
       addGoods(goodsItem) {
         goodsItem.discount = 100;
