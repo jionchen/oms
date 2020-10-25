@@ -95,10 +95,10 @@ export function purchaseOrderDestroy(form) {
   })
 }
 
-// PurchasePriceChangeRecord
-export function changeRecordList() {
+// PurchasePriceRecord
+export function purchasePriceRecordList() {
   return axios({
-    url: '/api/change_records/',
+    url: '/api/purchase_price_records/',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'get',
   })

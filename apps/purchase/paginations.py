@@ -12,7 +12,7 @@ class PurchaseOrderPagination(PageNumberPagination):
     max_page_size = 15
 
 
-class ChangeRecordPagination(PageNumberPagination):
+class PurchasePriceRecordPagination(PageNumberPagination):
     page_size = 20
     page_query_param = 'page'
     max_page_size = 20

@@ -21,21 +21,17 @@ const accountList = {
       {
           "number": "1001",
           "name": "account1",
-          "account": "",
-          "holder": "",
           "type": "cash",
-          "remark": "",
+          "remark": "test",
           "is_active": true,
           "id": 1
       },
       {
           "number": "1002",
           "name": "account2",
-          "account": "",
-          "holder": "",
           "type": "cash",
-          "remark": "",
-          "is_active": false,
+          "remark": "test",
+          "is_active": true,
           "id": 2
       }
   ]

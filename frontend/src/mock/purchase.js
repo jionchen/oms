@@ -2,37 +2,19 @@ import Mock from 'mockjs'
 
 
 const supplierList = {
-    "count": 2,
+    "count": 1,
     "next": null,
     "previous": null,
     "results": [
         {
             "number": "1001",
-            "name": "test",
-            "manager": "",
-            "phone": "",
-            "address": "",
-            "email": "",
-            "bank_account": "",
-            "bank_name": "",
-            "url": "",
-            "default_discount": 100,
-            "remark": "",
-            "is_active": true
-        },
-        {
-            "number": "1002",
-            "name": "test",
-            "manager": "",
-            "phone": "",
-            "address": "",
-            "email": "",
-            "bank_account": "",
-            "bank_name": "",
-            "url": "",
-            "default_discount": 100,
-            "remark": "",
-            "is_active": false
+            "name": "supplier1",
+            "contacts": "test",
+            "phone": "111",
+            "email": "111",
+            "address": "test",
+            "remark": "test",
+            "id": 1
         }
     ]
 };
@@ -332,7 +314,7 @@ const purchaseOrderList = {
     ]
 };
 
-const changeRecordList = {
+const purchasePriceRecordList = {
     "count": 3,
     "next": null,
     "previous": null,
@@ -405,4 +387,4 @@ const purchaseOrderRetrieve = {
 Mock.mock(/\/api\/suppliers\//, 'get', supplierList);
 Mock.mock(/\/api\/purchase_order\/.+\//, 'get', purchaseOrderRetrieve);
 Mock.mock(/\/api\/purchase_order\//, 'get', purchaseOrderList);
-Mock.mock(/\/api\/change_records\//, 'get', changeRecordList);
+Mock.mock(/\/api\/change_records\//, 'get', purchasePriceRecordList);

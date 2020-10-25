@@ -18,12 +18,12 @@
 </template>
 
 <script>
-  import { changeRecordList } from '@/api/purchase'
+  import { purchasePriceRecordList } from '@/api/purchase'
   import NP from 'number-precision'
   import moment from 'moment'
 
   export default {
-    name: 'ChangeRecord',
+    name: 'PurchasePriceRecord',
     data() {
       return {
         NP,
@@ -45,11 +45,6 @@
             title: '名称',
             dataIndex: 'goods_name',
             key: 'goods_name',
-          },
-          {
-            title: '单位',
-            dataIndex: 'unit',
-            key: 'unit',
           },
           {
             title: '修改前',
@@ -81,7 +76,7 @@
       },
       list() {
         this.loading = true;
-        changeRecordList(this.searchForm)
+        purchasePriceRecordList(this.searchForm)
           .then(resp => {
             this.totalRows = resp.data.count;
             this.items = resp.data.results;

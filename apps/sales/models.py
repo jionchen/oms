@@ -62,10 +62,10 @@ class SalesTask(models.Model):
 class Client(models.Model):
     """客户"""
     number = models.CharField(max_length=32)
-    name = models.CharField(max_length=64, null=True, blank=True)  # 客户名称
-    contacts = models.CharField(max_length=64, null=True, blank=True)  # 联系人
+    name = models.CharField(max_length=64, null=True, blank=True)
+    contacts = models.CharField(max_length=64, null=True, blank=True)
     phone = models.CharField(max_length=12, null=True, blank=True)
-    address = models.CharField(max_length=256, null=True, blank=True)
     email = models.CharField(max_length=256, null=True, blank=True)
-    create_date = models.DateTimeField(auto_now_add=True)
+    address = models.CharField(max_length=256, null=True, blank=True)
+    remark = models.CharField(max_length=256, null=True, blank=True)
     teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='clients')

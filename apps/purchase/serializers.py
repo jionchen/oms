@@ -1,13 +1,12 @@
-from .models import Supplier, PurchaseOrder, ChangeRecord, PaymentRecord
+from .models import Supplier, PurchaseOrder, PurchasePriceRecord, PaymentRecord
 from rest_framework import serializers
 
 
 class SupplierSerializer(serializers.ModelSerializer):
     class Meta:
         model = Supplier
-        read_only_fields = ['id', 'update_date']
-        fields = ['number', 'name', 'manager', 'phone', 'address', 'email', 'bank_account',
-                  'bank_name', 'url', 'default_discount', 'remark', 'is_active', *read_only_fields]
+        read_only_fields = ['id']
+        fields = ['number', 'name', 'contacts', 'phone', 'email', 'address', 'remark', *read_only_fields]
 
     def validate(self, data):
         # 编号验证
@@ -20,9 +19,8 @@ class SupplierSerializer(serializers.ModelSerializer):
 class SupplierUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Supplier
-        read_only_fields = ['id', 'number', 'update_date']
-        fields = ['name', 'manager', 'phone', 'address', 'email', 'bank_account',
-                  'bank_name', 'url', 'default_discount', 'remark', 'is_active', *read_only_fields]
+        read_only_fields = ['id', 'number']
+        fields = ['name', 'contacts', 'phone', 'email', 'address', 'remark', *read_only_fields]
 
 
 class PurchaseOrderSerializer(serializers.ModelSerializer):
@@ -31,9 +29,9 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrder
         read_only_fields = ['id', 'supplier_name', 'warehouse_name', 'warehouse_address', 'account_name',
-                            'contacts_name', 'contacts_phone', 'is_done', 'goods_set', 'total_amount']
+                            'contacts_name', 'contacts_phone', 'is_commit', 'goods_set', 'total_amount']
         fields = ['supplier', 'warehouse', 'account', 'contacts', 'amount', 'date', 'remark',
-                  'is_return', 'purchase_order', *read_only_fields]
+                  'purchase_order', *read_only_fields]
 
     def validate(self, data):
         if not data.get('supplier') or not data.get('warehouse') or not data.get('account'):
@@ -79,9 +77,9 @@ class PurchasePaymentRecordSerializer(serializers.ModelSerializer):
         return obj.purchase_order.supplier_name
 
 
-class ChangeRecordSerializer(serializers.ModelSerializer):
+class PurchasePriceRecordSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ChangeRecord
-        read_only_fields = ['create_datetime', 'goods_number', 'goods_name', 'unit',
-                            'before_change', 'after_change', 'operator', 'operator_name']
+        model = PurchasePriceRecord
+        read_only_fields = ['create_datetime', 'goods_number', 'goods_name', 'before_change',
+                            'after_change', 'operator', 'operator_name']
         fields = [*read_only_fields]

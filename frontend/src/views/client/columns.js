@@ -18,12 +18,16 @@ export default [
     dataIndex: 'phone',
   },
   {
+    title: '邮箱',
+    dataIndex: 'email',
+  },
+  {
     title: '地址',
     dataIndex: 'address',
   },
   {
-    title: '邮箱',
-    dataIndex: 'email',
+    title: '备注',
+    dataIndex: 'remark',
   },
   {
     title: '操作',

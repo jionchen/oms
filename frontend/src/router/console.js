@@ -101,10 +101,10 @@ export default {
       component: () => import('@/views/salesTask/SalesTask'),
     },
     {
-      path: 'change_record',
-      name: 'change_record',
+      path: 'purchase_price_record',
+      name: 'purchase_price_record',
       meta: { title: '进价变更记录' },
-      component: () => import('@/views/changeRecord/ChangeRecord'),
+      component: () => import('@/views/purchasePriceRecord/PurchasePriceRecord'),
     },
     {
       path: 'purchase_report',

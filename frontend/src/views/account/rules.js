@@ -7,7 +7,5 @@ export default {
     { required: true, message: '请输入名称', trigger: 'change' },
     { max: 64, message: '超出最大长度 (64)', trigger: 'change' },
   ],
-  account: [{ max: 64, message: '超出最大长度 (64)', trigger: 'change' }],
-  holder: [{ max: 64, message: '超出最大长度 (64)', trigger: 'change' }],
   remark: [{ max: 256, message: '超出最大长度 (256)', trigger: 'change' }],
 }

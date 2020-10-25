@@ -261,11 +261,11 @@ class ClientViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
     filter_fields = []
-    search_fields = ['number', 'name', 'phone', 'address', 'email', 'remark']
+    search_fields = ['number', 'name', 'phone', 'email', 'address', 'remark']
     ordering_fields = ['number', 'name']
     ordering = ['number']
     field_mapping = (('number', '编号'), ('name', '名称'), ('contacts', '联系人'), ('phone', '电话'),
-                     ('address', '地址'), ('email', '邮箱'))
+                     ('email', '邮箱'), ('address', '地址'), ('remark', '备注'))
 
     def get_serializer_class(self):
         return ClientUpdateSerializer if self.request.method == 'PUT' else self.serializer_class

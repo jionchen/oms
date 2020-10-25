@@ -157,7 +157,7 @@ class PurchaseStatisticsViewSet(viewsets.ModelViewSet):
     search_fields = ['id']
 
     def get_queryset(self):
-        return self.request.user.teams.purchase_order_set.all()
+        return self.request.user.teams.purchase_orders.all()
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

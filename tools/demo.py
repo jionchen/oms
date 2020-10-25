@@ -44,10 +44,10 @@ import pendulum
 # print([*[1,2,3]])
 
 # print(pendulum.now().add(days=-30))
-import xlrd
+# import xlrd
 
-wb = xlrd.open_workbook('./tools/warehouses')
-ws = wb.sheet_by_index(0)
+# wb = xlrd.open_workbook('./tools/warehouses')
+# ws = wb.sheet_by_index(0)
 
 # print(enumerate(ws.get_rows()))
 # for row in ws.get_rows():
@@ -55,9 +55,11 @@ ws = wb.sheet_by_index(0)
 #     for i in row:
 #         print(i.value)
 
-def text():
-    for i in range(10):
-        print(i)
-        yield i
+# def text():
+#     for i in range(10):
+#         print(i)
+#         yield i
 
-print(enumerate(text()))
+# print(enumerate(text()))
+
+assert False, {}

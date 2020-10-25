@@ -5,10 +5,7 @@
         <a-card>
           <a-row gutter="8" style="margin-bottom: 8px;">
             <a-col :span="24" :xl="12" style="margin-bottom: 8px;">
-              <a-select v-model="searchForm.warehouse" placeholder="仓库" style="width: 100%;" allowClear @change="search">
-                <a-select-option v-for="item in warehouseItems" :key="item.id" :value="item.id">{{item.name}}
-                </a-select-option>
-              </a-select>
+              <warehouse-select v-model="searchForm.warehouse"  placeholder="仓库" @change="search" />
             </a-col>
             <a-col :span="24" :xl="12" style="margin-bottom: 8px;">
               <a-select v-model="orderType" placeholder="单据类型" style="width: 100%;" @change="search">
@@ -46,7 +43,6 @@
 <script>
   import { purchaseOrderList } from '@/api/purchase'
   import { salesOrderList } from '@/api/sales'
-  import { warehouseList } from '@/api/warehouse'
   import NP from 'number-precision'
   import moment from 'moment'
 
@@ -55,6 +51,7 @@
     components: {
       PurchaseForm: () => import('@/components/PurchaseForm/PurchaseForm'),
       SalesForm: () => import('@/components/SalesForm/SalesForm'),
+      WarehouseSelect: () => import('@/components/WarehouseSelect/WarehouseSelect'),
     },
     data() {
       return {
@@ -91,14 +88,6 @@
     methods: {
       initialize() {
         this.list();
-
-        warehouseList()
-          .then(resp => {
-            this.warehouseItems = resp.data;
-          })
-          .catch(err => {
-            this.$message.error(err.response.data.message);
-          });
       },
       list() {
         this.orderType == 'sales' ? this.getSales() : this.getPurchaseReturn();

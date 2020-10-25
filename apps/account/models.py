@@ -12,13 +12,11 @@ class Role(models.Model):
 
 class Account(models.Model):
     """结算账户"""
-    TYPE = (('cash', '现金'), ('bank_accounts', '银行账户'), ('alipay', '支付宝'),
-            ('wechat_pay', '微信支付'), ('other', '其他'), )
+    TYPE = (('cash', '现金'), ('bank_account', '银行账户'), ('alipay', '支付宝'),
+            ('wechat_pay', '微信支付'), ('other', '其他'))
 
     number = models.CharField(max_length=32)
-    name = models.CharField(max_length=64)  # 账户名称
-    account = models.CharField(max_length=64, null=True, blank=True)  # 账号
-    holder = models.CharField(max_length=64, null=True, blank=True)  # 开户人
+    name = models.CharField(max_length=64)
     type = models.CharField(max_length=12, default='cash', choices=TYPE)
     remark = models.CharField(max_length=256, null=True, blank=True)
     is_active = models.BooleanField(default=True)

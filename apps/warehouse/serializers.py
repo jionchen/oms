@@ -6,7 +6,7 @@ from django.db.models import Sum, F
 class WarehouseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Warehouse
-        read_only_fields = ['id', 'create_date', 'update_date']
+        read_only_fields = ['id']
         fields = ['number', 'name', 'address', 'remark', 'is_active', *read_only_fields]
 
     def validate(self, data):
@@ -21,7 +21,7 @@ class WarehouseSerializer(serializers.ModelSerializer):
 class WarehouseUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Warehouse
-        read_only_fields = ['id', 'number', 'create_date', 'update_date']
+        read_only_fields = ['id', 'number']
         fields = ['name', 'address', 'remark', 'is_active', *read_only_fields]
 
 
@@ -49,7 +49,7 @@ class InventorySerializer(serializers.ModelSerializer):
         return obj.warehouse.name
 
     def get_total(self, obj):
-        return self.context['request'].user.teams.inventory_set.all().aggregate(
+        return self.context['request'].user.teams.inventories.all().aggregate(
             quantity=Sum('quantity'), amount=Sum(F('quantity') * F('goods__purchase_price')))
 
 

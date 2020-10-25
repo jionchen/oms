@@ -26,13 +26,18 @@
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
+              <a-form-model-item prop="email" label="邮箱">
+                <a-input v-model="form.email" />
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="24">
               <a-form-model-item prop="address" label="地址">
                 <a-input v-model="form.address" />
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
-              <a-form-model-item prop="email" label="邮箱">
-                <a-input v-model="form.email" />
+              <a-form-model-item prop="remark" label="备注">
+                <a-input v-model="form.remark" />
               </a-form-model-item>
             </a-col>
           </a-row>

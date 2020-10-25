@@ -10,14 +10,6 @@ export default [
     sorter: true,
   },
   {
-    title: '账号',
-    dataIndex: 'account',
-  },
-  {
-    title: '开户人',
-    dataIndex: 'holder',
-  },
-  {
     title: '类型',
     dataIndex: 'type',
     scopedSlots: { customRender: 'type' },

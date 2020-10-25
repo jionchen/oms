@@ -40,17 +40,16 @@ export default [
     ]
   },
   {
-    key: '6', name: '财务管理', icon: 'dollar', submenus: [
+    key: '6', name: '财务统计', icon: 'dollar', submenus: [
       { key: '/financial_statistics', name: '收支统计' },
       { key: '/sales_statistics', name: '销售收款统计' },
       { key: '/purchase_statistics', name: '采购付款统计' },
     ]
   },
-
   {
     key: '7', name: '系统管理', icon: 'team', submenus: [
       { key: '/role', name: '角色管理' },
       { key: '/subuser', name: '账号管理' },
     ]
   },
-]
+];

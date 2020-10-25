@@ -1,7 +1,6 @@
 from django.core.wsgi import get_wsgi_application
 from pathlib import Path
 import pymysql
-import sys
 import os
 
 host = '127.0.0.1'

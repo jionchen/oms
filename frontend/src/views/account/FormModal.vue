@@ -16,20 +16,10 @@
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
-              <a-form-model-item prop="account" label="账号">
-                <a-input v-model="form.account" />
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="24">
-              <a-form-model-item prop="holder" label="开户人">
-                <a-input v-model="form.holder" />
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="24">
               <a-form-model-item prop="type" label="类型">
                 <a-select>
                   <a-select-option value="cash">现金</a-select-option>
-                  <a-select-option value="bank_accounts">银行账户</a-select-option>
+                  <a-select-option value="bank_account">银行账户</a-select-option>
                   <a-select-option value="alipay">支付宝</a-select-option>
                   <a-select-option value="wechat_pay">微信支付</a-select-option>
                   <a-select-option value="other">其他</a-select-option>

@@ -1,3 +1,4 @@
+from apps.warehouse.models import Inventory, Warehouse
 from rest_framework.exceptions import ValidationError
 from apps.goods.models import Category, Goods
 from utils.permissions import IsAuthenticated, PurchasePricePermission
@@ -13,7 +14,7 @@ from rest_framework.decorators import action
 from django.db import transaction
 from rest_framework.status import HTTP_201_CREATED
 from rest_framework.response import Response
-from apps.purchase.models import ChangeRecord
+from apps.purchase.models import PurchasePriceRecord
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -61,9 +62,9 @@ class GoodsViewSet(viewsets.ModelViewSet):
     ordering_fields = ['number', 'name', 'purchase_price', 'retail_price']
     ordering = ['number']
     field_mapping = (('number', '编号'), ('name', '名称'), ('unit', '单位'), ('category_number', '分类编号'),
-                     ('purchase_price', '采购价'), ('retail_price', '零售价'), ('shelf_life', '保质期'),
-                     ('shelf_life_warnning_days', '保质期预警天数'), ('inventory_upper', '库存上限'),
-                     ('inventory_lower', '库存下线'), ('inventory_warning', '库存预警'), ('is_active', '状态'))
+                     ('purchase_price', '采购价'), ('retail_price', '零售价'), ('shelf_life_warnning', '保质期预警'),
+                     ('shelf_life', '保质期'), ('shelf_life_warnning_days', '保质期预警天数'), ('inventory_upper', '库存上限'),
+                     ('inventory_lower', '库存下限'), ('inventory_warning', '库存预警'), ('remark', '备注'), ('is_active', '状态'))
 
     def get_serializer_class(self):
         return GoodsUpdateSerializer if self.request.method == 'PUT' else self.serializer_class
@@ -71,8 +72,10 @@ class GoodsViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.request.user.teams.goods_set.select_related('category').all()
 
+    @transaction.atomic
     def perform_create(self, serializer):
         serializer.save(teams=self.request.user.teams)
+        Inventory.objects.bulk_create(self.create_inventory(serializer.instance))
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
@@ -80,8 +83,8 @@ class GoodsViewSet(viewsets.ModelViewSet):
         # 采购价变更记录
         purchase_price = request.data.get('purchase_price', 0)
         if purchase_price != instance.purchase_price:
-            ChangeRecord.objects.create(goods=instance, goods_number=instance.number,
-                                        goods_name=instance.name, unit=instance.unit,
+            PurchasePriceRecord.objects.create(goods=instance, goods_number=instance.number,
+                                        goods_name=instance.name,
                                         before_change=instance.purchase_price,
                                         after_change=purchase_price, operator=request.user,
                                         operator_name=request.user.name,
@@ -105,7 +108,12 @@ class GoodsViewSet(viewsets.ModelViewSet):
     @action(detail=False)
     @transaction.atomic
     def import_excel(self, request, *args, **kwargs):
-        Goods.objects.bulk_create(self.import_validate(import_excel(self, self.field_mapping)))
+        goods_set = Goods.objects.bulk_create(self.import_validate(import_excel(self, self.field_mapping)))
+        goods_numbers = [goods.number for goods in goods_set]
+
+        goods_set = Goods.objects.filter(number__in=goods_numbers, teams=request.user.teams)
+        for goods in goods_set:
+            Inventory.objects.bulk_create(self.create_inventory(goods))
         return Response(status=HTTP_201_CREATED)
 
     def import_validate(self, data):
@@ -119,3 +127,8 @@ class GoodsViewSet(viewsets.ModelViewSet):
             item['category'] = category
             item['teams'] = teams
             yield Goods(**item)
+
+    def create_inventory(self, goods):
+        teams = self.request.user.teams
+        for warehouse in Warehouse.objects.filter(teams=teams).iterator():
+            yield Inventory(warehouse=warehouse, goods=goods, teams=teams)

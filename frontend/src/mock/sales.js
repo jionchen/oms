@@ -739,29 +739,19 @@ const salesOrderRetrieve = {
 };
 
 const clientList = {
-    "count": 2,
+    "count": 1,
     "next": null,
     "previous": null,
     "results": [
         {
             "number": "1001",
             "name": "client1",
-            "contacts": "",
-            "phone": "",
-            "address": "",
-            "email": "",
-            "id": 1,
-            "create_date": "2020-10-20T09:27:54.713865Z"
-        },
-        {
-            "number": "1002",
-            "name": "client2",
-            "contacts": "",
-            "phone": "",
-            "address": "",
-            "email": "",
-            "id": 2,
-            "create_date": "2020-10-20T09:28:04.242755Z"
+            "contacts": "test",
+            "phone": "111",
+            "email": "test",
+            "address": "test",
+            "remark": "test",
+            "id": 1
         }
     ]
 };

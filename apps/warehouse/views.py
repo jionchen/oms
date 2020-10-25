@@ -43,8 +43,10 @@ class WarehouseViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.request.user.teams.warehouses.all()
 
+    @transaction.atomic
     def perform_create(self, serializer):
         serializer.save(teams=self.request.user.teams)
+        Inventory.objects.bulk_create(self.create_inventory(serializer.instance))
 
     @action(detail=False)
     def export_excel(self, request, *args, **kwargs):
@@ -55,9 +57,21 @@ class WarehouseViewSet(viewsets.ModelViewSet):
     @action(detail=False)
     @transaction.atomic
     def import_excel(self, request, *args, **kwargs):
-        Warehouse.objects.bulk_create([Warehouse(**item, teams=request.user.teams)
-                                       for item in import_excel(self, self.field_mapping)])
+        teams = request.user.teams
+        warehouses = Warehouse.objects.bulk_create([Warehouse(**item, teams=teams)
+                                                    for item in import_excel(self, self.field_mapping)])
+        # 同步库存
+        warehouse_numbers = [warehouse.number for warehouse in warehouses]
+        warehouses = Warehouse.objects.filter(number__in=warehouse_numbers, teams=teams)
+        for warehouse in warehouses:
+            Inventory.objects.bulk_create(self.create_inventory(warehouse))
+
         return Response(status=HTTP_201_CREATED)
+
+    def create_inventory(self, warehouse):
+        teams = self.request.user.teams
+        for goods in Goods.objects.filter(teams=teams).iterator():
+            yield Inventory(warehouse=warehouse, goods=goods, teams=teams)
 
 
 class InventoryViewSet(viewsets.ModelViewSet):
@@ -69,7 +83,7 @@ class InventoryViewSet(viewsets.ModelViewSet):
     pagination_class = InventoryPagination
 
     def get_queryset(self):
-        return self.request.user.teams.inventory_set.all()
+        return self.request.user.teams.inventories.all()
 
     @action(detail=False)
     def export(self, request, *args, **kwargs):
@@ -77,7 +91,7 @@ class InventoryViewSet(viewsets.ModelViewSet):
         if not queryset.is_valid():
             raise ValidationError
 
-        queryset = queryset.filter_queryset(request.user.teams.inventory_set.all())
+        queryset = queryset.filter_queryset(request.user.teams.inventories.all())
         results = queryset.all().values('quantity', number=F('goods__number'), name=F('goods__name'), brand=F('goods__brand'),
                                         category_name=F('goods__category__name'),
                                         unit=F('goods__unit'), purchase_price=F('goods__purchase_price'),

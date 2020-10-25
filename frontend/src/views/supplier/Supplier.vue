@@ -2,16 +2,10 @@
   <div>
     <a-card title="供应商管理">
       <a-row gutter="16">
-        <a-col :span="6">
-          <a-input-search v-model="searchForm.search" placeholder="编号, 名称, 电话, 地址, 邮箱" allowClear @search="search" />
+        <a-col :span="8">
+          <a-input-search v-model="searchForm.search" placeholder="编号, 名称, 电话, 邮箱, 地址" allowClear @search="search" />
         </a-col>
-        <a-col :span="6">
-          <a-select v-model="searchForm.is_active" placeholder="状态" style="width: 100%;" allowClear @change="search">
-            <a-select-option :value="true">激活</a-select-option>
-            <a-select-option :value="false">冻结</a-select-option>
-          </a-select>
-        </a-col>
-        <a-col :span="6">
+        <a-col :span="8">
           <a-space>
             <a-upload name="file" :showUploadList="false" :customRequest="importExcel">
               <a-button icon="upload">导入</a-button>
@@ -19,7 +13,7 @@
             <a-button icon="download" @click="exportExcel">导出</a-button>
           </a-space>
         </a-col>
-        <a-col :span="6">
+        <a-col :span="8">
           <div style="float: right;">
             <a-button type="primary" icon="plus" @click="openFormModal(form)">新增供应商</a-button>
           </div>
@@ -29,9 +23,6 @@
       <div style="margin-top: 16px;">
         <a-table :columns="columns" :data-source="items" size="small" :loading="loading" :pagination="pagination"
           @change="tableChange">
-          <div slot="is_active" slot-scope="value">
-            <a-tag :color="value ? 'green' : 'red'">{{value ? '激活' : '冻结'}}</a-tag>
-          </div>
           <div slot="action" slot-scope="value, item">
             <a-button-group>
               <a-button size="small" @click="openFormModal(item)">

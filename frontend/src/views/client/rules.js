@@ -9,6 +9,6 @@ export default {
   ],
   contacts: [{ max: 64, message: '超出最大长度 (64)', trigger: 'change' }],
   phone: [{ max: 12, message: '超出最大长度 (12)', trigger: 'change' }],
-  address: [{ max: 256, message: '超出最大长度 (256)', trigger: 'change' }],
   email: [{ max: 256, message: '超出最大长度 (256)', trigger: 'change' }],
+  address: [{ max: 256, message: '超出最大长度 (256)', trigger: 'change' }],
 }

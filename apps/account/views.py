@@ -77,17 +77,17 @@ class SubusertViewSet(viewsets.ModelViewSet):
 
 
 class AccountViewSet(viewsets.ModelViewSet):
-    """list, create, update, destroy"""
+    """结算账户: list, create, update, destroy"""
     serializer_class = AccountSerializer
     pagination_class = AccountPagination
     permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
     filter_fields = ['is_active']
-    search_fields = ['number', 'name', 'account', 'holder', 'remark']
+    search_fields = ['number', 'name', 'remark']
     ordering_fields = ['number', 'name']
     ordering = ['number']
-    field_mapping = (('number', '编号'), ('name', '名称'), ('account', '账号'), ('holder', '银行账户'),
-                     ('type', '类型'), ('remark', '备注'), ('is_active', '状态'))
+    field_mapping = (('number', '编号'), ('name', '名称'), ('type', '类型'),
+                     ('remark', '备注'), ('is_active', '状态'))
 
     def get_serializer_class(self):
         return AccountUpdateSerializer if self.request.method == 'PUT' else self.serializer_class
@@ -162,7 +162,7 @@ class StatisticalAccountViewSet(viewsets.ModelViewSet):
 
         bookkeeping_queryset = self.request.user.teams.bookkeeping_set.filter(
             account_id__in=accoutns)
-        purchase_queryset = self.request.user.teams.purchase_order_set.filter(
+        purchase_queryset = self.request.user.teams.purchase_orders.filter(
             account_id__in=accoutns, is_undo=False)
         sales_queryset = self.request.user.teams.sales_order_set.filter(
             account_id__in=accoutns, is_undo=False)

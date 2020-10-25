@@ -48,7 +48,7 @@ class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         read_only_fields = ['id']
-        fields = ['number', 'name', 'account', 'holder', 'type', 'remark', 'is_active',
+        fields = ['number', 'name', 'type', 'remark', 'is_active',
                   *read_only_fields]
 
     def validate(self, data):
@@ -63,7 +63,7 @@ class AccountUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         read_only_fields = ['id', 'number']
-        fields = ['name', 'account', 'holder', 'type', 'remark', 'is_active', *read_only_fields]
+        fields = ['name', 'type', 'remark', 'is_active', *read_only_fields]
 
 
 class BookkeepingSerializer(serializers.ModelSerializer):

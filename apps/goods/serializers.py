@@ -32,7 +32,7 @@ class GoodsSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'category_number', 'category_name']
         fields = ['number', 'name', 'unit', 'category', 'purchase_price', 'retail_price', 'shelf_life',
                   'shelf_life_warnning_days', 'inventory_upper', 'inventory_lower', 'inventory_warning',
-                  'is_active', *read_only_fields]
+                  'remark', 'is_active', *read_only_fields]
 
     def validate(self, data):
         teams = self.context['request'].user.teams
@@ -63,7 +63,7 @@ class GoodsUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'number', 'category_name']
         fields = ['name', 'unit', 'category', 'purchase_price', 'retail_price', 'shelf_life',
                   'shelf_life_warnning_days', 'inventory_upper', 'inventory_lower',
-                  'inventory_warning', 'is_active', *read_only_fields]
+                  'inventory_warning', 'remark', 'is_active', *read_only_fields]
 
     def validate(self, data):
         # 分类验证

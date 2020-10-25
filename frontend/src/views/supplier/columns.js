@@ -10,29 +10,24 @@ export default [
     sorter: true,
   },
   {
-    title: '负责人',
-    dataIndex: 'address',
+    title: '联系人',
+    dataIndex: 'contacts',
   },
   {
     title: '电话',
-    dataIndex: 'address',
+    dataIndex: 'phone',
+  },
+  {
+    title: '邮箱',
+    dataIndex: 'email',
   },
   {
     title: '地址',
     dataIndex: 'address',
   },
   {
-    title: '邮箱',
-    dataIndex: 'address',
-  },
-  {
     title: '备注',
     dataIndex: 'remark',
-  },
-  {
-    title: '状态',
-    dataIndex: 'is_active',
-    scopedSlots: { customRender: 'is_active' },
   },
   {
     title: '操作',

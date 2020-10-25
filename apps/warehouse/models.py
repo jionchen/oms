@@ -6,8 +6,6 @@ class Warehouse(models.Model):
     number = models.CharField(max_length=32)
     name = models.CharField(max_length=64)
     address = models.CharField(max_length=256, null=True, blank=True)
-    create_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now=True)
     remark = models.CharField(max_length=256, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='warehouses')
@@ -15,10 +13,19 @@ class Warehouse(models.Model):
 
 class Inventory(models.Model):
     """库存"""
-    goods = models.ForeignKey('goods.Goods', models.CASCADE, related_name='inventory_set')
-    warehouse = models.ForeignKey('warehouse.Warehouse', models.CASCADE, related_name='inventory_set')
+    goods = models.ForeignKey('goods.Goods', models.CASCADE, related_name='inventories')
+    warehouse = models.ForeignKey('warehouse.Warehouse', models.CASCADE, related_name='inventories')
+    batchs = models.ManyToManyField('warehouse.Batch', related_name='inventories', blank=True)
     quantity = models.FloatField(default=0)
-    teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='inventory_set')
+    teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='inventories')
+
+
+class Batch(models.Model):
+    """批次"""
+    create_date = models.DateTimeField(auto_now_add=True)
+    goods = models.ForeignKey('goods.Goods', models.CASCADE, related_name='batchs')
+    production_date = models.DateTimeField()
+    quantity = models.FloatField()
 
 
 class Flow(models.Model):

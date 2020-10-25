@@ -9,7 +9,7 @@ class PurchaseOrderFilter(filters.FilterSet):
 
     class Meta:
         model = PurchaseOrder
-        fields = ['start_date', 'end_date', 'warehouse', 'supplier', 'is_done', 'is_return']
+        fields = ['start_date', 'end_date', 'warehouse', 'supplier', 'is_commit']
 
     def end_date_filter(self, queryset, name, value):
         date = pendulum.parse(value).add(days=1)

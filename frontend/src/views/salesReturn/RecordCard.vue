@@ -23,7 +23,7 @@
         moment,
         recordColumns,
         loading: false,
-        searchForm: { page: 1, is_return: false },
+        searchForm: { page: 1, is_return: true },
         pagination: { current: 1, total: 0, pageSize: 15 },
       };
     },

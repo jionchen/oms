@@ -37,22 +37,8 @@
               </a-form-model-item>
             </a-col>
             <a-col :span="24" :md="12">
-              <a-form-model-item prop="shelf_life" label="保质期">
-                <a-input-number v-model="form.shelf_life" :precision="0" style="width: 100%;" />
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="24" :md="12">
-              <a-form-model-item prop="shelf_life_warnning_days" label="预警天数">
-                <a-input-number v-model="form.shelf_life_warnning_days" placeholder="保质期到期前天数" :precision="0"
-                  style="width: 100%;" />
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="24" :md="12">
-              <a-form-model-item prop="inventory_warning" label="库存预警">
-                <a-select v-model="form.inventory_warning">
-                  <a-select-option :value="true">开启</a-select-option>
-                  <a-select-option :value="false">关闭</a-select-option>
-                </a-select>
+              <a-form-model-item prop="remark" label="备注">
+                <a-input v-model="form.remark" />
               </a-form-model-item>
             </a-col>
             <a-col :span="24" :md="12">
@@ -64,13 +50,39 @@
               </a-form-model-item>
             </a-col>
             <a-col :span="24" :md="12">
-              <a-form-model-item prop="inventory_upper" label="库存上限">
-                <a-input-number v-model="form.inventory_upper" :precision="2" style="width: 100%;" />
+              <a-form-model-item prop="shelf_life_warnning" label="保质期预警">
+                <a-select v-model="form.shelf_life_warnning">
+                  <a-select-option :value="true">开启</a-select-option>
+                  <a-select-option :value="false">关闭</a-select-option>
+                </a-select>
               </a-form-model-item>
             </a-col>
             <a-col :span="24" :md="12">
+              <a-form-model-item prop="inventory_warning" label="库存预警">
+                <a-select v-model="form.inventory_warning">
+                  <a-select-option :value="true">开启</a-select-option>
+                  <a-select-option :value="false">关闭</a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </a-col>
+            <a-col v-if="form.shelf_life_warnning" :span="24" :md="12">
+              <a-form-model-item prop="shelf_life" label="保质期">
+                <a-input-number v-model="form.shelf_life" :precision="0" style="width: 100%;" />
+              </a-form-model-item>
+            </a-col>
+            <a-col v-if="form.shelf_life_warnning" :span="24" :md="12">
+              <a-form-model-item prop="shelf_life_warnning_days" label="预警天数">
+                <a-input-number v-model="form.shelf_life_warnning_days" :precision="0" style="width: 100%;" />
+              </a-form-model-item>
+            </a-col>
+            <a-col v-if="form.inventory_warning" :span="24" :md="12">
               <a-form-model-item prop="inventory_lower" label="库存下限">
-                <a-input-number v-model="form.inventory_lower" :precision="2" style="width: 100%;" />
+                <a-input-number v-model="form.inventory_lower" :step="100" style="width: 100%;" />
+              </a-form-model-item>
+            </a-col>
+            <a-col v-if="form.inventory_warning" :span="24" :md="12">
+              <a-form-model-item prop="inventory_upper" label="库存上限">
+                <a-input-number v-model="form.inventory_upper" :step="100" style="width: 100%;" />
               </a-form-model-item>
             </a-col>
           </a-row>
@@ -101,6 +113,16 @@
       confirm() {
         this.$refs.form.validate(valid => {
           if (valid) {
+            if (this.form.inventory_warning && this.inventory_upper < this.inventory_lower) {
+              this.$message.error('库存上限不能小于库存下限');
+              return
+            }
+
+            if (this.form.shelf_life_warnning && this.shelf_life < this.shelf_life_warnning_days) {
+              this.$message.error('预警天数不能大于保质期天数');
+              return
+            }
+
             this.loading = true;
             let func = this.form.id ? goodsUpdate : goodsCreate;
             func(this.form)
