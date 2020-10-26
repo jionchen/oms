@@ -25,6 +25,7 @@ from .paginations import SupplierPagination
 from utils.excel import export_excel, import_excel
 import itertools
 from number_precision import NP
+from apps.warehouse.models import StockInOrder, StockInGoods
 
 
 class SupplierViewSet(viewsets.ModelViewSet):
@@ -79,7 +80,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
     @transaction.atomic
     def perform_create(self, serializer):
         teams = self.request.user.teams
-        order_number = self.create_number()
+        order_number = self.create_purchase_number()
 
         # 验证外键
         supplier_id = self.request.data.get('supplier')
@@ -110,10 +111,50 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
     @action(detail=True)
     @transaction.atomic
     def commit(self, request, *args, **kwargs):
-        pass
+        order = self.get_purchase_order(kwargs.get('pk'))
+        # 创建入库单据
+        stock_in_order = StockInOrder.objects.create(number=self.create_stock_in_number(), warehouse=order.warehouse,
+                                                     warehouse_name=order.warehouse_name, teams=request.user.teams)
 
-    def create_number(self):
-        return f'P{pendulum.now().format("YYYYMMDDHHmmssSSSS")}'
+        stock_in_goods_set = []
+        for purchase_goods in order.goods_set.all():
+            if not purchase_goods.goods:
+                raise APIException(f'商品[{purchase_goods.goods_name}] 不存在')
+
+            # 统计商品数量, 应付金额
+            order.total_quantity = NP.plus(order.total_quantity, purchase_goods.quantity)
+            order.total_amount = NP.plus(order.total_amount, purchase_goods.discount_amount)
+
+            # 创建入库商品
+            stock_in_goods_set.append(StockInGoods(stock_in_order=stock_in_order, goods=purchase_goods.goods,
+                                                   goods_number=purchase_goods.number, goods_name=purchase_goods.name,
+                                                   goods_unit=purchase_goods.unit, quantity=purchase_goods.quantity,
+                                                   teams=request.user.teams))
+        StockInGoods.objects.bulk_create(stock_in_goods_set)
+
+        order.is_commit = True
+        order.save()
+        return Response(self.get_serializer(order).data)
+
+    def get_purchase_order(self, pk):
+        teams = self.request.user.teams
+        order = PurchaseOrder.objects.prefetch_related('goods_set').filter(teams=teams, pk=pk).first()
+        if not order:
+            raise APIException('单据不存在')
+
+        if order.is_commit:
+            raise APIException('采购单已提交入库')
+
+        if not order.warehouse:
+            raise APIException(f'仓库[{order.warehouse_name}] 不存在')
+
+        return order
+
+    def create_purchase_number(self):
+        return f'P{pendulum.now().format("YYYYMMDDHHmmssSSSSS")}'
+
+    def create_stock_in_number(self):
+        return f'SI{pendulum.now().format("YYYYMMDDHHmmssSSSS")}'
 
     def create_goods(self, purchase_order):
         teams = self.request.user.teams

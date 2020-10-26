@@ -9,7 +9,7 @@ urlpatterns = [
     # path('purchase_order/payment/', views.PurchaseOrderViewSet.as_view({'post': 'payment'})),
     path('purchase_orders/', views.PurchaseOrderViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('purchase_orders/<int:pk>/', views.PurchaseOrderViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'})),
-    path('purchase_orders/<int:pk>/confirm/', views.PurchaseOrderViewSet.as_view({'post': 'commit'})),
+    path('purchase_orders/<int:pk>/commit/', views.PurchaseOrderViewSet.as_view({'post': 'commit'})),
     path('purchase_price_records/', views.PurchasePriceRecordViewSet.as_view({'get': 'list'})),
     path('purchase_payment_records/', views.PurchasePaymentRecordViewSet.as_view({'get': 'list'})),
 ]

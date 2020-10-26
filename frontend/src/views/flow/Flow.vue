@@ -145,7 +145,7 @@
             this.warehouseItems = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
 
         categoryList()
@@ -153,7 +153,7 @@
             this.categoryItems = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
       list() {
@@ -168,7 +168,7 @@
             this.noMoreData = resp.data.results.length < this.perPage ? true : false;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.loading = false;

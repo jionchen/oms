@@ -216,7 +216,7 @@
             this.warehouseItems = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
 
         accountList()
@@ -224,7 +224,7 @@
             this.accountItems = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
 
         sellertList()
@@ -232,7 +232,7 @@
             this.sellerItems = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
       create() {
@@ -249,7 +249,7 @@
                 this.resetForm();
               })
               .catch(err => {
-                this.$message.error(err.response.data.message);
+                this.$message.error(this.errorToString(err));
               })
               .finally(() => {
                 this.loading = false;

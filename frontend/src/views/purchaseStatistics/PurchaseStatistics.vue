@@ -160,7 +160,7 @@
             this.supplierItems = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
       list() {
@@ -172,7 +172,7 @@
             this.items = resp.data.results;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.tableLoading = false;
@@ -183,7 +183,7 @@
             this.statistics = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.cardLoading = false;
@@ -202,7 +202,7 @@
             }
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.tableLoading = false;

@@ -167,7 +167,7 @@
             this.items = resp.data.results;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.tableLoading = false;
@@ -178,7 +178,7 @@
             this.statistics = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.cardLoading = false;
@@ -195,7 +195,7 @@
               this.clientItems = resp.data.results;
             })
             .catch(err => {
-              this.$message.error(err.response.data.message);
+              this.$message.error(this.errorToString(err));
             });
         }, 300);
       },
@@ -212,7 +212,7 @@
             }
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.tableLoading = false;

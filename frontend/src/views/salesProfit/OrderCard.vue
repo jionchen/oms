@@ -156,7 +156,7 @@
             this.changeCostVisible = false;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
       addExtraProfit() {
@@ -167,7 +167,7 @@
             this.addExtraProfitVisible = false;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
       deleteExtraProfit(item) {
@@ -177,7 +177,7 @@
             this.$emit('destroy', this.order.id, item);
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
       resetForm() {

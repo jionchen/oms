@@ -280,7 +280,7 @@ addGoodsModalVisible    <add-goods-modal v-model="addGoodsModalVisible" @confirm
             this.warehouseItems = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
 
         accountList()
@@ -288,7 +288,7 @@ addGoodsModalVisible    <add-goods-modal v-model="addGoodsModalVisible" @confirm
             this.accountItems = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
 
         sellertList()
@@ -296,7 +296,7 @@ addGoodsModalVisible    <add-goods-modal v-model="addGoodsModalVisible" @confirm
             this.sellerItems = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
       create() {
@@ -313,7 +313,7 @@ addGoodsModalVisible    <add-goods-modal v-model="addGoodsModalVisible" @confirm
                 this.resetForm();
               })
               .catch(err => {
-                this.$message.error(err.response.data.message);
+                this.$message.error(this.errorToString(err));
               })
               .finally(() => {
                 this.loading = false;

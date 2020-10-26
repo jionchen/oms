@@ -102,7 +102,7 @@
             this.items = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.loading = false;
@@ -113,7 +113,7 @@
             this.roleItems = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
       create(subuser) {
@@ -130,7 +130,7 @@
             this.items.splice(this.items.findIndex(item => item.username === form.username), 1);
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
     },

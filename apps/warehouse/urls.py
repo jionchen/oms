@@ -13,4 +13,7 @@ urlpatterns = [
     path('counting_list/<str:pk>/', views.CountingListViewSet.as_view({'get': 'retrieve'})),
     path('requisition/', views.RequisitionViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('requisition/<str:pk>/', views.RequisitionViewSet.as_view({'get': 'retrieve'})),
+
+    path('stock_in_orders/', views.StockInOrderViewSet.as_view({'get': 'list'})),
+    path('stock_in_goods/<int:pk>/stock_in/', views.StockInGoodsViewSet.as_view({'post': 'stock_in'})),
 ]

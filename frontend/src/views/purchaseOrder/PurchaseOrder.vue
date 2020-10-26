@@ -38,7 +38,8 @@
 
                 <a-col :sm="12" :xl="8" :xs="24">
                   <a-form-model-item prop="contacts" label="联系人">
-                    <user-select v-model="purchaseForm.contacts" :user="purchaseForm.contacts" :userName="purchaseForm.contacts_name" />
+                    <user-select v-model="purchaseForm.contacts" :user="purchaseForm.contacts"
+                      :userName="purchaseForm.contacts_name" />
                   </a-form-model-item>
                 </a-col>
                 <a-col :sm="12" :xl="8" :xs="24">
@@ -129,7 +130,7 @@
 </template>
 
 <script>
-  import { purchaseOrderList, purchaseOrderCreate, purchaseOrderDestroy } from '@/api/purchase'
+  import { purchaseOrderList, purchaseOrderCreate, purchaseOrderDestroy, purchaseOrderCommit } from '@/api/purchase'
   import NP from 'number-precision'
   import moment from 'moment'
 
@@ -289,7 +290,7 @@
             this.purchaseItems = resp.data.results;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.tableLoading = false;
@@ -312,7 +313,7 @@
                 this.purchaseForm = resp.data;
               })
               .catch(err => {
-                this.$message.error(err.response.data.message);
+                this.$message.error(this.errorToString(err));
               })
               .finally(() => {
                 this.buttonLoading = false;
@@ -329,11 +330,22 @@
             this.resetForm();
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
       commit() {
-
+        let form = { ...this.purchaseForm };
+        purchaseOrderCommit(form.id)
+          .then(resp => {
+            this.$message.success('提交入库成功');
+            this.purchaseItems.splice(this.purchaseItems.findIndex(item => item.id === form.id), 1, resp.data);
+            if (this.purchaseForm.id == form.id) {
+              this.purchaseForm = { ...resp.data };
+            }
+          })
+          .catch(err => {
+            this.$message.error(this.errorToString(err));
+          });
       },
       addGoods(goodsItem) {
         goodsItem.discount = 100;

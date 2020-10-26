@@ -26,6 +26,7 @@ class Batch(models.Model):
     goods = models.ForeignKey('goods.Goods', models.CASCADE, related_name='batchs')
     production_date = models.DateTimeField()
     quantity = models.FloatField()
+    teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='batchs')
 
 
 class Flow(models.Model):
@@ -52,18 +53,46 @@ class Flow(models.Model):
 
 class StockInOrder(models.Model):
     """入库单据"""
+    number = models.CharField(max_length=32)
+    create_date = models.DateTimeField(auto_now_add=True)
+    warehouse = models.ForeignKey('warehouse.Warehouse', models.SET_NULL, related_name='stock_in_orders', null=True)
+    warehouse_name = models.CharField(max_length=64)
+    is_complete = models.BooleanField(default=False)
+    teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='stock_in_orders')
 
 
 class StockInGoods(models.Model):
     """入库商品"""
+    stock_in_order = models.ForeignKey('warehouse.StockInOrder', models.CASCADE, related_name='goods_set')
+    goods = models.ForeignKey('goods.Goods', models.SET_NULL, related_name='stock_in_goods_set', null=True)
+    goods_number = models.CharField(max_length=32)
+    goods_name = models.CharField(max_length=256)
+    goods_unit = models.CharField(max_length=32, null=True, blank=True)
+    quantity = models.FloatField()
+    quantity_completed = models.FloatField(default=0)
+    teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='stock_in_goods_set')
 
 
 class StockOutOrder(models.Model):
     """出库单据"""
+    number = models.CharField(max_length=32)
+    create_date = models.DateTimeField(auto_now_add=True)
+    warehouse = models.ForeignKey('warehouse.Warehouse', models.SET_NULL, related_name='stock_out_orders', null=True)
+    warehouse_name = models.CharField(max_length=64)
+    is_complete = models.BooleanField(default=False)
+    teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='stock_out_orders')
 
 
 class StockOutGoods(models.Model):
     """出库商品"""
+    stock_out_order = models.ForeignKey('warehouse.StockInOrder', models.CASCADE, related_name='stock_out_goods_set')
+    goods = models.ForeignKey('goods.Goods', models.SET_NULL, related_name='stock_out_goods_set', null=True)
+    goods_number = models.CharField(max_length=32)
+    goods_name = models.CharField(max_length=256)
+    goods_unit = models.CharField(max_length=32, null=True, blank=True)
+    quantity = models.FloatField()
+    quantity_completed = models.FloatField(default=0)
+    teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='stock_out_goods_set')
 
 
 class StockCheckOrder(models.Model):

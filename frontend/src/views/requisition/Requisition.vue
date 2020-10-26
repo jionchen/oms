@@ -225,7 +225,7 @@
             this.warehouseItems = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
       list() {
@@ -241,7 +241,7 @@
             this.items = resp.data.results;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.tableLoading = false;
@@ -266,7 +266,7 @@
                 this.resetForm();
               })
               .catch(err => {
-                this.$message.error(err.response.data.message);
+                this.$message.error(this.errorToString(err));
               })
               .finally(() => {
                 this.buttonLoading = false;

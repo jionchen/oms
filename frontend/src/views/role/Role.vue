@@ -209,7 +209,7 @@
             this.items = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.tableLoading = false;
@@ -229,7 +229,7 @@
                 this.resetForm();
               })
               .catch(err => {
-                this.$message.error(err.response.data.message);
+                this.$message.error(this.errorToString(err));
               })
               .finally(() => {
                 this.buttonLoading = false;
@@ -250,7 +250,7 @@
                 this.items.splice(this.items.findIndex(item => item.id === resp.data.id), 1, resp.data);
               })
               .catch(err => {
-                this.$message.error(err.response.data.message);
+                this.$message.error(this.errorToString(err));
               })
               .finally(() => {
                 this.buttonLoading = false;
@@ -266,7 +266,7 @@
             this.items.splice(this.items.findIndex(item => item.id === form.id), 1);
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
       resetForm() {

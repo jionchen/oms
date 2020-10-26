@@ -20,296 +20,108 @@ const supplierList = {
 };
 
 const purchaseOrderList = {
-    "count": 12,
+    "count": 3,
     "next": null,
     "previous": null,
     "results": [
         {
-            "id": 1,
             "supplier": 1,
-            "supplier_name": "23212312",
             "warehouse": 1,
-            "account": 2,
+            "account": 1,
+            "contacts": "test",
             "amount": 0.0,
-            "date": "2020-07-05",
+            "date": "2020-10-25T16:00:00Z",
             "remark": "",
-            "products": [
-                {
-                    "name": "goods1",
-                    "number": "1001",
-                    "spec1": "spec1",
-                    "spec2": "spec3",
-                    "quantity": 1.0,
-                    "purchase_price": 0.0,
-                    "discount": 100.0,
-                    "discount_price": 0.0,
-                    "amount": 0.0,
-                    "discount_amount": 0.0
-                }
-            ],
-            "is_draft": false
-        },
-        {
-            "id": 2,
-            "supplier": 1,
-            "supplier_name": "23212312",
-            "warehouse": 1,
-            "account": 2,
-            "amount": 0.0,
-            "date": "2020-07-05",
-            "remark": "",
-            "products": [
-                {
-                    "name": "goods1",
-                    "number": "1001",
-                    "spec1": "spec1",
-                    "spec2": "spec3",
-                    "quantity": 1.0,
-                    "purchase_price": 0.0,
-                    "discount": 100.0,
-                    "discount_price": 0.0,
-                    "amount": 0.0,
-                    "discount_amount": 0.0
-                }
-            ],
-            "is_draft": false
-        },
-        {
-            "id": 3,
-            "supplier": 1,
-            "supplier_name": "23212312",
-            "warehouse": 1,
-            "account": 2,
-            "amount": 0.0,
-            "date": "2020-07-05",
-            "remark": "",
-            "products": [
-                {
-                    "name": "goods1",
-                    "number": "1001",
-                    "spec1": "spec1",
-                    "spec2": "spec3",
-                    "quantity": 1.0,
-                    "purchase_price": 0.0,
-                    "discount": 100.0,
-                    "discount_price": 0.0,
-                    "amount": 0.0,
-                    "discount_amount": 0.0
-                }
-            ],
-            "is_draft": false
-        },
-        {
             "id": 4,
-            "supplier": 1,
-            "supplier_name": "23212312",
-            "warehouse": 1,
-            "account": 2,
-            "amount": 0.0,
-            "date": "2020-07-05",
-            "remark": "",
-            "products": [
+            "number": "P2020102617092607961",
+            "supplier_name": "supplier1",
+            "warehouse_name": "warehouse1",
+            "warehouse_address": "test",
+            "account_name": "account1",
+            "contacts_name": "test",
+            "contacts_phone": "18571589816",
+            "is_commit": true,
+            "goods_set": [
                 {
-                    "name": "goods1",
+                    "id": 3,
                     "number": "1001",
-                    "spec1": "spec1",
-                    "spec2": "spec3",
-                    "quantity": 1.0,
-                    "purchase_price": 0.0,
+                    "name": "goods1",
+                    "unit": null,
+                    "purchase_price": 10.0,
+                    "quantity": 5.0,
                     "discount": 100.0,
-                    "discount_price": 0.0,
-                    "amount": 0.0,
-                    "discount_amount": 0.0
+                    "discount_price": 1000.0,
+                    "amount": 50.0,
+                    "discount_amount": 5000.0
                 }
             ],
-            "is_draft": false
+            "total_amount": 5000.0
         },
         {
-            "id": 5,
             "supplier": 1,
-            "supplier_name": "23212312",
             "warehouse": 1,
-            "account": 2,
+            "account": 1,
+            "contacts": "test",
             "amount": 0.0,
-            "date": "2020-07-05",
+            "date": "2020-10-25T16:00:00Z",
             "remark": "",
-            "products": [
+            "id": 3,
+            "number": "P2020102617070685852",
+            "supplier_name": "supplier1",
+            "warehouse_name": "warehouse1",
+            "warehouse_address": "test",
+            "account_name": "account1",
+            "contacts_name": "test",
+            "contacts_phone": "18571589816",
+            "is_commit": true,
+            "goods_set": [
                 {
-                    "name": "goods1",
-                    "number": "1001",
-                    "spec1": "spec1",
-                    "spec2": "spec3",
-                    "quantity": 1.0,
-                    "purchase_price": 0.0,
-                    "discount": 100.0,
-                    "discount_price": 0.0,
-                    "amount": 0.0,
-                    "discount_amount": 0.0
-                }
-            ],
-            "is_draft": false
-        },
-        {
-            "id": 6,
-            "supplier": 1,
-            "supplier_name": "23212312",
-            "warehouse": 1,
-            "account": 2,
-            "amount": 0.0,
-            "date": "2020-07-05",
-            "remark": "",
-            "products": [
-                {
-                    "name": "goods1",
-                    "number": "1001",
-                    "spec1": "spec1",
-                    "spec2": "spec3",
-                    "quantity": 1.0,
-                    "purchase_price": 0.0,
-                    "discount": 100.0,
-                    "discount_price": 0.0,
-                    "amount": 0.0,
-                    "discount_amount": 0.0
-                }
-            ],
-            "is_draft": false
-        },
-        {
-            "id": 7,
-            "supplier": 1,
-            "supplier_name": "23212312",
-            "warehouse": 1,
-            "account": 2,
-            "amount": 0.0,
-            "date": "2020-07-05",
-            "remark": "",
-            "products": [
-                {
-                    "name": "goods1",
-                    "number": "1001",
-                    "spec1": "spec1",
-                    "spec2": "spec3",
-                    "quantity": 2.0,
-                    "purchase_price": 0.0,
-                    "discount": 100.0,
-                    "discount_price": 0.0,
-                    "amount": 0.0,
-                    "discount_amount": 0.0
-                }
-            ],
-            "is_draft": false
-        },
-        {
-            "id": 8,
-            "supplier": 1,
-            "supplier_name": "23212312",
-            "warehouse": 1,
-            "account": 2,
-            "amount": 0.0,
-            "date": "2020-07-05",
-            "remark": "",
-            "products": [
-                {
-                    "name": "goods1",
-                    "number": "1001",
-                    "spec1": "spec1",
-                    "spec2": "spec3",
-                    "quantity": 12.0,
-                    "purchase_price": 0.0,
-                    "discount": 100.0,
-                    "discount_price": 0.0,
-                    "amount": 0.0,
-                    "discount_amount": 0.0
-                }
-            ],
-            "is_draft": false
-        },
-        {
-            "id": 9,
-            "supplier": 1,
-            "supplier_name": "23212312",
-            "warehouse": 1,
-            "account": 2,
-            "amount": 0.0,
-            "date": "2020-07-05",
-            "remark": "",
-            "products": [
-                {
-                    "name": "goods1",
-                    "number": "1001",
-                    "spec1": "spec1",
-                    "spec2": "spec3",
-                    "quantity": 12.0,
-                    "purchase_price": 0.0,
-                    "discount": 100.0,
-                    "discount_price": 0.0,
-                    "amount": 0.0,
-                    "discount_amount": 0.0
-                }
-            ],
-            "is_draft": false
-        },
-        {
-            "id": 10,
-            "supplier": 1,
-            "supplier_name": "23212312",
-            "warehouse": 1,
-            "account": 2,
-            "amount": 0.0,
-            "date": "2020-07-06",
-            "remark": "",
-            "products": [],
-            "is_draft": false
-        },
-        {
-            "id": 11,
-            "supplier": 1,
-            "supplier_name": "23212312",
-            "warehouse": 1,
-            "account": 2,
-            "amount": 0.0,
-            "date": "2020-07-06",
-            "remark": "",
-            "products": [
-                {
-                    "name": "goods2",
+                    "id": 2,
                     "number": "1002",
-                    "spec1": "spec3",
-                    "spec2": null,
-                    "quantity": 21.0,
-                    "purchase_price": 0.0,
+                    "name": "goods2",
+                    "unit": null,
+                    "purchase_price": 5.0,
+                    "quantity": 5.0,
                     "discount": 100.0,
-                    "discount_price": 0.0,
-                    "amount": 0.0,
-                    "discount_amount": 0.0
+                    "discount_price": 500.0,
+                    "amount": 25.0,
+                    "discount_amount": 2500.0
                 }
             ],
-            "is_draft": false
+            "total_amount": 2500.0
         },
         {
-            "id": 12,
             "supplier": 1,
-            "supplier_name": "23212312",
             "warehouse": 1,
-            "account": 2,
+            "account": 1,
+            "contacts": "test",
             "amount": 0.0,
-            "date": "2020-07-06",
+            "date": "2020-10-25T16:00:00Z",
             "remark": "",
-            "products": [
+            "id": 2,
+            "number": "P202010260033316732",
+            "supplier_name": "supplier1",
+            "warehouse_name": "warehouse1",
+            "warehouse_address": "test",
+            "account_name": "account1",
+            "contacts_name": "test",
+            "contacts_phone": "18571589816",
+            "is_commit": true,
+            "goods_set": [
                 {
-                    "name": "goods1",
+                    "id": 1,
                     "number": "1001",
-                    "spec1": "spec1",
-                    "spec2": "spec3",
-                    "quantity": 2.0,
-                    "purchase_price": 0.0,
+                    "name": "goods1",
+                    "unit": null,
+                    "purchase_price": 10.0,
+                    "quantity": 10.0,
                     "discount": 100.0,
-                    "discount_price": 0.0,
-                    "amount": 0.0,
-                    "discount_amount": 0.0
+                    "discount_price": 1000.0,
+                    "amount": 100.0,
+                    "discount_amount": 10000.0
                 }
             ],
-            "is_draft": true
+            "total_amount": 10000.0
         }
     ]
 };
@@ -385,6 +197,6 @@ const purchaseOrderRetrieve = {
 };
 
 Mock.mock(/\/api\/suppliers\//, 'get', supplierList);
-Mock.mock(/\/api\/purchase_order\/.+\//, 'get', purchaseOrderRetrieve);
-Mock.mock(/\/api\/purchase_order\//, 'get', purchaseOrderList);
+Mock.mock(/\/api\/purchase_orders\/.+\//, 'get', purchaseOrderRetrieve);
+Mock.mock(/\/api\/purchase_orders\//, 'get', purchaseOrderList);
 Mock.mock(/\/api\/change_records\//, 'get', purchasePriceRecordList);

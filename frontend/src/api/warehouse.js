@@ -132,3 +132,23 @@ export function requisitionRetrieve(params) {
     method: 'get',
   })
 }
+
+// StockInOrder
+export function stockInOrderList(params) {
+  return axios({
+    url: '/api/stock_in_orders/',
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    method: 'get',
+    params,
+  })
+}
+
+// StockInGoods
+export function stockInGoodsStockIn(form) {
+  return axios({
+    url: `/api/stock_in_goods/${form.id}/stock_in/`,
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    method: 'post',
+    data: form,
+  })
+}

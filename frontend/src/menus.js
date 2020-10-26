@@ -32,7 +32,7 @@ export default [
   },
   {
     key: '5', name: '库存管理', icon: 'database', submenus: [
-      { key: '/into_warehouse', name: '入库作业' },
+      { key: '/stock_in_order', name: '入库作业' },
       { key: '/out_warehouse', name: '出库作业' },
       { key: '/counting_list', name: '库存盘点' },
       { key: '/requisition', name: '库存调拨' },

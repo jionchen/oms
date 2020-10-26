@@ -149,7 +149,7 @@
             this.categoryItems = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
       list() {
@@ -160,7 +160,7 @@
             this.goodsItems = resp.data.results;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.loading = false;
@@ -186,7 +186,7 @@
             this.goodsItems.splice(this.goodsItems.findIndex(item => item.id === form.id), 1);
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
       search() {

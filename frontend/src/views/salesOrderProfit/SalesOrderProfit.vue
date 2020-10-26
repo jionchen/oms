@@ -91,7 +91,7 @@
             this.warehouseItems = resp.data;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           });
       },
       list() {
@@ -102,7 +102,7 @@
             this.totalRows = resp.data.count;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.loading = false;
@@ -115,7 +115,7 @@
             this.totalProfit = resp.data.total_profit;
           })
           .catch(err => {
-            this.$message.error(err.response.data.message);
+            this.$message.error(this.errorToString(err));
           })
           .finally(() => {
             this.computeLoading = false;

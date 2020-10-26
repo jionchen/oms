@@ -38,7 +38,7 @@
                 this.$message.success('新增成功');
               })
               .catch(err => {
-                this.$message.error(err.response.data.message);
+                this.$message.error(this.errorToString(err));
               });
           }
         });
@@ -52,7 +52,7 @@
                 this.$message.success('修改成功');
               })
               .catch(err => {
-                this.$message.error(err.response.data.message);
+                this.$message.error(this.errorToString(err));
               });
           }
         });

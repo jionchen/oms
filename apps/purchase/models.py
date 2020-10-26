@@ -14,16 +14,16 @@ class Supplier(models.Model):
 
 
 class PurchaseOrder(models.Model):
-    """采购单/采购退货单"""
+    """采购单"""
     number = models.CharField(max_length=32)
-    supplier = models.ForeignKey('purchase.Supplier', models.SET_NULL, related_name='purchase_orders', null=True)  # 供应商
+    supplier = models.ForeignKey('purchase.Supplier', models.SET_NULL, related_name='purchase_orders', null=True)
     supplier_name = models.CharField(max_length=64)
     warehouse = models.ForeignKey('warehouse.Warehouse', models.SET_NULL, related_name='purchase_orders', null=True)
     warehouse_name = models.CharField(max_length=64)
     warehouse_address = models.CharField(max_length=256, null=True, blank=True)
-    account = models.ForeignKey('account.Account', models.SET_NULL, related_name='purchase_orders', null=True)  # 结算账户
+    account = models.ForeignKey('account.Account', models.SET_NULL, related_name='purchase_orders', null=True)
     account_name = models.CharField(max_length=64)
-    contacts = models.ForeignKey('user.User', models.SET_NULL, related_name='purchase_orders', null=True)  # 联系人
+    contacts = models.ForeignKey('user.User', models.SET_NULL, related_name='purchase_orders', null=True)
     contacts_name = models.CharField(max_length=64)
     contacts_phone = models.CharField(max_length=12)
     amount = models.FloatField(default=0)  # 实付金额
@@ -52,6 +52,42 @@ class PurchaseGoods(models.Model):
     goods = models.ForeignKey('goods.Goods', models.SET_NULL, related_name='purchase_goods_set', null=True)
     purchase_order = models.ForeignKey('purchase.PurchaseOrder', models.CASCADE, related_name='goods_set')
     teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='purchase_goods_set')
+
+
+class PurchaseReturnOrder(models.Model):
+    """采购退货单"""
+    number = models.CharField(max_length=32)
+    supplier = models.ForeignKey('purchase.Supplier', models.SET_NULL, related_name='purchase_return_orders', null=True)
+    supplier_name = models.CharField(max_length=64)
+    warehouse = models.ForeignKey('warehouse.Warehouse', models.SET_NULL, related_name='purchase_return_orders', null=True)
+    warehouse_name = models.CharField(max_length=64)
+    warehouse_address = models.CharField(max_length=256, null=True, blank=True)
+    account = models.ForeignKey('account.Account', models.SET_NULL, related_name='purchase_return_orders', null=True)
+    account_name = models.CharField(max_length=64)
+    contacts = models.ForeignKey('user.User', models.SET_NULL, related_name='purchase_return_orders', null=True)
+    contacts_name = models.CharField(max_length=64)
+    contacts_phone = models.CharField(max_length=12)
+    amount = models.FloatField(default=0)  # 实付金额
+    total_amount = models.FloatField(default=0)  # 应退金额
+    total_quantity = models.FloatField(default=0)  # 总数量
+    date = models.DateTimeField()
+    remark = models.CharField(max_length=64, null=True, blank=True)
+    is_commit = models.BooleanField(default=False)
+    purchase_order = models.ForeignKey('purchase.PurchaseOrder', models.CASCADE, related_name='purchase_return_orders', null=True)
+    teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='purchase_return_orders')
+
+
+class PurchaseReturnGoods(models.Model):
+    """采购退货商品"""
+    number = models.CharField(max_length=32)
+    name = models.CharField(max_length=256)
+    unit = models.CharField(max_length=32, null=True, blank=True)  # 单位
+    price = models.FloatField(default=0)
+    quantity = models.FloatField(default=0)
+    amount = models.FloatField(default=0)  # 金额
+    goods = models.ForeignKey('goods.Goods', models.SET_NULL, related_name='purchase_return_goods_set', null=True)
+    purchase_return_order = models.ForeignKey('purchase.PurchaseReturnOrder', models.CASCADE, related_name='goods_set')
+    teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='purchase_return_goods_set')
 
 
 class PaymentRecord(models.Model):

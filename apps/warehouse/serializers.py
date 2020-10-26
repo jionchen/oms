@@ -1,6 +1,7 @@
 from .models import Warehouse, Inventory, Flow, CountingList, Requisition
 from rest_framework import serializers
 from django.db.models import Sum, F
+from apps.warehouse.models import StockInOrder, StockInGoods
 
 
 class WarehouseSerializer(serializers.ModelSerializer):
@@ -60,6 +61,34 @@ class FlowSerializer(serializers.ModelSerializer):
                   'warehouse_name', 'type', 'change_quantity', 'remain_quantity', 'operator',
                   'operator_name', 'requisition', 'counting_list', 'purchase_order', 'sales_order']
         read_only_fields = fields
+
+
+class StockInOrderSerializer(serializers.ModelSerializer):
+    goods_set = serializers.SerializerMethodField('get_goods_set')
+
+    class Meta:
+        model = StockInOrder
+        read_only_fields = ['id', 'number', 'create_date', 'warehouse', 'warehouse_name',
+                            'is_complete', 'goods_set']
+        fields = [*read_only_fields]
+
+    def get_goods_set(self, obj):
+        return obj.goods_set.select_related('goods').all() \
+            .values('id', 'goods', 'goods_number', 'goods_name', 'goods_unit', 'quantity',
+                    'quantity_completed', shelf_life_warnning=F('goods__shelf_life_warnning'))
+
+
+class StockInGoodsSerializer(serializers.ModelSerializer):
+    shelf_life_warnning = serializers.SerializerMethodField('get_shelf_life_warnning')
+
+    class Meta:
+        model = StockInGoods
+        read_only_fields = ['id', 'stock_in_order', 'goods', 'goods_number', 'goods_name',
+                            'goods_unit', 'quantity', 'quantity_completed', 'shelf_life_warnning']
+        fields = [*read_only_fields]
+
+    def get_shelf_life_warnning(self, obj):
+        return obj.goods.shelf_life_warnning if obj.goods else None
 
 
 class CountingListSerializer(serializers.ModelSerializer):

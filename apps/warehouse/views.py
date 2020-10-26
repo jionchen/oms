@@ -1,9 +1,10 @@
+from number_precision.number_precision import NP
 from .permissions import WarehousePermission, InventoryPermission, FlowPermission, CountingListPermission, RequisitionPermission
 from .serializers import WarehouseSerializer, FlowSerializer, CountingListSerializer, RequisitionSerializer, InventorySerializer
 from .paginations import FlowPagination, CountingListPagination, RequisitionPagination, InventoryPagination, WarehousePagination
 from utils.permissions import IsAuthenticated, PurchasePricePermission
 from rest_framework.exceptions import APIException, ValidationError
-from .models import CountingListGoods, RequisitionGoods, Warehouse
+from .models import CountingListGoods, RequisitionGoods, StockInGoods, Warehouse
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import F, Sum, Q, Count, Value
@@ -21,7 +22,10 @@ import pendulum
 import csv
 from .serializers import WarehouseUpdateSerializer
 from utils.excel import export_excel, import_excel
-from rest_framework.status import HTTP_201_CREATED
+from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
+from apps.warehouse.serializers import StockInOrderSerializer, StockInGoodsSerializer
+from apps.warehouse.paginations import StockInOrderPagination
+from apps.warehouse.models import Batch
 
 
 class WarehouseViewSet(viewsets.ModelViewSet):
@@ -272,3 +276,82 @@ class RequisitionViewSet(viewsets.ModelViewSet):
 
         RequisitionGoods.objects.bulk_create(requisition_goods_set)
         Flow.objects.bulk_create(flows)
+
+
+class StockInOrderViewSet(viewsets.ModelViewSet):
+    """入库单据: list"""
+    serializer_class = StockInOrderSerializer
+    pagination_class = StockInOrderPagination
+    permission_classes = [IsAuthenticated]
+    filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
+    filter_fields = ['warehouse', 'is_complete']
+    search_fields = ['number']
+    ordering_fields = ['number', 'create_date']
+    ordering = ['-number', 'create_date']
+
+    def get_queryset(self):
+        return self.request.user.teams.stock_in_orders.all()
+
+
+class StockInGoodsViewSet(viewsets.ModelViewSet):
+    """入库商品"""
+    serializer_class = StockInGoodsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return self.request.user.teams.stock_in_goods_set.select_related('stock_in_order', 'goods').all()
+
+    @action(detail=True)
+    @transaction.atomic
+    def stock_in(self, request, *args, **kwargs):
+        stock_in_goods = self.get_object()
+        quantity = request.data.get('quantity', 0)
+        if quantity <= 0:
+            raise APIException('入库数量不能小于0')
+
+        quantity_completed = NP.plus(stock_in_goods.quantity_completed, quantity)
+        if quantity_completed > stock_in_goods.quantity:
+            raise APIException('入库数量异常')
+
+        stock_in_goods.quantity_completed = quantity_completed
+        stock_in_goods.save()
+
+        if not StockInGoods.objects.filter(stock_in_order=stock_in_goods.stock_in_order,
+                                           quantity_completed__gte=F('quantity')).exists():
+            stock_in_goods.stock_in_order.is_complete = True
+            stock_in_goods.stock_in_order.save()
+
+        # 同步库存
+        inventory = self.get_inventory(stock_in_goods)
+        batch = self.create_batch(stock_in_goods, quantity)
+        if batch:
+            inventory.batchs.add(batch)
+
+        inventory.quantity = NP.plus(inventory.quantity, quantity)
+        inventory.save()
+        return Response(self.get_serializer(stock_in_goods).data)
+
+    def get_inventory(self, stock_in_goods):
+        warehouse = stock_in_goods.stock_in_order.warehouse
+        if not warehouse:
+            raise APIException('仓库不存在')
+
+        goods = stock_in_goods.goods
+        if not goods:
+            raise APIException('商品不存在')
+
+        inventory = Inventory.objects.filter(teams=self.request.user.teams, warehouse=warehouse,
+                                             goods=goods).first()
+        if not inventory:
+            raise APIException('库存不存在')
+
+        return inventory
+
+    def create_batch(self, stock_in_goods, quantity):
+        if stock_in_goods.goods.shelf_life_warnning:
+            production_date = self.request.data.get('production_date')
+            if production_date is None:
+                raise APIException('生产日期不能为空')
+            return Batch.objects.create(goods=stock_in_goods.goods, production_date=production_date,
+                                        quantity=quantity, teams=self.request.user.teams)
+        return None

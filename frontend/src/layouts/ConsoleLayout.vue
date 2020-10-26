@@ -63,7 +63,7 @@
               this.$message.error('请先登录');
               this.$router.push('/user/login');
             } else {
-              this.$message.error(err.response.data.message);
+              this.$message.error(this.errorToString(err));
             }
           });
       },

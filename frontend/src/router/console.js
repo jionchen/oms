@@ -125,15 +125,15 @@ export default {
       component: () => import('@/views/salesOrderProfit/SalesOrderProfit'),
     },
     {
-      path: 'into_warehouse',
-      name: 'into_warehouse',
-      meta: { title: '入库' },
-      component: () => import('@/views/intoWarehouse/IntoWarehouse'),
+      path: 'stock_in_order',
+      name: 'stock_in_order',
+      meta: { title: '入库作业' },
+      component: () => import('@/views/stockInOrder/StockInOrder'),
     },
     {
       path: 'out_warehouse',
       name: 'out_warehouse',
-      meta: { title: '出库' },
+      meta: { title: '出库作业' },
       component: () => import('@/views/outWarehouse/OutWarehouse'),
     },
     {

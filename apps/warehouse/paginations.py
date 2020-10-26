@@ -28,3 +28,9 @@ class RequisitionPagination(PageNumberPagination):
     page_size = 15
     page_query_param = 'page'
     max_page_size = 15
+
+
+
+class StockInOrderPagination(PageNumberPagination):
+    page_size = 15
+    max_page_size = 15

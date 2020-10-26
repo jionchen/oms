@@ -575,6 +575,8 @@ const requisitionRetrievev = {
     ]
 };
 
+
+
 Mock.mock(/\/api\/warehouses\//, 'get', warehouseList);
 Mock.mock(/\/api\/inventory\//, 'get', inventoryList);
 Mock.mock(/\/api\/flows\//, 'get', flowList);
@@ -582,3 +584,68 @@ Mock.mock(/^\/api\/counting_list\/$/, 'get', countingListList);
 Mock.mock(/\/api\/counting_list\//, 'get', countingListRetrieve);
 Mock.mock(/^\/api\/requisition\/$/, 'get', requisitionList);
 Mock.mock(/\/api\/requisition\//, 'get', requisitionRetrievev);
+
+Mock.mock(/\/api\/stock_in_orders\//, 'get', {
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 5,
+            "number": "SI202010261709281352",
+            "create_date": "2020-10-26T09:09:28.136152Z",
+            "warehouse": 1,
+            "warehouse_name": "warehouse1",
+            "is_complete": false,
+            "goods_set": [
+                {
+                    "id": 3,
+                    "goods": 1,
+                    "goods_number": "1001",
+                    "goods_name": "goods1",
+                    "goods_unit": null,
+                    "quantity": 5.0,
+                    "quantity_completed": 0.0
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "number": "SI202010261707107431",
+            "create_date": "2020-10-26T09:07:10.744327Z",
+            "warehouse": 1,
+            "warehouse_name": "warehouse1",
+            "is_complete": false,
+            "goods_set": [
+                {
+                    "id": 2,
+                    "goods": 2,
+                    "goods_number": "1002",
+                    "goods_name": "goods2",
+                    "goods_unit": null,
+                    "quantity": 5.0,
+                    "quantity_completed": 0.0
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "number": "SI202010261656419624",
+            "create_date": "2020-10-26T08:56:41.964864Z",
+            "warehouse": 1,
+            "warehouse_name": "warehouse1",
+            "is_complete": false,
+            "goods_set": [
+                {
+                    "id": 1,
+                    "goods": 1,
+                    "goods_number": "1001",
+                    "goods_name": "goods1",
+                    "goods_unit": null,
+                    "quantity": 10.0,
+                    "quantity_completed": 0.0
+                }
+            ]
+        }
+    ]
+});

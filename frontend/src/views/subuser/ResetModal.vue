@@ -48,7 +48,7 @@
                 this.cancel();
               })
               .catch(err => {
-                this.$message.error(err.response.data.message);
+                this.$message.error(this.errorToString(err));
               });
           }
         });
