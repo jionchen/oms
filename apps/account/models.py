@@ -4,8 +4,8 @@ from django.db import models
 
 class Role(models.Model):
     """角色"""
-    name = models.CharField(max_length=48)
-    remark = models.CharField(max_length=48, null=True, blank=True)
+    name = models.CharField(max_length=64)
+    remark = models.CharField(max_length=256, null=True, blank=True)
     permissions = JSONField()
     teams = models.ForeignKey('user.Teams', models.CASCADE, related_name='roles')
 

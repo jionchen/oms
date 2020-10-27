@@ -36,7 +36,7 @@ class Flow(models.Model):
     goods_name = models.CharField(max_length=256)
     unit = models.CharField(max_length=16, null=True, blank=True)  # 单位
     warehouse = models.ForeignKey('warehouse.Warehouse', models.SET_NULL, related_name='flows', null=True)
-    warehouse_name = models.CharField(max_length=4648)
+    warehouse_name = models.CharField(max_length=64)
     change_quantity = models.FloatField(default=0)
     remain_quantity = models.FloatField(default=0)
     type = models.CharField(max_length=12)
@@ -85,7 +85,7 @@ class StockOutOrder(models.Model):
 
 class StockOutGoods(models.Model):
     """出库商品"""
-    stock_out_order = models.ForeignKey('warehouse.StockInOrder', models.CASCADE, related_name='stock_out_goods_set')
+    stock_out_order = models.ForeignKey('warehouse.StockOutOrder', models.CASCADE, related_name='stock_out_goods_set')
     goods = models.ForeignKey('goods.Goods', models.SET_NULL, related_name='stock_out_goods_set', null=True)
     goods_number = models.CharField(max_length=32)
     goods_name = models.CharField(max_length=256)
@@ -115,7 +115,7 @@ class CountingList(models.Model):
     """盘点单"""
     id = models.CharField(primary_key=True, max_length=20)
     warehouse = models.ForeignKey('warehouse.Warehouse', models.SET_NULL, related_name='counting_list_set', null=True)
-    warehouse_name = models.CharField(max_length=48)
+    warehouse_name = models.CharField(max_length=64)
     total_quantity = models.FloatField(default=0)  # 盘点总数
     profit_quantity = models.FloatField(default=0)
     profit_amount = models.FloatField(default=0)

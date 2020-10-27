@@ -3,17 +3,17 @@ from .models import SalesOrder, SalesTask, PaymentRecord
 import pendulum
 
 
-class SalesOrderFilter(filters.FilterSet):
-    start_date = filters.CharFilter(field_name='date', lookup_expr='gte')
-    end_date = filters.CharFilter(method='end_date_filter', label='end_date')
+# class SalesOrderFilter(filters.FilterSet):
+#     start_date = filters.CharFilter(field_name='date', lookup_expr='gte')
+#     end_date = filters.CharFilter(method='end_date_filter', label='end_date')
 
-    class Meta:
-        model = SalesOrder
-        fields = ['start_date', 'end_date', 'warehouse', 'is_done', 'is_return', 'client']
+#     class Meta:
+#         model = SalesOrder
+#         fields = ['start_date', 'end_date', 'warehouse', 'is_done', 'is_return', 'client']
 
-    def end_date_filter(self, queryset, name, value):
-        date = pendulum.parse(value).add(days=1)
-        return queryset.filter(date__lte=date)
+#     def end_date_filter(self, queryset, name, value):
+#         date = pendulum.parse(value).add(days=1)
+#         return queryset.filter(date__lte=date)
 
 
 class SalesTaskFilter(filters.FilterSet):

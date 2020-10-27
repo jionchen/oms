@@ -5,7 +5,8 @@
         <record-card :items="items" :selectedItem="selectedItem" @updateItems="updateItems" @selectItem="selectItem" />
       </a-col>
       <a-col :span="24" :lg="18" style="margin-bottom: 16px;">
-        <detail-card :selectedItem="selectedItem" @createItem="createItem" @destroyItem="destroyItem" />
+        <detail-card :selectedItem="selectedItem" @createItem="createItem" @destroyItem="destroyItem"
+          @committedItem="committedItem" />
       </a-col>
     </a-row>
   </div>
@@ -35,7 +36,13 @@
         this.items.splice(this.items.findIndex(item => item.id == id), 1);
       },
       selectItem(item) {
-        this.selectedItem = {...item};
+        this.selectedItem = { ...item };
+      },
+      committedItem(item) {
+        this.items.splice(this.items.findIndex(order => order.id === item.id), 1, item);
+        if (this.selectedItem.id == item.id) {
+          this.selectedItem = { ...item };
+        }
       },
     },
   }

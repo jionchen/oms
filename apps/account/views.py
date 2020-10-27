@@ -164,7 +164,7 @@ class StatisticalAccountViewSet(viewsets.ModelViewSet):
             account_id__in=accoutns)
         purchase_queryset = self.request.user.teams.purchase_orders.filter(
             account_id__in=accoutns, is_undo=False)
-        sales_queryset = self.request.user.teams.sales_order_set.filter(
+        sales_queryset = self.request.user.teams.sales_orders.filter(
             account_id__in=accoutns, is_undo=False)
 
         if start_date:

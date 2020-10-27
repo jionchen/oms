@@ -4,7 +4,7 @@ import axios from 'axios'
 // SalesOrder
 export function salesOrderList(params) {
   return axios({
-    url: '/api/sales_order/',
+    url: '/api/sales_orders/',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'get',
     params,
@@ -13,7 +13,7 @@ export function salesOrderList(params) {
 
 export function salesOrderCreate(form) {
   return axios({
-    url: '/api/sales_order/',
+    url: '/api/sales_orders/',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'post',
     data: form,
@@ -22,26 +22,26 @@ export function salesOrderCreate(form) {
 
 export function salesOrderRetrieve(params) {
   return axios({
-    url: `/api/sales_order/${params.id}/`,
+    url: `/api/sales_orders/${params.id}/`,
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'get',
   })
 }
 
-export function salesOrderConfirm(form) {
+export function salesOrderDestroy(form) {
   return axios({
-    url: `/api/sales_order/confirm/`,
+    url: `/api/sales_orders/${form.id}/`,
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    method: 'post',
-    data: form,
+    method: 'delete',
   })
 }
 
-export function salesOrderDestroy(form) {
+export function salesOrderCommit(form) {
   return axios({
-    url: `/api/sales_order/${form.id}/`,
+    url: `/api/sales_orders/${form.id}/commit/`,
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    method: 'delete',
+    method: 'post',
+    data: form,
   })
 }
 

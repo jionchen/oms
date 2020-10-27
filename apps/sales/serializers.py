@@ -10,53 +10,24 @@ class SalesOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SalesOrder
-        read_only_fields = ['id', 'seller_name', 'warehouse_name', 'account_name', 'client_name',
-                            'is_done', 'goods_set', 'total_amount']
+        read_only_fields = ['id', 'number', 'seller_name', 'warehouse_name', 'account_name',
+                            'client_name', 'client_phone', 'client_address', 'is_commit',
+                            'goods_set', 'total_amount', 'total_quantity']
         fields = ['date', 'seller', 'warehouse', 'account', 'discount', 'amount',
-                  'client', 'remark', 'is_return', 'sales_order', *read_only_fields]
+                  'client', 'remark', *read_only_fields]
 
     def validate(self, data):
-        if not data.get('seller') or not data.get('warehouse') or not data.get('account'):
-            raise serializers.ValidationError
+        print(data)
+        if data.get('discount') is None or data['discount'] < 0:
+            raise serializers.ValidationError({'discount': '整单折扣不能小于0'})
 
-        if data.get('amount') is None or not data.get('date'):
-            raise serializers.ValidationError
-
-        if data.get('discount') is None or data['discount'] <= 0:
-            raise serializers.ValidationError
-
-        # client_phone = data.get('client_phone')
-        # if client_phone and not re.match(r'^1[3456789]\d{9}$', client_phone):
-        #     raise serializers.ValidationError
-
-        # 验证修改销售员权利
-        if self.context['request'].user.username != data['seller']:
-            user_roles = self.context['request'].user.roles.all()
-            permissions = sum(user_roles.values_list('permissions', flat=True), [])
-            if user_roles.count() != 0 and 'CHANGE_SELLER' not in permissions:
-                raise serializers.ValidationError
-
-        # goods_set
-        goods_set = self.context['request'].data.get('goods_set', [])
-        if not goods_set:
-            raise serializers.ValidationError
-
-        for item in goods_set:
-            if item.get('id') is None or item.get('retail_price') is None:
-                raise serializers.ValidationError
-
-            if not item.get('quantity') or item['quantity'] <= 0:
-                raise serializers.ValidationError
-
-        # 退货单
-        if data.get('is_return', False) and not data.get('sales_order'):
-            raise serializers.ValidationError
-
+        if len(self.context['request'].data.get('goods_set', [])) == 0:
+            raise serializers.ValidationError('表单商品不能为空')
         return data
 
     def get_goods_set(self, obj):
         return obj.goods_set.all().values('id', 'number', 'name', 'unit', 'quantity',
-                                          'retail_price', 'amount', 'remark')
+                                          'retail_price', 'amount')
 
 
 class SalesPaymentRecordSerializer(serializers.ModelSerializer):

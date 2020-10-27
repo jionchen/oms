@@ -3,7 +3,6 @@ from rest_framework.pagination import PageNumberPagination
 
 class SalesOrderPagination(PageNumberPagination):
     page_size = 15
-    page_query_param = 'page'
     max_page_size = 15
 
 

@@ -4,7 +4,7 @@ from utils.permissions import IsAuthenticated, PurchasePricePermission
 from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from .filters import SalesTaskFilter, SalesOrderProfitFilter, SalesPaymentRecordFilter, SalesOrderFilter
+from .filters import SalesTaskFilter, SalesOrderProfitFilter, SalesPaymentRecordFilter
 from .models import SalesGoods, SalesOrder, PaymentRecord
 from apps.warehouse.models import Inventory, Warehouse, Flow
 from rest_framework.status import HTTP_201_CREATED
@@ -24,157 +24,277 @@ from utils import math
 import pendulum
 from .serializers import ClientUpdateSerializer
 from utils.excel import export_excel, import_excel
+from number_precision import NP
+import itertools
+from apps.warehouse.models import StockOutOrder, StockOutGoods
 
 
 class SalesOrderViewSet(viewsets.ModelViewSet):
-    """list, create, destroy"""
+    """销售单据: list, create, destroy, commit"""
     serializer_class = SalesOrderSerializer
-    permission_classes = [IsAuthenticated, SalesOrderPermission]
     pagination_class = SalesOrderPagination
+    permission_classes = [IsAuthenticated, SalesOrderPermission]
     filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
-    filterset_class = SalesOrderFilter
-    search_fields = ['id', 'client_name', 'client_phone', 'remark']
-    ordering_fields = ['id', 'date', 'total_amount', 'amount']
-    ordering = ['-id']
+    filter_fields = ['warehouse', 'seller', 'account', 'client', 'is_commit']
+    search_fields = ['number', 'remark']
+    ordering_fields = ['number', 'date']
+    ordering = ['-number']
 
     def get_queryset(self):
-        return self.request.user.teams.sales_order_set.all()
+        return self.request.user.teams.sales_orders.all()
 
     @transaction.atomic
     def perform_create(self, serializer):
-        order_id = f'S{pendulum.now().format("YYYYMMDDHHmmssSSSS")}'
         teams = self.request.user.teams
+        order_number = self.create_sales_number()
 
-        # 验证
-        if self.request.data.get('is_return', False):  # 退货单
-            sales_order = self.request.data.get('sales_order')
-            sales_order = SalesOrder.objects.filter(
-                id=sales_order, is_done=True, is_return=False, teams=teams).first()
-            if not sales_order:
-                raise ValidationError
-            warehouse = sales_order.warehouse
-        else:
-            warehouse = self.request.data.get('warehouse')
-            warehouse = Warehouse.objects.filter(id=warehouse, teams=teams).first()
+        # 验证外键
+        seller_username = self.request.data.get('seller')
+        seller = User.objects.filter(teams=teams, username=seller_username).first()
+        warehouse_id = self.request.data.get('warehouse')
+        warehouse = Warehouse.objects.filter(teams=teams, id=warehouse_id).first()
+        account_id = self.request.data.get('account')
+        account = Account.objects.filter(teams=teams, id=account_id).first()
+        client_id = self.request.data.get('client')
+        client = Client.objects.filter(teams=teams, id=client_id).first() if client_id else None
 
-        seller = self.request.data.get('seller')
-        if seller == self.request.user.username:
-            seller = self.request.user
-        else:
-            seller = User.objects.filter(username=seller, teams=teams).first()
+        print(self.request.data)
+        if not all([seller, warehouse, account]):
+            raise APIException('销售员, 仓库, 账户, 客户不存在')
 
-        account = self.request.data.get('account')
-        account = Account.objects.filter(id=account, teams=teams).first()
+        # 创建销售表单
+        serializer.save(teams=teams, number=order_number, seller_name=seller.name,
+                        warehouse_name=warehouse.name, account_name=account.name,
+                        client_name=client.name if client else None,
+                        client_phone=client.phone if client else None,
+                        client_address=client.address if client else None)
 
-        if not warehouse or not account or not seller:
-            raise ValidationError
+        # 创建销售商品
+        SalesGoods.objects.bulk_create(self.create_goods(serializer.instance))
 
-        # 创建表单商品
+    def perform_destroy(self, instance):
+        if instance.is_commit:
+            raise APIException('销售单据已确认提交不能删除')
+        instance.delete()
+
+    @action(detail=True)
+    @transaction.atomic
+    def commit(self, request, *args, **kwargs):
+        order = self.get_sales_order(kwargs.get('pk'))
+        print(order)
+        # 创建出库单据
+        stock_out_order = StockOutOrder.objects.create(number=self.create_stock_out_number(), warehouse=order.warehouse,
+                                                       warehouse_name=order.warehouse_name, teams=request.user.teams)
+
+        stock_out_goods_set = []
+        for sales_goods in order.goods_set.all():
+            if not sales_goods.goods:
+                raise APIException(f'商品[{sales_goods.goods_name}] 不存在')
+
+            # 统计商品数量, 应收金额
+            order.total_quantity = NP.plus(order.total_quantity, sales_goods.quantity)
+            order.total_amount = NP.times(NP.plus(order.total_amount, sales_goods.amount), order.discount, 0.01)
+
+            # 创建出库商品
+            stock_out_goods_set.append(StockOutGoods(stock_out_order=stock_out_order, goods=sales_goods.goods,
+                                                     goods_number=sales_goods.number, goods_name=sales_goods.name,
+                                                     goods_unit=sales_goods.unit, quantity=sales_goods.quantity,
+                                                     teams=request.user.teams))
+        StockOutGoods.objects.bulk_create(stock_out_goods_set)
+
+        order.is_commit = True
+        order.save()
+        return Response(self.get_serializer(order).data)
+
+    def get_sales_order(self, pk):
+        teams = self.request.user.teams
+        order = SalesOrder.objects.prefetch_related('goods_set').filter(teams=teams, pk=pk).first()
+        if not order:
+            raise APIException('单据不存在')
+
+        if order.is_commit:
+            raise APIException('销售单已提交出库')
+
+        if not order.warehouse:
+            raise APIException(f'仓库[{order.warehouse_name}] 不存在')
+
+        return order
+
+    def create_sales_number(self):
+        return f'P{pendulum.now().format("YYYYMMDDHHmmssSSSSS")}'
+
+    def create_stock_out_number(self):
+        return f'SO{pendulum.now().format("YYYYMMDDHHmmssSSSS")}'
+
+    def create_goods(self, sales_order):
+        teams = self.request.user.teams
         goods_set = self.request.data.get('goods_set', [])
-        goods_id_set = map(lambda item: item['id'], goods_set)
-        goods_list = Goods.objects.filter(id__in=goods_id_set, teams=teams)
+        goods_ids = map(lambda item: item['id'], goods_set)
+        goods_list = Goods.objects.filter(id__in=goods_ids, teams=teams)
 
         if len(goods_set) != len(goods_list):
-            raise ValidationError
+            raise APIException('商品不存在')
 
-        discount = self.request.data.get('discount', 100)
-        total_quantity = 0
-        total_amount = 0
-        sales_goods_set = []
-        for goods1 in goods_list:
-            for goods2 in goods_set:
-                if goods1.id == goods2['id']:
-                    amount = math.times(goods2['quantity'], goods2['retail_price'], discount, 0.01)
-                    total_quantity = math.plus(total_quantity, goods2['quantity'])
-                    total_amount = math.plus(total_amount, amount)
+        for item in itertools.product(goods_list, goods_set):
+            if item[0].id == item[1]['id']:
+                quantity, retail_price = (item[1].get('quantity'), item[1].get('retail_price'))
+                if retail_price < 0 or quantity <= 0:
+                    raise APIException('商品数据异常')
 
-                    sales_goods_set.append(
-                        SalesGoods(goods=goods1, number=goods1.number, name=goods1.name, unit=goods1.unit,
-                                   quantity=goods2['quantity'],
-                                   purchase_price=goods1.purchase_price, retail_price=goods2['retail_price'],
-                                   amount=amount, remark=goods2.get('remark'), sales_order_id=order_id))
-                    break
+                yield SalesGoods(teams=teams, sales_order=sales_order, goods=item[0], number=item[0].number,
+                                 name=item[0].name, unit=item[0].unit, quantity=quantity,
+                                 purchase_price=item[0].purchase_price, retail_price=retail_price,
+                                 amount=NP.times(retail_price, quantity))
 
 
-        client = self.request.data.get('client')
-        client = Client.objects.filter(id=client, teams=teams).first() if client else None
-        client_name = client.name if client else None
-        
-        serializer.save(teams=teams, id=order_id, seller_name=seller.name, warehouse_name=warehouse.name,
-                        account_name=account.name, total_quantity=total_quantity, total_amount=total_amount,
-                        client=client, client_name=client_name)
-        SalesGoods.objects.bulk_create(sales_goods_set)
+# class SalesOrderViewSet(viewsets.ModelViewSet):
+#     """list, create, destroy"""
+#     serializer_class = SalesOrderSerializer
+#     permission_classes = [IsAuthenticated, SalesOrderPermission]
+#     pagination_class = SalesOrderPagination
+#     filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
+#     filterset_class = SalesOrderFilter
+#     search_fields = ['id', 'client_name', 'client_phone', 'remark']
+#     ordering_fields = ['id', 'date', 'total_amount', 'amount']
+#     ordering = ['-id']
 
-        # 创建付款记录
-        amount = self.request.data.get('amount', 0)
-        if amount != 0:
-            PaymentRecord.objects.create(amount=amount, account=account, account_name=account.name,
-                                         sales_order=serializer.instance)
+#     def get_queryset(self):
+#         return self.request.user.teams.sales_orders.all()
 
-    @action(detail=False)
-    @transaction.atomic
-    def confirm(self, request, *args, **kwargs):
-        teams = request.user.teams
-        order_id = request.data.get('id')
-        if not order_id:
-            raise ValidationError
+#     @transaction.atomic
+#     def perform_create(self, serializer):
+#         order_id = f'S{pendulum.now().format("YYYYMMDDHHmmssSSSS")}'
+#         teams = self.request.user.teams
 
-        sales_order = SalesOrder.objects.filter(teams=teams, is_done=False, id=order_id).first()
-        if not sales_order:
-            raise ValidationError
+#         # 验证
+#         if self.request.data.get('is_return', False):  # 退货单
+#             sales_order = self.request.data.get('sales_order')
+#             sales_order = SalesOrder.objects.filter(
+#                 id=sales_order, is_done=True, is_return=False, teams=teams).first()
+#             if not sales_order:
+#                 raise ValidationError
+#             warehouse = sales_order.warehouse
+#         else:
+#             warehouse = self.request.data.get('warehouse')
+#             warehouse = Warehouse.objects.filter(id=warehouse, teams=teams).first()
 
-        # 同步仓库, 创建流水
-        flows = []
-        for sales_goods in sales_order.goods_set.all().iterator():
-            inventory = Inventory.objects.filter(
-                teams=teams, goods=sales_goods.goods, warehouse=sales_order.warehouse).first()
-            if not inventory:
-                raise APIException({'message': '表单已失效 (仓库/门店 或 商品 已被删除)'})
-            change_quantity = sales_goods.quantity if sales_order.is_return else -sales_goods.quantity
-            inventory.quantity = math.plus(inventory.quantity, change_quantity)
-            inventory.save()
+#         seller = self.request.data.get('seller')
+#         if seller == self.request.user.username:
+#             seller = self.request.user
+#         else:
+#             seller = User.objects.filter(username=seller, teams=teams).first()
 
-            type = '销售退货单' if sales_order.is_return else '销售单'
-            flows.append(Flow(type=type, teams=teams, goods=sales_goods.goods, goods_number=sales_goods.number,
-                              goods_name=sales_goods.name,
-                              unit=sales_goods.unit, warehouse=sales_order.warehouse,
-                              warehouse_name=sales_order.warehouse_name, change_quantity=change_quantity,
-                              remain_quantity=inventory.quantity, operator=request.user,
-                              operator_name=request.user.name, sales_order=sales_order))
+#         account = self.request.data.get('account')
+#         account = Account.objects.filter(id=account, teams=teams).first()
 
-        Flow.objects.bulk_create(flows)
+#         if not warehouse or not account or not seller:
+#             raise ValidationError
 
-        sales_order.is_done = True
-        sales_order.save()
-        return Response(status=HTTP_201_CREATED)
+#         # 创建表单商品
+#         goods_set = self.request.data.get('goods_set', [])
+#         goods_id_set = map(lambda item: item['id'], goods_set)
+#         goods_list = Goods.objects.filter(id__in=goods_id_set, teams=teams)
 
-    @action(detail=False)
-    @transaction.atomic
-    def payment(self, request, *args, **kwargs):
-        teams = request.user.teams
-        order_id = request.data.get('id')
-        amount = request.data.get('amount')
-        account = request.data.get('account')
-        remark = request.data.get('remark')
+#         if len(goods_set) != len(goods_list):
+#             raise ValidationError
 
-        # 验证
-        if not order_id or not account or amount is None:
-            raise ValidationError
-        if amount <= 0:
-            raise ValidationError({'message': '金额错误'})
+#         discount = self.request.data.get('discount', 100)
+#         total_quantity = 0
+#         total_amount = 0
+#         sales_goods_set = []
+#         for goods1 in goods_list:
+#             for goods2 in goods_set:
+#                 if goods1.id == goods2['id']:
+#                     amount = math.times(goods2['quantity'], goods2['retail_price'], discount, 0.01)
+#                     total_quantity = math.plus(total_quantity, goods2['quantity'])
+#                     total_amount = math.plus(total_amount, amount)
 
-        order = SalesOrder.objects.filter(teams=teams, id=order_id).first()
-        account = Account.objects.filter(teams=teams, id=account).first()
-        if not order or not account:
-            raise ValidationError
-        if order.amount + amount > order.total_amount:
-            raise ValidationError({'message': '金额已超出'})
+#                     sales_goods_set.append(
+#                         SalesGoods(goods=goods1, number=goods1.number, name=goods1.name, unit=goods1.unit,
+#                                    quantity=goods2['quantity'],
+#                                    purchase_price=goods1.purchase_price, retail_price=goods2['retail_price'],
+#                                    amount=amount, remark=goods2.get('remark'), sales_order_id=order_id))
+#                     break
 
-        PaymentRecord.objects.create(amount=amount, account=account, account_name=account.name,
-                                     sales_order=order, remark=remark)
-        order.amount = math.plus(order.amount, amount)
-        order.save()
-        return Response({'id': order.id, 'amount': order.amount}, status=HTTP_201_CREATED)
+#         client = self.request.data.get('client')
+#         client = Client.objects.filter(id=client, teams=teams).first() if client else None
+#         client_name = client.name if client else None
+
+#         serializer.save(teams=teams, id=order_id, seller_name=seller.name, warehouse_name=warehouse.name,
+#                         account_name=account.name, total_quantity=total_quantity, total_amount=total_amount,
+#                         client=client, client_name=client_name)
+#         SalesGoods.objects.bulk_create(sales_goods_set)
+
+#         # 创建付款记录
+#         amount = self.request.data.get('amount', 0)
+#         if amount != 0:
+#             PaymentRecord.objects.create(amount=amount, account=account, account_name=account.name,
+#                                          sales_order=serializer.instance)
+
+#     @action(detail=False)
+#     @transaction.atomic
+#     def confirm(self, request, *args, **kwargs):
+#         teams = request.user.teams
+#         order_id = request.data.get('id')
+#         if not order_id:
+#             raise ValidationError
+
+#         sales_order = SalesOrder.objects.filter(teams=teams, is_done=False, id=order_id).first()
+#         if not sales_order:
+#             raise ValidationError
+
+#         # 同步仓库, 创建流水
+#         flows = []
+#         for sales_goods in sales_order.goods_set.all().iterator():
+#             inventory = Inventory.objects.filter(
+#                 teams=teams, goods=sales_goods.goods, warehouse=sales_order.warehouse).first()
+#             if not inventory:
+#                 raise APIException({'message': '表单已失效 (仓库/门店 或 商品 已被删除)'})
+#             change_quantity = sales_goods.quantity if sales_order.is_return else -sales_goods.quantity
+#             inventory.quantity = math.plus(inventory.quantity, change_quantity)
+#             inventory.save()
+
+#             type = '销售退货单' if sales_order.is_return else '销售单'
+#             flows.append(Flow(type=type, teams=teams, goods=sales_goods.goods, goods_number=sales_goods.number,
+#                               goods_name=sales_goods.name,
+#                               unit=sales_goods.unit, warehouse=sales_order.warehouse,
+#                               warehouse_name=sales_order.warehouse_name, change_quantity=change_quantity,
+#                               remain_quantity=inventory.quantity, operator=request.user,
+#                               operator_name=request.user.name, sales_order=sales_order))
+
+#         Flow.objects.bulk_create(flows)
+
+#         sales_order.is_done = True
+#         sales_order.save()
+#         return Response(status=HTTP_201_CREATED)
+
+#     @action(detail=False)
+#     @transaction.atomic
+#     def payment(self, request, *args, **kwargs):
+#         teams = request.user.teams
+#         order_id = request.data.get('id')
+#         amount = request.data.get('amount')
+#         account = request.data.get('account')
+#         remark = request.data.get('remark')
+
+#         # 验证
+#         if not order_id or not account or amount is None:
+#             raise ValidationError
+#         if amount <= 0:
+#             raise ValidationError({'message': '金额错误'})
+
+#         order = SalesOrder.objects.filter(teams=teams, id=order_id).first()
+#         account = Account.objects.filter(teams=teams, id=account).first()
+#         if not order or not account:
+#             raise ValidationError
+#         if order.amount + amount > order.total_amount:
+#             raise ValidationError({'message': '金额已超出'})
+
+#         PaymentRecord.objects.create(amount=amount, account=account, account_name=account.name,
+#                                      sales_order=order, remark=remark)
+#         order.amount = math.plus(order.amount, amount)
+#         order.save()
+#         return Response({'id': order.id, 'amount': order.amount}, status=HTTP_201_CREATED)
 
 
 class SalesPaymentRecordViewSet(viewsets.ModelViewSet):
@@ -222,7 +342,7 @@ class SalesOrderProfitViewSet(viewsets.ModelViewSet):
     ordering = ['-id']
 
     def get_queryset(self):
-        return self.request.user.teams.sales_order_set.filter(is_return=False)
+        return self.request.user.teams.sales_orders.filter(is_return=False)
 
     def update(self, request, *args, **kwargs):
         sales_goods_id = kwargs.get('pk')
@@ -259,8 +379,7 @@ class ClientViewSet(viewsets.ModelViewSet):
     serializer_class = ClientSerializer
     pagination_class = ClientPagination
     permission_classes = [IsAuthenticated]
-    filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
-    filter_fields = []
+    filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['number', 'name', 'phone', 'email', 'address', 'remark']
     ordering_fields = ['number', 'name']
     ordering = ['number']

@@ -22,24 +22,24 @@
               <a-row>
                 <a-col :sm="12" :xl="8" :xs="24">
                   <a-form-model-item prop="supplier" label="供应商">
-                    <supplier-select v-model="purchaseForm.supplier" :defaultItem="purchaseForm" />
+                    <supplier-select v-model="purchaseForm.supplier" :defaultItem="purchaseForm" :disabled="purchaseForm.id" />
                   </a-form-model-item>
                 </a-col>
                 <a-col :sm="12" :xl="8" :xs="24">
                   <a-form-model-item prop="warehouse" label="仓库">
-                    <warehouse-select v-model="purchaseForm.warehouse" :defaultItem="purchaseForm" />
+                    <warehouse-select v-model="purchaseForm.warehouse" :defaultItem="purchaseForm" :disabled="purchaseForm.id" />
                   </a-form-model-item>
                 </a-col>
                 <a-col :sm="12" :xl="8" :xs="24">
                   <a-form-model-item prop="account" label="结算账户">
-                    <account-select v-model="purchaseForm.account" :defaultItem="purchaseForm" />
+                    <account-select v-model="purchaseForm.account" :defaultItem="purchaseForm" :disabled="purchaseForm.id" />
                   </a-form-model-item>
                 </a-col>
 
                 <a-col :sm="12" :xl="8" :xs="24">
                   <a-form-model-item prop="contacts" label="联系人">
                     <user-select v-model="purchaseForm.contacts" :user="purchaseForm.contacts"
-                      :userName="purchaseForm.contacts_name" />
+                      :userName="purchaseForm.contacts_name" :disabled="purchaseForm.id" />
                   </a-form-model-item>
                 </a-col>
                 <a-col :sm="12" :xl="8" :xs="24">

@@ -3,7 +3,7 @@
     <a-card>
       <a-table :columns="recordColumns" :data-source="items" :loading="loading" :pagination="pagination"
         :customRow="customRow" :rowClassName="rowClassName" size="small">
-        <div slot="status" slot-scope="value, item">{{statusToString(item)}}</div>
+        <div slot="status" slot-scope="value, item">{{item.is_commit ? '已完成' : '等待出库'}}</div>
         <div slot="date" slot-scope="value">{{moment(value).format('YYYY-MM-DD')}}</div>
       </a-table>
     </a-card>
@@ -44,11 +44,6 @@
           .finally(() => {
             this.loading = false;
           });
-      },
-      statusToString(item) {
-        let orderType = item.is_return ? '退货单' : '销售单';
-        let orderStatus = item.is_done ? '已完成' : item.is_return ? '等待入库' : '等待出库';
-        return `${orderType} - ${orderStatus}`
       },
       customRow(item) {
         return {

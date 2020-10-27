@@ -71,7 +71,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
     filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
     filterset_class = PurchaseOrderFilter
     search_fields = ['number', 'remark']
-    ordering_fields = ['number', 'amount', 'date', 'total_amount', 'total_quantity']
+    ordering_fields = ['number', 'date']
     ordering = ['-number']
 
     def get_queryset(self):
@@ -93,7 +93,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         contacts = User.objects.filter(teams=teams, username=contacts_username).first()
 
         if not supplier or not warehouse or not account or not contacts:
-            raise APIException({'error': '供应商, 仓库, 账户, 联系人不存在'})
+            raise APIException('供应商, 仓库, 账户, 联系人不存在')
 
         # 创建采购表单
         serializer.save(number=order_number, supplier_name=supplier.name, warehouse_name=warehouse.name,
@@ -105,7 +105,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         if instance.is_commit:
-            raise APIException({'error': '采购单据已确认提交不能删除'})
+            raise APIException('采购单据已确认提交不能删除')
         instance.delete()
 
     @action(detail=True)
@@ -170,9 +170,9 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
                 purchase_price = item[1].get('purchase_price', item[0].purchase_price)
                 quantity, discount = (item[1].get('quantity'), item[1].get('discount'))
                 if purchase_price < 0 or quantity <= 0 or discount < 0:
-                    raise APIException({'error': '商品数据异常'})
+                    raise APIException('商品数据异常')
 
-                discount_price = NP.times(purchase_price, discount)
+                discount_price = NP.times(purchase_price, discount, 0.01)
                 yield PurchaseGoods(teams=teams, purchase_order=purchase_order, goods=item[0], number=item[0].number,
                                     name=item[0].name, unit=item[0].unit, purchase_price=purchase_price,
                                     quantity=quantity, amount=NP.times(purchase_price, quantity), discount=discount,

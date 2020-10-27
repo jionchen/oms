@@ -5,48 +5,48 @@
         <a-row>
           <a-col :span="8">
             <a-form-model-item prop="discount" label="整单折扣">
-              <a-input-number v-model="form.discount" :precision="0" :min="0" :max="100" :step="5"
-                :formatter="value => `${value}%`" :parser="value => value.replace('%', '')" style="width: 100%;" />
+              <a-input-number v-model="form.discount" :min="0" :step="10" :formatter="value => `${value}%`"
+                :parser="value => value.replace('%', '')" :disabled="form.id" style="width: 100%;" />
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
             <a-form-model-item prop="date" label="日期">
-              <a-date-picker v-model="form.date" :showToday="false" :allowClear="false" style="width: 100%;" />
+              <a-date-picker v-model="form.date" :showToday="false" :disabled="form.id" :allowClear="false" style="width: 100%;" />
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
             <a-form-model-item prop="seller" label="销售员">
-              <user-select v-model="form.seller" :user="form.seller" :userName="form.seller_name" />
+              <user-select v-model="form.seller" :user="form.seller" :userName="form.seller_name" :disabled="form.id" />
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
             <a-form-model-item prop="warehouse" label="仓库">
-              <warehouse-select v-model="form.warehouse" :defaultItem="form" />
+              <warehouse-select v-model="form.warehouse" :defaultItem="form" :disabled="form.id" />
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
             <a-form-model-item prop="account" label="结算账户">
-              <account-select v-model="form.account" :defaultItem="form" />
+              <account-select v-model="form.account" :defaultItem="form" :disabled="form.id" />
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
             <a-form-model-item prop="amount" label="实收金额">
-              <a-input-number v-model="form.amount" :precision="2" style="width: 100%;" />
+              <a-input-number v-model="form.amount" :precision="2" style="width: 100%;" :disabled="form.id" />
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
             <a-form-model-item prop="client" label="客户">
-              <client-select v-model="form.client" :defaultItem="form" />
+              <client-select v-model="form.client" :defaultItem="form" :disabled="form.id" />
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
             <a-form-model-item prop="remark" label="备注">
-              <a-input v-model="form.remark" allowClear />
+              <a-input v-model="form.remark" allowClear :disabled="form.id" />
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
             <a-form-model-item style="float: right;">
-              <a-button type="primary" icon="plus" @click="visible = true">添加条目</a-button>
+              <a-button type="primary" icon="plus" :disabled="form.id" @click="visible = true">添加条目</a-button>
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -55,16 +55,16 @@
         <div slot="amount" slot-scope="value, item">
           {{NP.round(item.isTotal ? value : NP.times(item.quantity, item.retail_price), 2)}}
         </div>
-        <div slot="action" slot-scope="value, item, index">
+        <div slot="action" v-if="!form.id" slot-scope="value, item, index">
           <a-button-group v-if="!item.isTotal">
             <a-popover title="修改条目" trigger="click">
               <div slot="content">
                 <a-form-model :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
+                  <a-form-model-item label="数量">
+                    <a-input-number v-model="item.quantity" style="width: 100%;" />
+                  </a-form-model-item>
                   <a-form-model-item label="单价">
                     <a-input-number v-model="item.retail_price" :precision="2" style="width: 100%;" />
-                  </a-form-model-item>
-                  <a-form-model-item label="备注">
-                    <a-input v-model="item.remark" allowClear />
                   </a-form-model-item>
                 </a-form-model>
               </div>
@@ -86,13 +86,16 @@
       </a-table>
 
       <div style="margin-top: 16px;">
-        <a-popconfirm v-if="form.id && !form.is_done" title="确定删除吗?" @confirm="destroy">
+        <a-popconfirm v-if="form.id && !form.is_commit" title="确定提交吗?" @confirm="commit">
+          <a-button type="primary" style="margin-right: 16px;">提交出库</a-button>
+        </a-popconfirm>
+        <a-popconfirm v-if="form.id && !form.is_commit" title="确定删除吗?" @confirm="destroy">
           <a-button type="danger" style="margin-right: 16px;">删除</a-button>
         </a-popconfirm>
-        <a-popconfirm v-if="!form.id" title="确定结算吗?" @confirm="create">
-          <a-button type="primary" :loading="buttonLoading">结算</a-button>
+        <a-popconfirm v-if="!form.id" title="确定创建销售单据吗?" @confirm="create">
+          <a-button type="primary" :loading="buttonLoading">创建单据</a-button>
         </a-popconfirm>
-        <a-button v-else @click="printInvoice">生成打印单据</a-button>
+        <a-button v-else @click="printInvoice">生成销售单据</a-button>
         <a-button style="float: right;" @click="resetForm">清空表单</a-button>
       </div>
     </a-card>
@@ -102,7 +105,7 @@
 </template>
 
 <script>
-  import { salesOrderCreate, salesOrderDestroy } from '@/api/sales'
+  import { salesOrderCreate, salesOrderDestroy, salesOrderCommit } from '@/api/sales'
   import { goodsColumns } from './columns.js'
   import NP from 'number-precision'
   import rules from './rules.js'
@@ -165,7 +168,7 @@
             salesOrderCreate(this.form)
               .then((resp) => {
                 this.$emit('createItem', resp.data);
-                this.$message.success('结账成功');
+                this.$message.success('创建成功');
                 this.resetForm();
               })
               .catch(err => {
@@ -184,6 +187,17 @@
             this.$message.success('删除成功');
             this.$emit('destroyItem', form.id);
             this.resetForm();
+          })
+          .catch(err => {
+            this.$message.error(this.errorToString(err));
+          });
+      },
+      commit() {
+        let form = { ...this.selectedItem };
+        salesOrderCommit(form)
+          .then(resp => {
+            this.$message.success('提交入库成功');
+            this.$emit('committedItem', resp.data)
           })
           .catch(err => {
             this.$message.error(this.errorToString(err));
